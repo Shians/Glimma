@@ -1,0 +1,13 @@
+Package: Glimma
+Type: Package
+Title: Interactive graphics from the limma package
+Version: 1.0
+Date: 2014-12-03
+Author: Shian Su
+Maintainer: Shian Su <su.s@wehi.edu.au>
+Description: This package generates html interactive plots for popular displays from the limma package.
+License: GPL-3
+Depends:
+	limma
+Imports:
+	limma
