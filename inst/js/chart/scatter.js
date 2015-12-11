@@ -31,6 +31,13 @@ function scatterChart() {
         yScale.domain(_scaled_extent(data, yValue))
                 .range([height - margin.top - margin.bottom, 0]);
 
+        // Create brush object
+        var brush = d3.svg.brush()
+                        .x(xScale)
+                        .y(yScale)
+                        .on("brush", _brushmove)
+                        .on("brushend", _brushend);
+
         // Update the color-scale.
         cScale.domain(data.map(function (d) { return cValue(d); }).unique()); //TODO: Allow fill with cValue without mapping
 
@@ -47,8 +54,6 @@ function scatterChart() {
 
         var svg = selection.select("svg");
 
-        var zoom = d3.behavior.zoom().scaleExtent([1,8]).x(xScale).y(yScale).on("zoom", zoom);
-
         // Update the outer dimensions.
         svg .attr("width", width)
                 .attr("height", height);
@@ -56,8 +61,6 @@ function scatterChart() {
         // Update the inner dimensions.
         var g = svg.select("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        g.call(zoom);
 
         // Update the area path.
         svg.select(".circle_container")
@@ -68,7 +71,6 @@ function scatterChart() {
                 .attr("cx", function (d) { return xScale(xValue(d)); })
                 .attr("cy", function (d) { return yScale(yValue(d)); })
                 .attr("r", function (d) { return sizeValue(d); })
-                .attr("transform", transform)
                 .style("fill", function (d) { return cScale(cValue(d)); })
                 .on('mouseover', function (d) { dispatcher.hover(d); })
                 .on('mouseout', function (d) { dispatcher.leave(d); });
@@ -182,12 +184,12 @@ function scatterChart() {
                     .style("top", tooltipTop + "px");
     }
 
-    function zoom() {
-      circle.attr("transform", transform);
+    function _brushmove() {
+
     }
 
-    function transform(d) {
-      return "translate(" + xScale(xValue(d)) + "," + yScale(yValue(d)) + ")";
+    function _brushend() {
+
     }
 
     //* Interactions *//
