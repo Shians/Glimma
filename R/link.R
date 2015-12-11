@@ -7,9 +7,12 @@
 #' @examples 
 #' 
 
-link <- function(from, to, action) {
+link <- function(from, to, action, both=FALSE) {
 	out <- list()
 	out$link <- data.frame(from=from, to=to, action=action)
+	if (both) {
+		out$link <- rbind(out$link, data.frame(from=to, to=from, action=action))
+	}
 	out$type <- "link"
 	return(out)
 }

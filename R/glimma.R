@@ -10,21 +10,34 @@ glimma <- function(..., layout=d(1,1)) {
 	# Convert variable arguments into list
 	args <- list(...)
 
-	cat("var glimma = window.glimma = [];\n", file="index.js")
-	cat("var data = [];\n", file="data.js")	
-	write.data <- writeMaker("data.js")
+	cat("var glimma = window.glimma = [];\n",
+		"glimma.data = [];\n",
+		"glimma.charts = [];\n",
+		 file="index.js")	
 
-	actions <- data.frame(from=0, to=0, action="none")
+	write.data <- writeMaker("index.js")
+
+	actions <- data.frame(from=0, to=0, action="none") # Dummy row
 	data.list <- list()
 
 	for (i in 1:length(args)) {
 		if (args[[i]]$type == "scatter") {
+			write.data(paste0("glimma.data.push(", args[[i]]$json, ");\n"))
 			scatterJS(args[[i]])
 			plotCall(i)
-			write.data(paste0("data.push(", args[[i]]$json, ");\n"))
 		} else if (args[[i]]$type == "link") {
-			actions <- cbind(actions, args[[i]]$link)
+			actions <- rbind(actions, args[[i]]$link)
 		}
+	}
+
+	if (nrow(actions) > 1) {
+		actions.js <- makeDFJson(actions[-1, ])
+		cat("var glimma = window.glimma;\n",
+			"glimma.linkage = ", actions.js, 
+			file="linkage.js")
+	} else {
+		cat("var glimma = window.glimma;\n",
+			"glimma.linkage = [];", file="linkage.js")
 	}
 
 	cat("var interactions = ", file="interactions.js")
@@ -33,7 +46,7 @@ glimma <- function(..., layout=d(1,1)) {
 scatterJS <- function(chart) {
 	write.out <- writeMaker("index.js")
 
-	command <- "glimma.push(scatterChart().height(400)"
+	command <- "glimma.charts.push(scatterChart().height(400)"
 
 	x.func <- paste0(".x(function (d) { return d[", quotify(chart$x), "]; })")
 	command <- paste0(command, x.func)
@@ -54,7 +67,9 @@ scatterJS <- function(chart) {
 plotCall <- function(index) {
 	write.out <- writeMaker("index.js")
 
-	command <- paste0("d3.select(\".glimma-plot.available\").datum(data[", index-1, "]).call(glimma[", index-1, "]);\n")
+	command <- paste0("d3.select(\".glimma-plot.available\")", 
+							".datum(glimma.data[", index-1, "])",
+							".call(glimma.charts[", index-1, "]);\n")
 
 	write.out(command)
 }

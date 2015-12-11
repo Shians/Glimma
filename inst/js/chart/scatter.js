@@ -76,8 +76,8 @@ function scatterChart() {
         g.select(".y.axis")
                 .call(yAxis);
 
-        dispatcher.on("hover", function (d) { chart.highlight(d); });
-        dispatcher.on("leave", function (d) { chart.lowlight(d); });
+        dispatcher.on("hover", function (d) { chart.hover(d); });
+        dispatcher.on("leave", function (d) { chart.leave(d); });
     }
 
     //* Setters/getters *//
@@ -178,7 +178,7 @@ function scatterChart() {
     }
 
     //* Interactions *//
-    chart.highlight = function(data) {
+    chart.hover = function(data) {
         var c = front.select("circle")
         if (c[0][0] === null) {
             c = front.append("circle")
@@ -193,7 +193,7 @@ function scatterChart() {
         _showTooltip(data);
     };
 
-    chart.lowlight = function(data) {
+    chart.leave = function(data) {
         front.selectAll("circle")
                 .style("opacity", 0);
 
