@@ -37,7 +37,7 @@ glimma <- function(..., layout=d(1,1)) {
 			write.data(paste0("glimma.chartInfo.push(", chartInfo, ");\n"))
 
 			# Write plot call
-			scatterJS(args[[i]])
+			scatterJS(args[[i]], i)
 		}
 	}
 
@@ -50,7 +50,7 @@ glimma <- function(..., layout=d(1,1)) {
 	}
 }
 
-scatterJS <- function(chart) {
+scatterJS <- function(chart, index) {
 	write.out <- writeMaker("data.js")
 
 	command <- "glimma.charts.push(scatterChart().height(400)"
@@ -60,6 +60,9 @@ scatterJS <- function(chart) {
 
 	y.func <- paste0(".y(function (d) { return d[", quotify(chart$y), "]; })")
 	command <- paste0(command, y.func)
+
+	anno <- paste0(".tooltip(glimma.chartInfo[", index - 1, "].anno)")
+	command <- paste0(command, anno)
 
 	if (!is.null(chart$col)) {
 		c.func <- paste(".col(function(d) { return d[", quotify(chart$col), "]; })")

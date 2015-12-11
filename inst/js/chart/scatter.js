@@ -6,7 +6,7 @@ function scatterChart() {
     var yValue = function(d) { return d.y; };
     var sizeValue = function (d) { return 2; };
     var cValue = function (d) { return "black"; };
-    var tooltip = ["Sepal.Length", "Sepal.Width"];
+    var tooltip = ["x", "y"];
     var xScale = d3.scale.linear();
     var yScale = d3.scale.linear();
     var cScale = d3.scale.category10();
@@ -47,6 +47,8 @@ function scatterChart() {
 
         var svg = selection.select("svg");
 
+        var zoom = d3.behavior.zoom().scaleExtent([1,8]).x(xScale).y(yScale).on("zoom", zoom);
+
         // Update the outer dimensions.
         svg .attr("width", width)
                 .attr("height", height);
@@ -54,6 +56,8 @@ function scatterChart() {
         // Update the inner dimensions.
         var g = svg.select("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        g.call(zoom);
 
         // Update the area path.
         svg.select(".circle_container")
@@ -64,6 +68,7 @@ function scatterChart() {
                 .attr("cx", function (d) { return xScale(xValue(d)); })
                 .attr("cy", function (d) { return yScale(yValue(d)); })
                 .attr("r", function (d) { return sizeValue(d); })
+                .attr("transform", transform)
                 .style("fill", function (d) { return cScale(cValue(d)); })
                 .on('mouseover', function (d) { dispatcher.hover(d); })
                 .on('mouseout', function (d) { dispatcher.leave(d); });
@@ -158,13 +163,13 @@ function scatterChart() {
 
         for (var i=0; i<tooltip.length; i++) {
             var row = table.append("tr");
-            row.append("td").html(tooltip[i] +": ");
-            row.append("td").html(data[tooltip[i]]);
+            row.append("td").attr("class", "right-align tooltip-cell").html(tooltip[i] +":");
+            row.append("td").attr("class", "left-align tooltip-cell").html(data[tooltip[i]]);
         }
 
         tooltipLeft = xScale(xValue(data));
-        tooltipLeft += margin.left;
-        tooltipLeft -= 3 + container.select(".tooltip").node().offsetWidth;
+        tooltipLeft += margin.left + margin.right;
+        // tooltipLeft -= 3 + container.select(".tooltip").node().offsetWidth;
 
         tooltipTop = yScale(yValue(data));
         tooltipTop += margin.top;
@@ -175,6 +180,14 @@ function scatterChart() {
                     .style("opacity", 1)
                     .style("left", tooltipLeft + "px")
                     .style("top", tooltipTop + "px");
+    }
+
+    function zoom() {
+      circle.attr("transform", transform);
+    }
+
+    function transform(d) {
+      return "translate(" + xScale(xValue(d)) + "," + yScale(yValue(d)) + ")";
     }
 
     //* Interactions *//
