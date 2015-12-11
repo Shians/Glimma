@@ -12,39 +12,46 @@ glimma <- function(..., layout=d(1,1)) {
 
 	cat("var glimma = window.glimma = [];\n",
 		"glimma.data = [];\n",
+		"glimma.chartInfo = [];\n",
 		"glimma.charts = [];\n",
-		 file="index.js")	
+		"glimma.linkage = [];\n",
+		file="data.js", sep="")
 
-	write.data <- writeMaker("index.js")
+	cat("var glimma = window.glimma = [];\n", file="index.js");
+
+	write.data <- writeMaker("data.js")
 
 	actions <- data.frame(from=0, to=0, action="none") # Dummy row
 	data.list <- list()
 
 	for (i in 1:length(args)) {
-		if (args[[i]]$type == "scatter") {
-			write.data(paste0("glimma.data.push(", args[[i]]$json, ");\n"))
-			scatterJS(args[[i]])
-			plotCall(i)
-		} else if (args[[i]]$type == "link") {
+		if (args[[i]]$type == "link") {
 			actions <- rbind(actions, args[[i]]$link)
+		} else if (args[[i]]$type == "scatter") {
+			# Write json data
+			write.data(paste0("glimma.data.push(", args[[i]]$json, ");\n"))
+			
+			# Write plot information
+			args[[i]]$json <- NULL
+			chartInfo <- makeChartJson(args[[i]])
+			write.data(paste0("glimma.chartInfo.push(", chartInfo, ");\n"))
+
+			# Write plot call
+			scatterJS(args[[i]])
 		}
 	}
 
+	# Write linkage
 	if (nrow(actions) > 1) {
 		actions.js <- makeDFJson(actions[-1, ])
-		cat("var glimma = window.glimma;\n",
-			"glimma.linkage = ", actions.js, 
-			file="linkage.js")
+		write.data(paste0("glimma.linkage = ", actions.js, ";"))
 	} else {
-		cat("var glimma = window.glimma;\n",
-			"glimma.linkage = [];", file="linkage.js")
+		write.data("glimma.linkage = [];")
 	}
-
-	cat("var interactions = ", file="interactions.js")
 }
 
 scatterJS <- function(chart) {
-	write.out <- writeMaker("index.js")
+	write.out <- writeMaker("data.js")
 
 	command <- "glimma.charts.push(scatterChart().height(400)"
 

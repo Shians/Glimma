@@ -47,6 +47,25 @@ makeDFJson <- function(df) {
   output
 }
 
+# Function to make json object from a chart, ignoring the json property
+makeChartJson <- function(chart) {
+  if (!is(chart, "jschart")) {
+    stopType("jschart", "chart")
+  }
+
+  makeEntry <- function(d) {
+    if (length(chart[[d]]) > 1) {
+      return(paste(quotify(d), arrayify(quotify(chart[[d]])), sep=":"))
+    } else {
+      return(paste(quotify(d), quotify(chart[[d]]), sep=":"))
+    }
+  }
+
+  chart$json <- NULL
+
+  paste0("{", paste(sapply(names(chart), makeEntry), collapse=","), "}")
+}
+
 # Function to print stored json as a javascript var declaration
 printJsonToFile <- function(json, filename, varname) {
   file.con <- file(description=filename, open="w")

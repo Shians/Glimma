@@ -1,8 +1,7 @@
-d3.select("body")
-	.append("div")
-	.attr("class", "row")
-	.selectAll("div")
-	.data([4,4,4])
-	.enter()
-	.append("div")
-	.attr("class", );
+for (var i=0; i<glimma.chartInfo.length; i++) {
+	var chart = glimma.chartInfo[i];
+
+	if (chart.type == "scatter") {
+		d3.select(".glimma-plot.available").datum(glimma.data[i]).call(glimma.charts[i]);
+	}
+}

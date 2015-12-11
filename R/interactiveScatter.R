@@ -8,7 +8,7 @@ interactiveScatter <- function(x, ...) {
 	UseMethod("interactiveScatter")
 }
 
-interactiveScatter.default <- function(x, xval="x", yval="y", colval=NULL, annot=c("x", "y"), path=getwd()) {
+interactiveScatter.default <- function(x, xval="x", yval="y", colval=NULL, annot=c(xval, yval), path=getwd()) {
 	##
 	# Input checking
 	if (!is.character(xval)) {
