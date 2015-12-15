@@ -16,87 +16,93 @@ function scatterChart() {
     var dispatcher = d3.dispatch("hover", "leave");
     var container;
     var front;
+    var data;
+    var extent;
 
     function chart(selection) {
-        container = selection;
-        container.classed("available", false);
+        chart.container = container = selection;
+        container.classed("available", false); // Mark plot window as occupied.
 
-        var data = selection.data()[0];
+        data = data || selection.data()[0]; // Grab data from plot window
 
-        // Update the x-scale.
-        xScale.domain(_scaled_extent(data, xValue))
-                .range([0, width - margin.left - margin.right]);
+        extent = extent || {"x": _scaled_extent(data, xValue), "y": _scaled_extent(data, yValue)};
 
-        // Update the y-scale.
-        yScale.domain(_scaled_extent(data, yValue))
-                .range([height - margin.top - margin.bottom, 0]);
-
-        // Create brush object
-        var brush = d3.svg.brush()
-                        .x(xScale)
-                        .y(yScale)
-                        .on("brush", _brushmove)
-                        .on("brushend", _brushend);
-
-        // Update the color-scale.
+        // Scale initialisation
+        xScale.domain(extent.x).range([0, width - margin.left - margin.right]);
+        yScale.domain(extent.y).range([height - margin.top - margin.bottom, 0]);
         cScale.domain(data.map(function (d) { return cValue(d); }).unique()); //TODO: Allow fill with cValue without mapping
 
+        // Create brush object
+        var brush = d3.svg.brush().x(xScale).y(yScale).on("brushend", _brushend);
+
+        // Bind data to SVG if it exists
+        var svg = selection.selectAll("svg").data([data]);
+
         // Otherwise, create the skeletal chart.
-        var gEnter = selection.append("svg").append("g");
-        gEnter.append("g").attr("class", "x axis");
-        gEnter.append("g").attr("class", "y axis");
-        gEnter.append("g").attr("class", "circle_container");
-        front = gEnter.append("g").attr("class", "front");
+        var gEnter = svg.enter().append("svg").append("g");
+        gEnter.append("g").attr("class", "brush"); // brush
+        gEnter.append("g").attr("class", "x axis"); // x axis
+        gEnter.append("g").attr("class", "y axis"); // y axis
+        gEnter.append("g").attr("class", "circle_container"); // circle container
+        front = gEnter.append("g").attr("class", "front"); // front layer
+        container.select(".tooltip").node() || 
+        container.append("div").attr("class", "tooltip").style("opacity", 0); // tooltip
 
-        container.append("div")
-                    .attr("class", "tooltip")
-                    .style("opacity", 0);
-
-        var svg = selection.select("svg");
+        svg.select(".brush").call(brush);
 
         // Update the outer dimensions.
-        svg .attr("width", width)
-                .attr("height", height);
+        svg.attr("width", width)
+            .attr("height", height);
 
         // Update the inner dimensions.
         var g = svg.select("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        // Update the area path.
-        svg.select(".circle_container")
-                .selectAll("circle")
-                .data(data)
-                .enter()
-                .append("circle")
-                .attr("cx", function (d) { return xScale(xValue(d)); })
-                .attr("cy", function (d) { return yScale(yValue(d)); })
-                .attr("r", function (d) { return sizeValue(d); })
-                .style("fill", function (d) { return cScale(cValue(d)); })
-                .on('mouseover', function (d) { dispatcher.hover(d); })
-                .on('mouseout', function (d) { dispatcher.leave(d); });
+        var cirContainer = svg.select(".circle_container")
+                                .selectAll("circle")
+                                .data(data, function(d) { return [xValue(d), yValue(d)]; })
+        
+                
+        cirContainer.exit()
+                    .remove();
 
-        // Update the x-axis.
-        g.select(".x.axis")
+        // Create container for circles.
+        cirContainer.enter()
+                    .append("circle")
+                    .attr("class", "point")
+                    .attr("cx", function (d) { return xScale(xValue(d)); })
+                    .attr("cy", function (d) { return yScale(yValue(d)); })
+                    .attr("r", function (d) { return sizeValue(d); })
+                    .style("fill", function (d) { return cScale(cValue(d)); })
+                    .on('mouseover', function (d) { dispatcher.hover(d); })
+                    .on('mouseout', function (d) { dispatcher.leave(d); });
+
+        cirContainer.transition()
+                    .attr("cx", function (d) { return xScale(xValue(d)); })
+                    .attr("cy", function (d) { return yScale(yValue(d)); });
+
+        // Update the axes.
+        svg.select(".x.axis")
                 .attr("transform", "translate(0," + yScale.range()[0] + ")")
+                .transition()
                 .call(xAxis);
-
-        g.select(".y.axis")
+        svg.select(".y.axis")
+                .transition()
                 .call(yAxis);
 
+        // Assign dispatcher events
         dispatcher.on("hover", function (d) { chart.hover(d); });
         dispatcher.on("leave", function (d) { chart.leave(d); });
+
+        // Brush function
+        function _brushend() {
+            var extent = brush.extent();
+            svg.select(".brush").call(brush.clear());
+            _rescale(extent);
+        }
     }
 
     //* Setters/getters *//
-
-    function X(d) {
-        return xScale(d[0]);
-    }
-
-    function Y(d) {
-        return yScale(d[1]);
-    }
-
     chart.margin = function(_) {
         if (!arguments.length) return margin;
         margin = _;
@@ -145,12 +151,24 @@ function scatterChart() {
         return chart;
     }
 
+    chart.data = function(_) {
+        if (!arguments.length) return data;
+        data = _;
+        return chart;
+    }
+
+    chart.extent = function(_) {
+        if (!arguments.length) return extent;
+        extent = _;
+        return chart;
+    }
+
     //* Helper Functions *//
     function _scaled_extent(data, key, factor) {
         factor = typeof factor !== "undefined" ? factor : 0.02;
         extent = d3.extent(data, key);
         range = extent[1] - extent[0];
-        offset = range * 0.05;
+        offset = range * factor;
         return [extent[0] - offset, extent[1] + offset]
     }
 
@@ -176,6 +194,7 @@ function scatterChart() {
         tooltipTop = yScale(yValue(data));
         tooltipTop += margin.top;
         tooltipTop -= 3 + container.select(".tooltip").node().offsetHeight;
+        tooltipTop = tooltipTop < 0 ? 0 : tooltipTop;
                      
 
         container.select(".tooltip")
@@ -184,12 +203,27 @@ function scatterChart() {
                     .style("top", tooltipTop + "px");
     }
 
-    function _brushmove() {
-
+    function _rescale(extent) {
+        var newData = container.data()[0].filter(function (d) { return _within(d, extent); })
+        chart.data(newData);
+        chart.extent({"x": [extent[0][0], extent[1][0]], "y": [extent[0][1], extent[1][1]]});
+        container.call(chart);
     }
 
-    function _brushend() {
+    function _resetScale() {
+        chart.data(container.data()[0]);
+        extent = null;
+        container.call(chart);   
+    }
 
+    function _within(point, extent) {
+        var x = xValue(point);
+        var y = yValue(point);
+
+        return (x >= extent[0][0] && 
+                x <= extent[1][0] &&
+                y >= extent[0][1] &&
+                y <= extent[1][1])
     }
 
     //* Interactions *//
@@ -214,6 +248,14 @@ function scatterChart() {
 
         container.select(".tooltip")
                     .style("opacity", 0);
+    };
+
+    chart.rescale = function(extent) {
+        _rescale(extent);
+    };
+
+    chart.update = function() {
+        container.call(chart);
     };
 
     // This allows other objects to 'listen' to events dispatched by the _table object.
