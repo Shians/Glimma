@@ -1,5 +1,5 @@
 function scatterChart() {
-    var margin = {top: 20, right: 20, bottom: 40, left: 40};
+    var margin = {top: 20, right: 20, bottom: 50, left: 50};
     var width = 500;
     var height = 500;
     var xValue = function(d) { return d.x; };
@@ -7,6 +7,9 @@ function scatterChart() {
     var sizeValue = function (d) { return 2; };
     var cValue = function (d) { return "black"; };
     var tooltip = ["x", "y"];
+    var titleValue = "";
+    var xLabel = "";
+    var yLabel = "";
     var xScale = d3.scale.linear();
     var yScale = d3.scale.linear();
     var cScale = d3.scale.category10();
@@ -32,6 +35,25 @@ function scatterChart() {
         yScale.domain(extent.y).range([height - margin.top - margin.bottom, 0]);
         cScale.domain(data.map(function (d) { return cValue(d); }).unique()); //TODO: Allow fill with cValue without mapping
 
+        // Select title div if it exists, otherwise create it
+        var titleDiv = selection.select(".title");
+        if (titleDiv.node() == null) {
+            var titleDiv = selection.append("div")
+                                    .attr("class", "title center-align")
+                                    .html(titleValue);
+        }
+
+        // Select the gutter
+        var gutter = selection.select(".gutter");
+        if (gutter.node() == null) {
+            var gutter = selection.append("div")
+                                    .attr("class", "gutter left-align");
+            gutter.append("button")
+                    .attr("class", "reset-button")
+                    .html("Reset Zoom")
+                    .on("click", _resetScale);
+        }
+
         // Create brush object
         var brush = d3.svg.brush().x(xScale).y(yScale).on("brushend", _brushend);
 
@@ -41,14 +63,20 @@ function scatterChart() {
         // Otherwise, create the skeletal chart.
         var gEnter = svg.enter().append("svg").append("g");
         gEnter.append("g").attr("class", "brush"); // brush
+        gEnter.append("g").attr("class", "brush-cover"); // brush
         gEnter.append("g").attr("class", "x axis"); // x axis
+        gEnter.append("g").attr("class", "x label center-align"); // x label
         gEnter.append("g").attr("class", "y axis"); // y axis
-        gEnter.append("g").attr("class", "circle_container"); // circle container
+        gEnter.append("g").attr("class", "y label center-align"); // x label
+        gEnter.append("g").attr("class", "circle-container"); // circle container
         front = gEnter.append("g").attr("class", "front"); // front layer
         container.select(".tooltip").node() || 
         container.append("div").attr("class", "tooltip").style("opacity", 0); // tooltip
 
         svg.select(".brush").call(brush);
+        svg.select("rect.extent")
+            .style("cursor", "crosshair")
+            .style("pointer-events", "none");
 
         // Update the outer dimensions.
         svg.attr("width", width)
@@ -58,37 +86,64 @@ function scatterChart() {
         var g = svg.select("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var cirContainer = svg.select(".circle_container")
+        var cirContainer = svg.select(".circle-container")
                                 .selectAll("circle")
                                 .data(data, function(d) { return [xValue(d), yValue(d)]; })
         
                 
+        // Remove data points that no longer exist
         cirContainer.exit()
                     .remove();
 
-        // Create container for circles.
+        // Add points for new data
         cirContainer.enter()
                     .append("circle")
                     .attr("class", "point")
-                    .attr("cx", function (d) { return xScale(xValue(d)); })
-                    .attr("cy", function (d) { return yScale(yValue(d)); })
                     .attr("r", function (d) { return sizeValue(d); })
                     .style("fill", function (d) { return cScale(cValue(d)); })
                     .on('mouseover', function (d) { dispatcher.hover(d); })
                     .on('mouseout', function (d) { dispatcher.leave(d); });
 
-        cirContainer.transition()
-                    .attr("cx", function (d) { return xScale(xValue(d)); })
-                    .attr("cy", function (d) { return yScale(yValue(d)); });
+        // Update positions
+        if (cirContainer.node().childElementCount < 2000) {
+            cirContainer.transition()
+                        .attr("cx", function (d) { return xScale(xValue(d)); })
+                        .attr("cy", function (d) { return yScale(yValue(d)); });
+        } else {
+            cirContainer.attr("cx", function (d) { return xScale(xValue(d)); })
+                        .attr("cy", function (d) { return yScale(yValue(d)); });
+        }
+        
+        var tallTextOffset = 6;
 
         // Update the axes.
         svg.select(".x.axis")
                 .attr("transform", "translate(0," + yScale.range()[0] + ")")
                 .transition()
                 .call(xAxis);
+        var xLabSel = svg.select(".x.label");
+        if (xLabSel.node().childElementCount  == 0) {
+            xLabSel.append("text")
+                    .attr("class", "label-text")
+                    .attr("text-anchor", "middle")
+                    .attr("x", width/2)
+                    .attr("y", height - margin.top - tallTextOffset)
+                    .html(xLabel);
+        }
+
         svg.select(".y.axis")
                 .transition()
                 .call(yAxis);
+        var yLabSel = svg.select(".y.label");
+        if (yLabSel.node().childElementCount  == 0) {
+            yLabSel.attr("transform", "rotate(90)")
+                    .append("text")
+                    .attr("class", "label-text")
+                    .attr("text-anchor", "middle")
+                    .attr("x", height/2)
+                    .attr("y", - margin.top - tallTextOffset)
+                    .html(yLabel);
+        }
 
         // Assign dispatcher events
         dispatcher.on("hover", function (d) { chart.hover(d); });
@@ -96,9 +151,11 @@ function scatterChart() {
 
         // Brush function
         function _brushend() {
-            var extent = brush.extent();
-            svg.select(".brush").call(brush.clear());
-            _rescale(extent);
+            if (!brush.empty()) {
+                var extent = brush.extent();
+                svg.select(".brush").call(brush.clear());
+                _rescale(extent);
+            }
         }
     }
 
@@ -127,9 +184,21 @@ function scatterChart() {
         return chart;
     };
 
+    chart.xlab = function(_) {
+        if (!arguments.length) return xLabel;
+        xLabel = _;
+        return chart;
+    };
+
     chart.y = function(_) {
         if (!arguments.length) return yValue;
         yValue = _;
+        return chart;
+    };
+
+    chart.ylab = function(_) {
+        if (!arguments.length) return yLabel;
+        yLabel = _;
         return chart;
     };
 
@@ -163,6 +232,30 @@ function scatterChart() {
         return chart;
     }
 
+    chart.title = function(_) {
+        if (!arguments.length) return titleValue;
+        titleValue = _;
+        return chart;
+    }
+
+    function _highlight(data) {
+        var c = front.select("circle")
+        if (c[0][0] === null) {
+            c = front.append("circle")
+        }
+        c.attr("cx", xScale(xValue(data)))
+            .attr("cy", yScale(yValue(data)))
+            .attr("r", sizeValue(data) + 2)
+            .style("opacity", 1)
+            .style("stroke", "white")
+            .style("fill", cScale(cValue(data)));
+    }
+
+    function _lowlight() {
+        front.selectAll("circle")
+                .style("opacity", 0);
+    }
+
     //* Helper Functions *//
     function _scaled_extent(data, key, factor) {
         factor = typeof factor !== "undefined" ? factor : 0.02;
@@ -183,7 +276,7 @@ function scatterChart() {
 
         for (var i=0; i<tooltip.length; i++) {
             var row = table.append("tr");
-            row.append("td").attr("class", "right-align tooltip-cell").html(tooltip[i] +":");
+            row.append("td").attr("class", "right-align tooltip-cell").html(tooltip[i]);
             row.append("td").attr("class", "left-align tooltip-cell").html(data[tooltip[i]]);
         }
 
@@ -203,6 +296,11 @@ function scatterChart() {
                     .style("top", tooltipTop + "px");
     }
 
+    function _hideTooltip() {
+        container.select(".tooltip")
+                    .style("opacity", 0);
+    }
+
     function _rescale(extent) {
         var newData = container.data()[0].filter(function (d) { return _within(d, extent); })
         chart.data(newData);
@@ -213,7 +311,7 @@ function scatterChart() {
     function _resetScale() {
         chart.data(container.data()[0]);
         extent = null;
-        container.call(chart);   
+        container.call(chart);
     }
 
     function _within(point, extent) {
@@ -228,26 +326,13 @@ function scatterChart() {
 
     //* Interactions *//
     chart.hover = function(data) {
-        var c = front.select("circle")
-        if (c[0][0] === null) {
-            c = front.append("circle")
-        }
-        c.attr("cx", xScale(xValue(data)))
-            .attr("cy", yScale(yValue(data)))
-            .attr("r", sizeValue(data) + 2)
-            .style("opacity", 1)
-            .style("stroke", "white")
-            .style("fill", cScale(cValue(data)));
-
+        _highlight(data);
         _showTooltip(data);
     };
 
     chart.leave = function(data) {
-        front.selectAll("circle")
-                .style("opacity", 0);
-
-        container.select(".tooltip")
-                    .style("opacity", 0);
+        _lowlight();
+        _hideTooltip();
     };
 
     chart.rescale = function(extent) {

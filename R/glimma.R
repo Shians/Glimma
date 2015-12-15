@@ -58,11 +58,21 @@ scatterJS <- function(chart, index) {
 	x.func <- paste0(".x(function (d) { return d[", quotify(chart$x), "]; })")
 	command <- paste0(command, x.func)
 
+	x.lab <- paste0(".xlab(", quotify(chart$x), ")")
+	command <- paste0(command, x.lab)
+
 	y.func <- paste0(".y(function (d) { return d[", quotify(chart$y), "]; })")
 	command <- paste0(command, y.func)
 
+	y.lab <- paste0(".xlab(", quotify(chart$y), ")")
+	command <- paste0(command, y.lab)
+
+
 	anno <- paste0(".tooltip(glimma.chartInfo[", index - 1, "].anno)")
 	command <- paste0(command, anno)
+
+	main <- paste0(".title(glimma.chartInfo[", index - 1, "].title)")
+	command <- paste0(command, main)
 
 	if (!is.null(chart$col)) {
 		c.func <- paste(".col(function(d) { return d[", quotify(chart$col), "]; })")

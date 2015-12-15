@@ -4,11 +4,12 @@
 #' @return 
 #' @examples
 #' 
-interactiveScatter <- function(x, ...) {
-	UseMethod("interactiveScatter")
+glScatter <- function(x, ...) {
+	UseMethod("glScatter")
 }
 
-interactiveScatter.default <- function(x, xval="x", yval="y", colval=NULL, annot=c(xval, yval), path=getwd()) {
+glScatter.default <- function(x, xval="x", yval="y", colval=NULL, annot=c(xval, yval),
+										main=NULL, path=getwd()) {
 	##
 	# Input checking
 	if (!is.character(xval)) {
@@ -19,6 +20,14 @@ interactiveScatter.default <- function(x, xval="x", yval="y", colval=NULL, annot
 	}
 	if (!is.character(annot)) {
 		stopType("character", "annot")	
+	}
+
+	if (is.na(match(xval, names(x)))) {
+		stop(paste(xval, "does not correspond to a column"))
+	}
+
+	if (is.na(match(yval, names(x)))) {
+		stop(paste(yval, "does not correspond to a column"))
 	}
 
 	##
@@ -41,6 +50,7 @@ interactiveScatter.default <- function(x, xval="x", yval="y", colval=NULL, annot
 	out$anno <- annot
 	out$json <- json
 	out$type <- "scatter"
+	out$title <- main
 
 	class(out) <- "jschart"
 

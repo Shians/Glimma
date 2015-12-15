@@ -54,7 +54,9 @@ makeChartJson <- function(chart) {
   }
 
   makeEntry <- function(d) {
-    if (length(chart[[d]]) > 1) {
+    if (is.null(chart[[d]])) {
+      return(paste(quotify(d), "null", sep=":"))
+    } else if (length(chart[[d]]) > 1) {
       return(paste(quotify(d), arrayify(quotify(chart[[d]])), sep=":"))
     } else {
       return(paste(quotify(d), quotify(chart[[d]]), sep=":"))
