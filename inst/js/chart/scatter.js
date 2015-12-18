@@ -1,9 +1,9 @@
 function scatterChart() {
-    var margin = {top: 20, right: 20, bottom: 50, left: 50};
+    var margin = {top: 20, right: 20, bottom: 50, left: 60};
     var width = 500;
-    var height = 500;
-    var xValue = function(d) { return d.x; };
-    var yValue = function(d) { return d.y; };
+    var height = 400;
+    var xValue = function (d) { return d.x; };
+    var yValue = function (d) { return d.y; };
     var sizeValue = function (d) { return 2; };
     var cValue = function (d) { return "black"; };
     var tooltip = ["x", "y"];
@@ -23,131 +23,66 @@ function scatterChart() {
     var extent;
 
     function chart(selection) {
-        chart.container = container = selection;
-        container.classed("available", false); // Mark plot window as occupied.
+        var svg;
+        var brush;
 
-        data = data || selection.data()[0]; // Grab data from plot window
+        occupyContainer();
+        assignData();
+        createDimensions();
+        drawTitle();
+        drawButtons();
+        createBrush();
+        bindData();
+        drawSkeleton();
+        drawBrush();
+        drawPoints();
+        drawAxis();
+        bindDispatcher();
 
-        extent = extent || {"x": _scaled_extent(data, xValue), "y": _scaled_extent(data, yValue)};
-
-        // Scale initialisation
-        xScale.domain(extent.x).range([0, width - margin.left - margin.right]);
-        yScale.domain(extent.y).range([height - margin.top - margin.bottom, 0]);
-        cScale.domain(data.map(function (d) { return cValue(d); }).unique()); //TODO: Allow fill with cValue without mapping
-
-        // Select title div if it exists, otherwise create it
-        var titleDiv = selection.select(".title");
-        if (titleDiv.node() == null) {
-            var titleDiv = selection.append("div")
-                                    .attr("class", "title center-align")
-                                    .html(titleValue);
+        function occupyContainer() {
+            chart.container = container = selection;
+            container.classed("available", false); // Mark plot window as occupied.
         }
 
-        // Select the gutter
-        var gutter = selection.select(".gutter");
-        if (gutter.node() == null) {
-            var gutter = selection.append("div")
-                                    .attr("class", "gutter left-align");
-            gutter.append("button")
-                    .attr("class", "reset-button")
-                    .html("Reset Zoom")
-                    .on("click", _resetScale);
+        function assignData() {
+            data = data || selection.data()[0]; // Grab data from plot window
         }
 
-        // Create brush object
-        var brush = d3.svg.brush().x(xScale).y(yScale).on("brushend", _brushend);
-
-        // Bind data to SVG if it exists
-        var svg = selection.selectAll("svg").data([data]);
-
-        // Otherwise, create the skeletal chart.
-        var gEnter = svg.enter().append("svg").append("g");
-        gEnter.append("g").attr("class", "brush"); // brush
-        gEnter.append("g").attr("class", "brush-cover"); // brush
-        gEnter.append("g").attr("class", "x axis"); // x axis
-        gEnter.append("g").attr("class", "x label center-align"); // x label
-        gEnter.append("g").attr("class", "y axis"); // y axis
-        gEnter.append("g").attr("class", "y label center-align"); // x label
-        gEnter.append("g").attr("class", "circle-container"); // circle container
-        front = gEnter.append("g").attr("class", "front"); // front layer
-        container.select(".tooltip").node() || 
-        container.append("div").attr("class", "tooltip").style("opacity", 0); // tooltip
-
-        svg.select(".brush").call(brush);
-        svg.select("rect.extent")
-            .style("cursor", "crosshair")
-            .style("pointer-events", "none");
-
-        // Update the outer dimensions.
-        svg.attr("width", width)
-            .attr("height", height);
-
-        // Update the inner dimensions.
-        var g = svg.select("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        var cirContainer = svg.select(".circle-container")
-                                .selectAll("circle")
-                                .data(data, function(d) { return [xValue(d), yValue(d)]; })
-        
-                
-        // Remove data points that no longer exist
-        cirContainer.exit()
-                    .remove();
-
-        // Add points for new data
-        cirContainer.enter()
-                    .append("circle")
-                    .attr("class", "point")
-                    .attr("r", function (d) { return sizeValue(d); })
-                    .style("fill", function (d) { return cScale(cValue(d)); })
-                    .on('mouseover', function (d) { dispatcher.hover(d); })
-                    .on('mouseout', function (d) { dispatcher.leave(d); });
-
-        // Update positions
-        if (cirContainer.node().childElementCount < 2000) {
-            cirContainer.transition()
-                        .attr("cx", function (d) { return xScale(xValue(d)); })
-                        .attr("cy", function (d) { return yScale(yValue(d)); });
-        } else {
-            cirContainer.attr("cx", function (d) { return xScale(xValue(d)); })
-                        .attr("cy", function (d) { return yScale(yValue(d)); });
-        }
-        
-        var tallTextOffset = 6;
-
-        // Update the axes.
-        svg.select(".x.axis")
-                .attr("transform", "translate(0," + yScale.range()[0] + ")")
-                .transition()
-                .call(xAxis);
-        var xLabSel = svg.select(".x.label");
-        if (xLabSel.node().childElementCount  == 0) {
-            xLabSel.append("text")
-                    .attr("class", "label-text")
-                    .attr("text-anchor", "middle")
-                    .attr("x", width/2)
-                    .attr("y", height - margin.top - tallTextOffset)
-                    .html(xLabel);
+        function createDimensions() {
+            extent = extent || {"x": _scaled_extent(data, xValue), "y": _scaled_extent(data, yValue)};
+            // Scale initialisation
+            xScale.domain(extent.x).range([0, width - margin.left - margin.right]);
+            yScale.domain(extent.y).range([height - margin.top - margin.bottom, 0]);
+            cScale.domain(data.map(function (d) { return cValue(d); }).unique()); //TODO: Allow fill with cValue without mapping
         }
 
-        svg.select(".y.axis")
-                .transition()
-                .call(yAxis);
-        var yLabSel = svg.select(".y.label");
-        if (yLabSel.node().childElementCount  == 0) {
-            yLabSel.attr("transform", "rotate(90)")
-                    .append("text")
-                    .attr("class", "label-text")
-                    .attr("text-anchor", "middle")
-                    .attr("x", height/2)
-                    .attr("y", - margin.top - tallTextOffset)
-                    .html(yLabel);
+        function drawTitle() {
+            // Select title div if it exists, otherwise create it
+            var titleDiv = selection.select(".title");
+            if (titleDiv.node() == null) {
+                var titleDiv = selection.append("div")
+                                        .attr("class", "title center-align")
+                                        .html(titleValue);
+            }
         }
 
-        // Assign dispatcher events
-        dispatcher.on("hover", function (d) { chart.hover(d); });
-        dispatcher.on("leave", function (d) { chart.leave(d); });
+        function drawButtons() {
+            // Select the gutter and add reset zoom button
+            var gutter = selection.select(".gutter");
+            if (gutter.node() == null) {
+                var gutter = selection.append("div")
+                                        .attr("class", "gutter left-align");
+                gutter.append("button")
+                        .attr("class", "reset-button")
+                        .html("Reset Zoom")
+                        .on("click", _resetScale);
+            }   
+        }
+
+        function createBrush() {
+            // Create brush object
+            brush = d3.svg.brush().x(xScale).y(yScale).on("brushend", _brushend);
+        }
 
         // Brush function
         function _brushend() {
@@ -156,6 +91,109 @@ function scatterChart() {
                 svg.select(".brush").call(brush.clear());
                 _rescale(extent);
             }
+        }
+
+        function bindData() {   
+            // Bind data to SVG if it exists
+            svg = selection.selectAll("svg").data([data]);
+        }
+
+        function drawSkeleton() {
+            // Otherwise, create the skeletal chart.
+            var gEnter = svg.enter().append("svg").append("g");
+            gEnter.append("g").attr("class", "brush"); // brush
+            gEnter.append("g").attr("class", "brush-cover"); // brush
+            gEnter.append("g").attr("class", "x axis"); // x axis
+            gEnter.append("g").attr("class", "x label center-align"); // x label
+            gEnter.append("g").attr("class", "y axis"); // y axis
+            gEnter.append("g").attr("class", "y label center-align"); // x label
+            gEnter.append("g").attr("class", "circle-container"); // circle container
+            front = gEnter.append("g").attr("class", "front"); // front layer
+            container.select(".tooltip").node() || 
+            container.append("div").attr("class", "tooltip").style("opacity", 0); // tooltip
+            // Update the inner dimensions.
+            var g = svg.select("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            // Update the outer dimensions.
+            svg.attr("width", width)
+                .attr("height", height);
+        }
+
+        function drawBrush() {
+            svg.select(".brush").call(brush);
+            svg.select("rect.extent")
+                .style("cursor", "crosshair")
+                .style("pointer-events", "none");
+        }
+
+        function drawPoints() {
+            var cirContainer = svg.select(".circle-container")
+                                    .selectAll("circle")
+                                    .data(data, function(d) { return [xValue(d), yValue(d)]; });
+            
+                    
+            // Remove data points that no longer exist
+            cirContainer.exit()
+                        .remove();
+
+            // Add points for new data
+            cirContainer.enter()
+                        .append("circle")
+                        .attr("class", "point")
+                        .attr("r", function (d) { return sizeValue(d); })
+                        .style("fill", function (d) { return cScale(cValue(d)); })
+                        .on('mouseover', function (d) { dispatcher.hover(d); })
+                        .on('mouseout', function (d) { dispatcher.leave(d); });
+
+            // Update positions
+            if (cirContainer.node().childElementCount < 2000) {
+                cirContainer.transition()
+                            .attr("cx", function (d) { return xScale(xValue(d)); })
+                            .attr("cy", function (d) { return yScale(yValue(d)); });
+            } else {
+                cirContainer.attr("cx", function (d) { return xScale(xValue(d)); })
+                            .attr("cy", function (d) { return yScale(yValue(d)); });
+            }
+        }
+        
+        function drawAxis() {
+            var tallTextOffset = 6;
+
+            // Update the axes.
+            svg.select(".x.axis")
+                    .attr("transform", "translate(0," + yScale.range()[0] + ")")
+                    .transition()
+                    .call(xAxis);
+            var xLabSel = svg.select(".x.label");
+            if (xLabSel.node().childElementCount  == 0) {
+                xLabSel.append("text")
+                        .attr("class", "label-text")
+                        .attr("text-anchor", "middle")
+                        .attr("x", (width - margin.left) / 2)
+                        .attr("y", height - margin.top - tallTextOffset)
+                        .html(xLabel);
+            }
+
+
+            svg.select(".y.axis")
+                    .transition()
+                    .call(yAxis);
+            var yLabSel = svg.select(".y.label");
+            if (yLabSel.node().childElementCount  == 0) {
+                yLabSel.attr("transform", "rotate(-90)")
+                        .append("text")
+                        .attr("class", "label-text")
+                        .attr("text-anchor", "middle")
+                        .attr("x", - (height - margin.top - margin.bottom) / 2)
+                        .attr("y", - (margin.left / 1.5))
+                        .html(yLabel);
+            }
+        }
+
+        function bindDispatcher() {
+            // Assign dispatcher events
+            dispatcher.on("hover", function (d) { chart.hover(d); });
+            dispatcher.on("leave", function (d) { chart.leave(d); });
         }
     }
 
@@ -282,10 +320,9 @@ function scatterChart() {
 
         tooltipLeft = xScale(xValue(data));
         tooltipLeft += margin.left + margin.right;
-        // tooltipLeft -= 3 + container.select(".tooltip").node().offsetWidth;
 
         tooltipTop = yScale(yValue(data));
-        tooltipTop += margin.top;
+        tooltipTop += margin.top + margin.bottom;
         tooltipTop -= 3 + container.select(".tooltip").node().offsetHeight;
         tooltipTop = tooltipTop < 0 ? 0 : tooltipTop;
                      

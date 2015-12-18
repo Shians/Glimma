@@ -8,8 +8,10 @@ glScatter <- function(x, ...) {
 	UseMethod("glScatter")
 }
 
-glScatter.default <- function(x, xval="x", yval="y", colval=NULL, annot=c(xval, yval),
-										main=NULL, path=getwd()) {
+glScatter.default <- function(x, xval="x", yval="y", 
+								xlab=xval, ylab=yval, main=NULL,
+								height=400, width=500,
+								colval=NULL, annot=c(xval, yval)) {
 	##
 	# Input checking
 	if (!is.character(xval)) {
@@ -30,29 +32,29 @@ glScatter.default <- function(x, xval="x", yval="y", colval=NULL, annot=c(xval, 
 		stop(paste(yval, "does not correspond to a column"))
 	}
 
-	##
-	# Function body
-	out <- list()
+	if (any(is.na(match(annot, names(x))))) {
+		stop(paste("not all values in annot correspond to a column"))
+	}
 
 	# Make json out of data
 	x <- data.frame(x)
 	json <- makeDFJson(x)
 
-	if (char(path, -1) != "/") {	
-		path <- paste0(path, "/")
-	}
-
-	file.path <- pathMaker(path)
-
-	out$x <- xval
-	out$y <- yval
-	out$col <- colval
-	out$anno <- annot
-	out$json <- json
-	out$type <- "scatter"
-	out$title <- main
+	out <- list(
+				x = xval,
+				y = yval,
+				xlab = xlab,
+				ylab = ylab,
+				col = colval,
+				anno = annot,
+				height = height,
+				width = width,
+				json = json,
+				type = "scatter",
+				title = main
+			)
 
 	class(out) <- "jschart"
 
-	out	
+	out
 }
