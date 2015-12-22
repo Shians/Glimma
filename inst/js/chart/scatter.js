@@ -62,6 +62,7 @@ function scatterChart() {
             if (titleDiv.node() == null) {
                 var titleDiv = selection.append("div")
                                         .attr("class", "title center-align")
+                                        .style("width", width + "px")
                                         .html(titleValue);
             }
         }
@@ -322,7 +323,7 @@ function scatterChart() {
         tooltipLeft += margin.left + margin.right;
 
         tooltipTop = yScale(yValue(data));
-        tooltipTop += margin.top + margin.bottom;
+        tooltipTop += margin.top + container.select("svg").node().offsetTop;
         tooltipTop -= 3 + container.select(".tooltip").node().offsetHeight;
         tooltipTop = tooltipTop < 0 ? 0 : tooltipTop;
                      
