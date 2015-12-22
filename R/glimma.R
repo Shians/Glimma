@@ -37,7 +37,18 @@ glimma <- function(..., layout=d(1,1)) {
 			write.data(paste0("glimma.chartInfo.push(", chartInfo, ");\n"))
 
 			# Write plot call
-			scatterJS(args[[i]], i)
+			constructScatterPlot(args[[i]], i)
+		} else if (args[[i]]$type == "bar") {
+			# Write json data
+			write.data(paste0("glimma.data.push(", args[[i]]$json, ");\n"))
+			
+			# Write plot information
+			args[[i]]$json <- NULL
+			chartInfo <- makeChartJson(args[[i]])
+			write.data(paste0("glimma.chartInfo.push(", chartInfo, ");\n"))
+
+			# Write plot call
+			constructBarPlot(args[[i]], i)
 		}
 	}
 
@@ -48,48 +59,4 @@ glimma <- function(..., layout=d(1,1)) {
 	} else {
 		write.data("glimma.linkage = [];")
 	}
-}
-
-scatterJS <- function(chart, index) {
-	write.out <- writeMaker("data.js")
-
-	command <- "glimma.charts.push(scatterChart().height(400)"
-
-	x.func <- paste0(".x(function (d) { return d[", quotify(chart$x), "]; })")
-	command <- paste0(command, x.func)
-
-	x.lab <- paste0(".xlab(", quotify(chart$x), ")")
-	command <- paste0(command, x.lab)
-
-	y.func <- paste0(".y(function (d) { return d[", quotify(chart$y), "]; })")
-	command <- paste0(command, y.func)
-
-	y.lab <- paste0(".xlab(", quotify(chart$y), ")")
-	command <- paste0(command, y.lab)
-
-
-	anno <- paste0(".tooltip(glimma.chartInfo[", index - 1, "].anno)")
-	command <- paste0(command, anno)
-
-	main <- paste0(".title(glimma.chartInfo[", index - 1, "].title)")
-	command <- paste0(command, main)
-
-	if (!is.null(chart$col)) {
-		c.func <- paste(".col(function(d) { return d[", quotify(chart$col), "]; })")
-		command <- paste0(command, c.func)	
-	}
-
-	command <- paste0(command, ");\n")
-
-	write.out(command)
-}
-
-plotCall <- function(index) {
-	write.out <- writeMaker("index.js")
-
-	command <- paste0("d3.select(\".glimma-plot.available\")", 
-							".datum(glimma.data[", index-1, "])",
-							".call(glimma.charts[", index-1, "]);\n")
-
-	write.out(command)
 }

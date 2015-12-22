@@ -1,47 +1,40 @@
-#' Create an interactive scatter plot object
+#' Create an interactive bar plot object
 #' 
 #' @param x A data.frame containing data to plot
 #' @return 
 #' @examples
 #' 
-glScatter <- function(x, ...) {
-	UseMethod("glScatter")
+glBar <- function(x, ...) {
+	UseMethod("glBar")
 }
 
-glScatter.default <- function(x, xval="x", yval="y", 
-								xlab=xval, ylab=yval, main=NULL,
+glBar.default <- function(x, yval, names.arg=rownames(x), 
+								xlab=NULL, ylab=yval, main=NULL,
 								height=400, width=500,
-								colval=NULL, annot=c(xval, yval)) {
+								colval=NULL, annot=yval) {
 	##
 	# Input checking
-	if (!is.character(xval)) {
-		stopType("character", "xval")
-	}
-	if (!is.character(yval)) {
-		stopType("character", "yval")	
-	}
-	if (!is.character(annot)) {
-		stopType("character", "annot")	
-	}
-
-	if (is.na(match(xval, names(x)))) {
-		stop(paste(xval, "does not correspond to a column"))
-	}
-
 	if (is.na(match(yval, names(x)))) {
 		stop(paste(yval, "does not correspond to a column"))
 	}
 
-	if (any(is.na(match(annot, names(x))))) {
-		stop(paste("not all values in annot correspond to a column"))
+	if (is.na(match(names.arg, names(x)))) {
+		stop(paste(names.arg, "does not correspond to a column"))
 	}
+
+	if (!is.null(colval)) {
+		if (is.na(match(colval, names(x)))) {
+			stop(paste(colval, "does not correspond to a column"))
+		}
+	}
+	
 
 	# Make json out of data
 	x <- data.frame(x)
 	json <- makeDFJson(x)
 
 	out <- list(
-				x = xval,
+				names = names.arg,
 				y = yval,
 				xlab = xlab,
 				ylab = ylab,
@@ -50,19 +43,20 @@ glScatter.default <- function(x, xval="x", yval="y",
 				height = height,
 				width = width,
 				json = json,
-				type = "scatter",
+				type = "bar",
 				title = main
 			)
 
 	class(out) <- "jschart"
 
-	out
+	out	
 }
 
-constructScatterPlot <- function(chart, index) {
+
+constructBarPlot <- function(chart, index) {
 	write.out <- writeMaker("data.js")
 
-	command <- "glimma.charts.push(scatterChart()"
+	command <- "glimma.charts.push(barChart()"
 
 	height <- paste0(".height(", chart$height, ")")
 	command <- paste0(command, height)
@@ -70,7 +64,7 @@ constructScatterPlot <- function(chart, index) {
 	width <- paste0(".width(", chart$width, ")")
 	command <- paste0(command, width)
 
-	x.func <- paste0(".x(function (d) { return d[", quotify(chart$x), "]; })")
+	x.func <- paste0(".id(function (d) { return d[", quotify(chart$names), "]; })")
 	command <- paste0(command, x.func)
 
 	x.lab <- paste0(".xlab(", quotify(chart$xlab), ")")
@@ -82,16 +76,8 @@ constructScatterPlot <- function(chart, index) {
 	y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
 	command <- paste0(command, y.lab)
 
-	anno <- paste0(".tooltip(glimma.chartInfo[", index - 1, "].anno)")
-	command <- paste0(command, anno)
-
 	main <- paste0(".title(glimma.chartInfo[", index - 1, "].title)")
 	command <- paste0(command, main)
-
-	if (!is.null(chart$col)) {
-		c.func <- paste(".col(function(d) { return d[", quotify(chart$col), "]; })")
-		command <- paste0(command, c.func)	
-	}
 
 	command <- paste0(command, ");\n")
 
