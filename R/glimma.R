@@ -10,12 +10,8 @@ glimma <- function(..., layout=d(1,1)) {
 	# Convert variable arguments into list
 	args <- list(...)
 
-	cat("var glimma = window.glimma = [];\n",
-		"glimma.data = [];\n",
-		"glimma.chartInfo = [];\n",
-		"glimma.charts = [];\n",
-		"glimma.linkage = [];\n",
-		file="data.js", sep="")
+	# Create file
+	cat("", file="data.js", sep="")
 
 	cat("var glimma = window.glimma = [];\n", file="index.js");
 
@@ -29,7 +25,7 @@ glimma <- function(..., layout=d(1,1)) {
 			actions <- rbind(actions, args[[i]]$link)
 		} else if (args[[i]]$type == "scatter") {
 			# Write json data
-			write.data(paste0("glimma.data.push(", args[[i]]$json, ");\n"))
+			write.data(paste0("glimma.chartData.push(", args[[i]]$json, ");\n"))
 			
 			# Write plot information
 			args[[i]]$json <- NULL
@@ -40,7 +36,7 @@ glimma <- function(..., layout=d(1,1)) {
 			constructScatterPlot(args[[i]], i)
 		} else if (args[[i]]$type == "bar") {
 			# Write json data
-			write.data(paste0("glimma.data.push(", args[[i]]$json, ");\n"))
+			write.data(paste0("glimma.chartData.push(", args[[i]]$json, ");\n"))
 			
 			# Write plot information
 			args[[i]]$json <- NULL

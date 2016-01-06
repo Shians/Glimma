@@ -9,9 +9,10 @@ glBar <- function(x, ...) {
 }
 
 glBar.default <- function(x, yval, names.arg=rownames(x), 
-								xlab=NULL, ylab=yval, main=NULL,
-								height=400, width=500,
-								colval=NULL, annot=yval) {
+							ndigits=NULL, signif=6,
+							xlab=NULL, ylab=yval, main=NULL,
+							height=400, width=500,
+							colval=NULL, annot=yval) {
 	##
 	# Input checking
 	if (is.na(match(yval, names(x)))) {
@@ -36,6 +37,8 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 	out <- list(
 				names = names.arg,
 				y = yval,
+				ndigits = ndigits,
+				signif = signif,
 				xlab = xlab,
 				ylab = ylab,
 				col = colval,
@@ -56,7 +59,7 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 constructBarPlot <- function(chart, index) {
 	write.out <- writeMaker("data.js")
 
-	command <- "glimma.charts.push(barChart()"
+	command <- "glimma.charts.push(glimma.plot.barChart()"
 
 	height <- paste0(".height(", chart$height, ")")
 	command <- paste0(command, height)
@@ -78,6 +81,13 @@ constructBarPlot <- function(chart, index) {
 
 	main <- paste0(".title(glimma.chartInfo[", index - 1, "].title)")
 	command <- paste0(command, main)
+
+	if (!is.null(chart$ndigits)) {
+		nformat <- paste0(".ndigits(", chart$ndigits, ")")
+	} else {
+		nformat <- paste0(".signif(", chart$signif, ")")
+	}
+	command <- paste0(command, nformat)
 
 	command <- paste0(command, ");\n")
 

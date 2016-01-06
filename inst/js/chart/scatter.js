@@ -1,7 +1,9 @@
-function scatterChart() {
+glimma.plot.scatterChart = function() {
     var margin = {top: 20, right: 20, bottom: 50, left: 60};
     var width = 500;
     var height = 400;
+    var signif = 6;
+    var ndigits = null;
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var sizeValue = function (d) { return 2; };
@@ -87,6 +89,7 @@ function scatterChart() {
 
         // Brush function
         function _brushend() {
+            _lowlight();
             if (!brush.empty()) {
                 var extent = brush.extent();
                 svg.select(".brush").call(brush.clear());
@@ -109,7 +112,7 @@ function scatterChart() {
             gEnter.append("g").attr("class", "y axis"); // y axis
             gEnter.append("g").attr("class", "y label center-align"); // x label
             gEnter.append("g").attr("class", "circle-container"); // circle container
-            front = gEnter.append("g").attr("class", "front"); // front layer
+            gEnter.append("g").attr("class", "front"); // front layer
             container.select(".tooltip").node() || 
             container.append("div").attr("class", "tooltip").style("opacity", 0); // tooltip
             // Update the inner dimensions.
@@ -118,6 +121,8 @@ function scatterChart() {
             // Update the outer dimensions.
             svg.attr("width", width)
                 .attr("height", height);
+
+            front = container.select(".front");
         }
 
         function drawBrush() {
@@ -277,6 +282,23 @@ function scatterChart() {
         return chart;
     }
 
+    chart.signif = function(_) {
+        if (!arguments.length) return signif;
+        if (+_ % 1 == 0) {
+            signif = _;
+        }
+        return chart;
+    }
+
+    chart.ndigits = function(_) {
+        if (!arguments.length) return ndigits;
+        if (+_ % 1 == 0) {
+            ndigits = _;
+        }
+        return chart;
+    }
+
+    //* Internal Functions *//
     function _highlight(data) {
         var c = front.select("circle")
         if (c[0][0] === null) {
@@ -315,8 +337,19 @@ function scatterChart() {
 
         for (var i=0; i<tooltip.length; i++) {
             var row = table.append("tr");
+
             row.append("td").attr("class", "right-align tooltip-cell").html(tooltip[i]);
-            row.append("td").attr("class", "left-align tooltip-cell").html(data[tooltip[i]]);
+            if (typeof data[tooltip[i]] == "number") {
+                if (ndigits == null) {
+                    row.append("td").attr("class", "left-align tooltip-cell")
+                                    .html(glimma.signif(data[tooltip[i]], signif));
+                } else {
+                    row.append("td").attr("class", "left-align tooltip-cell")
+                                    .html(glimma.round(data[tooltip[i]], ndigits));
+                }
+            } else {
+                row.append("td").attr("class", "left-align tooltip-cell").html(data[tooltip[i]]);
+            }
         }
 
         tooltipLeft = xScale(xValue(data));

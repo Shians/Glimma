@@ -9,6 +9,7 @@ glScatter <- function(x, ...) {
 }
 
 glScatter.default <- function(x, xval="x", yval="y", 
+								ndigits=NULL, signif=6,
 								xlab=xval, ylab=yval, main=NULL,
 								height=400, width=500,
 								colval=NULL, annot=c(xval, yval)) {
@@ -43,6 +44,8 @@ glScatter.default <- function(x, xval="x", yval="y",
 	out <- list(
 				x = xval,
 				y = yval,
+				ndigits = ndigits,
+				signif = signif,
 				xlab = xlab,
 				ylab = ylab,
 				col = colval,
@@ -62,7 +65,7 @@ glScatter.default <- function(x, xval="x", yval="y",
 constructScatterPlot <- function(chart, index) {
 	write.out <- writeMaker("data.js")
 
-	command <- "glimma.charts.push(scatterChart()"
+	command <- "glimma.charts.push(glimma.plot.scatterChart()"
 
 	height <- paste0(".height(", chart$height, ")")
 	command <- paste0(command, height)
@@ -88,8 +91,15 @@ constructScatterPlot <- function(chart, index) {
 	main <- paste0(".title(glimma.chartInfo[", index - 1, "].title)")
 	command <- paste0(command, main)
 
+	if (!is.null(chart$ndigits)) {
+		nformat <- paste0(".ndigits(", chart$ndigits, ")")
+	} else {
+		nformat <- paste0(".signif(", chart$signif, ")")
+	}
+	command <- paste0(command, nformat)
+
 	if (!is.null(chart$col)) {
-		c.func <- paste(".col(function(d) { return d[", quotify(chart$col), "]; })")
+		c.func <- paste0(".col(function(d) { return d[", quotify(chart$col), "]; })")
 		command <- paste0(command, c.func)	
 	}
 

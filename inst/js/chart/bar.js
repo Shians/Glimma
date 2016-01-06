@@ -1,7 +1,9 @@
-function barChart() {
+glimma.plot.barChart = function() {
     var margin = {top: 50, right: 20, bottom: 50, left: 60};
     var width = 500;
     var height = 400;
+    var signif = 6;
+    var ndigits = null;
     var nValue = function(d) { return d.Id; };
     var yValue = function(d) { return d.val; };
     var sizeValue = function (d) { return 2; };
@@ -215,6 +217,23 @@ function barChart() {
         return chart;
     }
 
+    chart.signif = function(_) {
+        if (!arguments.length) return signif;
+        if (+_ % 1 == 0) {
+            signif = _;
+        }
+        return chart;
+    }
+
+    chart.ndigits = function(_) {
+        if (!arguments.length) return ndigits;
+        if (+_ % 1 == 0) {
+            ndigits = _;
+        }
+        return chart;
+    }
+
+    //* Internal Functions *//
     function _highlight(data) {
         _showTooltip(data)
     }
@@ -236,7 +255,11 @@ function barChart() {
     function _showTooltip(data) {
         // TODO: Allow custom tooltip annotations.
         var tooltip = container.select(".tooltip");
-        tooltip.html(yValue(data));
+        if (ndigits == null) {
+            tooltip.html(glimma.signif(yValue(data), signif));
+        } else {
+            tooltip.html(glimma.round(yValue(data), ndigits));
+        }
 
         var ttWidth = tooltip.node().offsetWidth;
         var ttHeight = tooltip.node().offsetHeight;
