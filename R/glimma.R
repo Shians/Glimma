@@ -6,7 +6,7 @@
 #' @examples
 #' 
 
-glimma <- function(..., layout=d(1,1)) {
+glimma <- function(..., layout=c(1,1)) {
 	# Convert variable arguments into list
 	args <- list(...)
 
