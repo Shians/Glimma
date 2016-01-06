@@ -256,9 +256,9 @@ glimma.plot.barChart = function() {
         // TODO: Allow custom tooltip annotations.
         var tooltip = container.select(".tooltip");
         if (ndigits == null) {
-            tooltip.html(glimma.signif(yValue(data), signif));
+            tooltip.html(glimma.math.signif(yValue(data), signif));
         } else {
-            tooltip.html(glimma.round(yValue(data), ndigits));
+            tooltip.html(glimma.math.round(yValue(data), ndigits));
         }
 
         var ttWidth = tooltip.node().offsetWidth;

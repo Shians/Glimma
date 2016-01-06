@@ -55,7 +55,9 @@ glimma.plot.scatterChart = function() {
             // Scale initialisation
             xScale.domain(extent.x).range([0, width - margin.left - margin.right]);
             yScale.domain(extent.y).range([height - margin.top - margin.bottom, 0]);
-            cScale.domain(data.map(function (d) { return cValue(d); }).unique()); //TODO: Allow fill with cValue without mapping
+            if (cScale.domain() == []) {
+                cScale.domain(data.map(function (d) { return cValue(d); }).unique()); //TODO: Allow fill with cValue without mapping
+            }
         }
 
         function drawTitle() {
@@ -342,10 +344,10 @@ glimma.plot.scatterChart = function() {
             if (typeof data[tooltip[i]] == "number") {
                 if (ndigits == null) {
                     row.append("td").attr("class", "left-align tooltip-cell")
-                                    .html(glimma.signif(data[tooltip[i]], signif));
+                                    .html(glimma.math.signif(data[tooltip[i]], signif));
                 } else {
                     row.append("td").attr("class", "left-align tooltip-cell")
-                                    .html(glimma.round(data[tooltip[i]], ndigits));
+                                    .html(glimma.math.round(data[tooltip[i]], ndigits));
                 }
             } else {
                 row.append("td").attr("class", "left-align tooltip-cell").html(data[tooltip[i]]);
