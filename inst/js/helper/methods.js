@@ -1,7 +1,9 @@
+//* REQUIRES D3 *//
 // Method to get unique elements of array.
-// REQUIRES D3
 if (typeof typeof d3 != "undefined") {
-	Array.prototype.unique = function () {
-		return d3.set(this).values();
-	}	
+	if (typeof Array.prototype.unique !== "function") {
+		Array.prototype.unique = function () {
+			return d3.set(this).values();
+		};
+	}
 }
