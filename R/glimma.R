@@ -13,7 +13,7 @@ glimma <- function(..., layout=c(1,1)) {
 	# Create file
 	cat("", file="data.js", sep="")
 
-	cat("var glimma = window.glimma = [];\n", file="index.js");
+	cat("", file="index.js");
 
 	write.data <- writeMaker("data.js")
 
@@ -51,8 +51,12 @@ glimma <- function(..., layout=c(1,1)) {
 	# Write linkage
 	if (nrow(actions) > 1) {
 		actions.js <- makeDFJson(actions[-1, ])
-		write.data(paste0("glimma.linkage = ", actions.js, ";"))
+		write.data(paste0("glimma.linkage = ", actions.js, ";\n"))
 	} else {
-		write.data("glimma.linkage = [];")
+		write.data("glimma.linkage = [];\n")
 	}
+
+	# Generate layout
+	layout <- paste0("glimma.layout.setupGrid(d3.select(\".container\"), \"md\", ", "[", layout[1], ",", layout[2], "])\n")
+	write.data(layout)
 }
