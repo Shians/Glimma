@@ -18,7 +18,7 @@ glimma.plot.scatterChart = function() {
 		xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0),
 		yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(6, 0);
 
-	var dispatcher = d3.dispatch("hover", "leave", "select"),
+	var dispatcher = d3.dispatch("hover", "leave", "click"),
 		container,
 		front,
 		data,
@@ -422,7 +422,6 @@ glimma.plot.scatterChart = function() {
 		container.call(chart);
 	};
 
-	// This allows other objects to 'listen' to events dispatched by the _table object.
 	d3.rebind(chart, dispatcher, "on");
 	
 	return chart;

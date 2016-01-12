@@ -298,7 +298,6 @@ glimma.plot.barChart = function() {
 		container.call(chart);
 	};
 
-	// This allows other objects to 'listen' to events dispatched by the _table object.
 	d3.rebind(chart, dispatcher, "on");
 	
 	return chart;
