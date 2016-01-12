@@ -1,26 +1,26 @@
 glimma.plot.barChart = function() {
-	var margin = {top: 50, right: 20, bottom: 50, left: 60};
-	var width = 500;
-	var height = 400;
-	var signif = 6;
-	var ndigits = null;
-	var nValue = function(d) { return d.Id; };
-	var yValue = function(d) { return d.val; };
-	var sizeValue = function (d) { return 2; };
-	var titleValue = "";
-	var xLabel = "";
-	var yLabel = "";
-	var xScale = d3.scale.ordinal();
-	var yScale = d3.scale.linear();
-	var cScale = d3.scale.category10();
-	var xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0);
-	var yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(6, 0);
+	var margin = {top: 50, right: 20, bottom: 50, left: 60},
+		width = 500,
+		height = 400,
+		signif = 6,
+		ndigits = null,
+		nValue = function(d) { return d.Id; },
+		yValue = function(d) { return d.val; },
+		sizeValue = function (d) { return 2; },
+		titleValue = "",
+		xLabel = "",
+		yLabel = "",
+		xScale = d3.scale.ordinal(),
+		yScale = d3.scale.linear(),
+		cScale = d3.scale.category10(),
+		xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0),
+		yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(6, 0);
 
-	var dispatcher = d3.dispatch("hover", "leave");
-	var container;
-	var front;
-	var data;
-	var extent;
+	var dispatcher = d3.dispatch("hover", "leave", "click"),
+		container,
+		front,
+		data,
+		extent;
 
 	function chart(selection) {
 		var svg;
@@ -53,8 +53,8 @@ glimma.plot.barChart = function() {
 		function drawTitle() {
 			// Select title div if it exists, otherwise create it
 			var titleDiv = selection.select(".title");
-			if (titleDiv.node() == null) {
-				var titleDiv = selection.append("div")
+			if (titleDiv.node() === null) {
+				titleDiv = selection.append("div")
 										.attr("class", "title center-align")
 										.style("width", width + "px")
 										.html(titleValue);
@@ -77,8 +77,9 @@ glimma.plot.barChart = function() {
 			gEnter.append("g").attr("class", "y label center-align"); // x label
 			gEnter.append("g").attr("class", "bar-container"); // bar container
 			front = gEnter.append("g").attr("class", "front"); // front layer
-			container.select(".tooltip").node() || 
-			container.append("div").attr("class", "tooltip padded rounded").style("opacity", 0); // tooltip
+			if (container.select(".tooltip").node() === null) {
+				container.append("div").attr("class", "tooltip padded rounded").style("opacity", 0); // tooltip
+			}
 			// Update the inner dimensions.
 			var g = svg.select("g")
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -105,6 +106,7 @@ glimma.plot.barChart = function() {
 						.attr("height", function (d) { return height - margin.top - margin.bottom - yScale(yValue(d)); })
 						.attr("width", xScale.rangeBand())
 						.style("fill", "steelblue")
+						.on("click", function (d) { dispatcher.click(d); })
 						.on("mouseover", function (d) { dispatcher.hover(d); })
 						.on("mouseout", function (d) { dispatcher.leave(d); });
 
@@ -124,7 +126,7 @@ glimma.plot.barChart = function() {
 					.transition()
 					.call(xAxis);
 			var xLabSel = svg.select(".x.label");
-			if (xLabSel.node().childElementCount  == 0) {
+			if (xLabSel.node().childElementCount  === 0) {
 				xLabSel.append("text")
 						.attr("class", "label-text")
 						.attr("text-anchor", "middle")
@@ -138,7 +140,7 @@ glimma.plot.barChart = function() {
 					.transition()
 					.call(yAxis);
 			var yLabSel = svg.select(".y.label");
-			if (yLabSel.node().childElementCount  == 0) {
+			if (yLabSel.node().childElementCount  === 0) {
 				yLabSel.attr("transform", "rotate(-90)")
 						.append("text")
 						.attr("class", "label-text")
@@ -209,33 +211,33 @@ glimma.plot.barChart = function() {
 		if (!arguments.length) return data;
 		data = _;
 		return chart;
-	}
+	};
 
 	chart.title = function(_) {
 		if (!arguments.length) return titleValue;
 		titleValue = _;
 		return chart;
-	}
+	};
 
 	chart.signif = function(_) {
 		if (!arguments.length) return signif;
-		if (+_ % 1 == 0) {
+		if (+_ % 1 === 0) {
 			signif = _;
 		}
 		return chart;
-	}
+	};
 
 	chart.ndigits = function(_) {
 		if (!arguments.length) return ndigits;
-		if (+_ % 1 == 0) {
+		if (+_ % 1 === 0) {
 			ndigits = _;
 		}
 		return chart;
-	}
+	};
 
 	//* Internal Functions *//
 	function _highlight(data) {
-		_showTooltip(data)
+		_showTooltip(data);
 	}
 
 	function _lowlight() {
@@ -255,15 +257,15 @@ glimma.plot.barChart = function() {
 	function _showTooltip(data) {
 		// TODO: Allow custom tooltip annotations.
 		var tooltip = container.select(".tooltip");
-		if (ndigits == null) {
+		if (ndigits === null) {
 			tooltip.html(glimma.math.signif(yValue(data), signif));
 		} else {
 			tooltip.html(glimma.math.round(yValue(data), ndigits));
 		}
 
-		var ttWidth = tooltip.node().offsetWidth;
-		var ttHeight = tooltip.node().offsetHeight;
-		var floatOffset = 3;
+		var ttWidth = tooltip.node().offsetWidth,
+			ttHeight = tooltip.node().offsetHeight,
+			floatOffset = 3;
 
 		var tooltipTop = yScale(yValue(data)) + container.select("svg").node().offsetTop;
 		tooltipTop += margin.top - ttHeight - floatOffset;
@@ -286,11 +288,11 @@ glimma.plot.barChart = function() {
 	//* Interactions *//
 	chart.highlight = function (d) {
 		_highlight(d);
-	}
+	};
 
 	chart.lowlight = function (d) {
 		_lowlight();
-	}
+	};
 
 	chart.update = function () {
 		container.call(chart);
@@ -300,4 +302,4 @@ glimma.plot.barChart = function() {
 	d3.rebind(chart, dispatcher, "on");
 	
 	return chart;
-}
+};
