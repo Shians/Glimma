@@ -7,6 +7,16 @@
 #' 
 
 glimma <- function(..., layout=c(1,1)) {
+	nplots <- 0
+	for (i in list(...)) {
+		if (i[["type"]] != "link") {
+			nplots <- nplots + 1
+		}
+	}
+	if (nplots > layout[1] * layout[2]) {
+		stop("More plots than available layout cells")
+	}
+
 	# Convert variable arguments into list
 	args <- list(...)
 
@@ -17,7 +27,7 @@ glimma <- function(..., layout=c(1,1)) {
 
 	write.data <- writeMaker("data.js")
 
-	actions <- data.frame(from=0, to=0, action="none") # Dummy row
+	actions <- data.frame(from=0, to=0, src="none", dest="none") # Dummy row
 	data.list <- list()
 
 	for (i in 1:length(args)) {
@@ -57,6 +67,6 @@ glimma <- function(..., layout=c(1,1)) {
 	}
 
 	# Generate layout
-	layout <- paste0("glimma.layout.setupGrid(d3.select(\".container\"), \"md\", ", "[", layout[1], ",", layout[2], "])\n")
+	layout <- paste0("glimma.layout.setupGrid(d3.select(\".container\"), \"md\", ", "[", layout[1], ",", layout[2], "]);\n")
 	write.data(layout)
 }

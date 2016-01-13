@@ -1,32 +1,32 @@
 glimma.plot.scatterChart = function() {
-	var margin = {top: 20, right: 20, bottom: 50, left: 60};
-	var width = 500;
-	var height = 400;
-	var signif = 6;
-	var ndigits = null;
-	var xValue = function (d) { return d.x; };
-	var yValue = function (d) { return d.y; };
-	var sizeValue = function (d) { return 2; };
-	var cValue = function (d) { return "black"; };
-	var tooltip = ["x", "y"];
-	var titleValue = "";
-	var xLabel = "";
-	var yLabel = "";
-	var xScale = d3.scale.linear();
-	var yScale = d3.scale.linear();
-	var cScale = d3.scale.category10();
-	var xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0);
-	var yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(6, 0);
+	var margin = {top: 20, right: 20, bottom: 50, left: 60},
+		width = 500,
+		height = 400,
+		signif = 6,
+		ndigits = null,
+		xValue = function (d) { return d.x; },
+		yValue = function (d) { return d.y; },
+		sizeValue = function (d) { return 2; },
+		cValue = function (d) { return "black"; },
+		tooltip = ["x", "y"],
+		titleValue = "",
+		xLabel = "",
+		yLabel = "",
+		xScale = d3.scale.linear(),
+		yScale = d3.scale.linear(),
+		cScale = d3.scale.category10(),
+		xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0),
+		yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(6, 0);
 
-	var dispatcher = d3.dispatch("hover", "leave");
-	var container;
-	var front;
-	var data;
-	var extent;
+	var dispatcher = d3.dispatch("hover", "leave", "click"),
+		container,
+		front,
+		data,
+		extent;
 
 	function chart(selection) {
-		var svg;
-		var brush;
+		var svg,
+			brush;
 
 		occupyContainer();
 		assignData();
@@ -63,8 +63,8 @@ glimma.plot.scatterChart = function() {
 		function drawTitle() {
 			// Select title div if it exists, otherwise create it
 			var titleDiv = selection.select(".title");
-			if (titleDiv.node() == null) {
-				var titleDiv = selection.append("div")
+			if (titleDiv.node() === null) {
+				titleDiv = selection.append("div")
 										.attr("class", "title center-align")
 										.style("width", width + "px")
 										.html(titleValue);
@@ -74,8 +74,8 @@ glimma.plot.scatterChart = function() {
 		function drawButtons() {
 			// Select the gutter and add reset zoom button
 			var gutter = selection.select(".gutter");
-			if (gutter.node() == null) {
-				var gutter = selection.append("div")
+			if (gutter.node() === null) {
+				gutter = selection.append("div")
 										.attr("class", "gutter left-align");
 				gutter.append("button")
 						.attr("class", "reset-button")
@@ -115,8 +115,9 @@ glimma.plot.scatterChart = function() {
 			gEnter.append("g").attr("class", "y label center-align"); // x label
 			gEnter.append("g").attr("class", "circle-container"); // circle container
 			gEnter.append("g").attr("class", "front"); // front layer
-			container.select(".tooltip").node() || 
-			container.append("div").attr("class", "tooltip").style("opacity", 0); // tooltip
+			if (container.select(".tooltip").node() === null) {
+				container.append("div").attr("class", "tooltip").style("opacity", 0); // tooltip
+			} 
 			// Update the inner dimensions.
 			var g = svg.select("g")
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -173,12 +174,15 @@ glimma.plot.scatterChart = function() {
 					.transition()
 					.call(xAxis);
 			var xLabSel = svg.select(".x.label");
-			if (xLabSel.node().childElementCount  == 0) {
+			if (xLabSel.node().childElementCount  === 0) {
 				xLabSel.append("text")
 						.attr("class", "label-text")
 						.attr("text-anchor", "middle")
 						.attr("x", (width - margin.left) / 2)
 						.attr("y", height - margin.top - tallTextOffset)
+						.html(xLabel);
+			} else {
+				xLabSel.select("text")
 						.html(xLabel);
 			}
 
@@ -187,13 +191,16 @@ glimma.plot.scatterChart = function() {
 					.transition()
 					.call(yAxis);
 			var yLabSel = svg.select(".y.label");
-			if (yLabSel.node().childElementCount  == 0) {
+			if (yLabSel.node().childElementCount  === 0) {
 				yLabSel.attr("transform", "rotate(-90)")
 						.append("text")
 						.attr("class", "label-text")
 						.attr("text-anchor", "middle")
 						.attr("x", - (height - margin.top - margin.bottom) / 2)
 						.attr("y", - (margin.left / 1.5))
+						.html(yLabel);
+			} else {
+				yLabSel.select("text")
 						.html(yLabel);
 			}
 		}
@@ -264,47 +271,47 @@ glimma.plot.scatterChart = function() {
 		if (!arguments.length) return tooltip;
 		tooltip = _;
 		return chart;
-	}
+	};
 
 	chart.data = function(_) {
 		if (!arguments.length) return data;
 		data = _;
 		return chart;
-	}
+	};
 
 	chart.extent = function(_) {
 		if (!arguments.length) return extent;
 		extent = _;
 		return chart;
-	}
+	};
 
 	chart.title = function(_) {
 		if (!arguments.length) return titleValue;
 		titleValue = _;
 		return chart;
-	}
+	};
 
 	chart.signif = function(_) {
 		if (!arguments.length) return signif;
-		if (+_ % 1 == 0) {
+		if (+_ % 1 === 0) {
 			signif = _;
 		}
 		return chart;
-	}
+	};
 
 	chart.ndigits = function(_) {
 		if (!arguments.length) return ndigits;
-		if (+_ % 1 == 0) {
+		if (+_ % 1 === 0) {
 			ndigits = _;
 		}
 		return chart;
-	}
+	};
 
 	//* Internal Functions *//
 	function _highlight(data) {
-		var c = front.select("circle")
+		var c = front.select("circle"); 
 		if (c[0][0] === null) {
-			c = front.append("circle")
+			c = front.append("circle");
 		}
 		c.attr("cx", xScale(xValue(data)))
 			.attr("cy", yScale(yValue(data)))
@@ -325,7 +332,7 @@ glimma.plot.scatterChart = function() {
 		extent = d3.extent(data, key);
 		range = extent[1] - extent[0];
 		offset = range * factor;
-		return [extent[0] - offset, extent[1] + offset]
+		return [extent[0] - offset, extent[1] + offset];
 	}
 
 	function _showTooltip(data) {
@@ -342,7 +349,7 @@ glimma.plot.scatterChart = function() {
 
 			row.append("td").attr("class", "right-align tooltip-cell").html(tooltip[i]);
 			if (typeof data[tooltip[i]] == "number") {
-				if (ndigits == null) {
+				if (ndigits === null) {
 					row.append("td").attr("class", "left-align tooltip-cell")
 									.html(glimma.math.signif(data[tooltip[i]], signif));
 				} else {
@@ -375,7 +382,7 @@ glimma.plot.scatterChart = function() {
 	}
 
 	function _rescale(extent) {
-		var newData = container.data()[0].filter(function (d) { return _within(d, extent); })
+		var newData = container.data()[0].filter(function (d) { return _within(d, extent); });
 		chart.data(newData);
 		chart.extent({"x": [extent[0][0], extent[1][0]], "y": [extent[0][1], extent[1][1]]});
 		container.call(chart);
@@ -388,13 +395,13 @@ glimma.plot.scatterChart = function() {
 	}
 
 	function _within(point, extent) {
-		var x = xValue(point);
-		var y = yValue(point);
+		var x = xValue(point),
+			y = yValue(point);
 
 		return (x >= extent[0][0] && 
 				x <= extent[1][0] &&
 				y >= extent[0][1] &&
-				y <= extent[1][1])
+				y <= extent[1][1]);
 	}
 
 	//* Interactions *//
@@ -416,8 +423,12 @@ glimma.plot.scatterChart = function() {
 		container.call(chart);
 	};
 
-	// This allows other objects to 'listen' to events dispatched by the _table object.
+	chart.refresh = function () {
+		extent = null;
+		container.call(chart);
+	};
+
 	d3.rebind(chart, dispatcher, "on");
 	
 	return chart;
-}
+};
