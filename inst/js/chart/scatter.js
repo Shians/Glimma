@@ -181,6 +181,9 @@ glimma.plot.scatterChart = function() {
 						.attr("x", (width - margin.left) / 2)
 						.attr("y", height - margin.top - tallTextOffset)
 						.html(xLabel);
+			} else {
+				xLabSel.select("text")
+						.html(xLabel);
 			}
 
 
@@ -195,6 +198,9 @@ glimma.plot.scatterChart = function() {
 						.attr("text-anchor", "middle")
 						.attr("x", - (height - margin.top - margin.bottom) / 2)
 						.attr("y", - (margin.left / 1.5))
+						.html(yLabel);
+			} else {
+				yLabSel.select("text")
 						.html(yLabel);
 			}
 		}
