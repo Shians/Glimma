@@ -1,13 +1,13 @@
 Package: Glimma
 Type: Package
-Title: Interactive graphics from the limma package
-Version: 1.0
-Date: 2015-12-22
+Title: Interactive HTML graphics.
+Version: 1.0-1
+Date: 2016-01-19
 Author: Shian Su
 Maintainer: Shian Su <su.s@wehi.edu.au>
-Description: This package generates html interactive plots for popular displays from the limma package.
+Description: This package generates interactive plots in a HTML page using
+    d3.js.
 License: GPL-3
-Depends:
-	limma
-Imports:
-	limma
+URL: https://github.com/Shians/Glimma
+BugReports: https://github.com/Shians/Glimma/issues
+RoxygenNote: 5.0.1

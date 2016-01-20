@@ -1,6 +1,6 @@
 #' Core glimma plot manager. Generates environment for glimma plots.
 #' 
-#' @param ... glimma plotting functions.
+#' @param ... chart or link objects
 #' @param layout numeric vector specifying rows and columns of plots to create.
 #' @return Generates interactive plots based on filling layout row by row from left to right.
 #' @examples
