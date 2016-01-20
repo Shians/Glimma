@@ -1,14 +1,31 @@
 #' Create an interactive scatter plot object
 #' 
-#' @param x A data.frame containing data to plot
-#' @return 
+#' @param x the data.frame containing data to plot.
+#' @param xval the column name for the x-axis values.
+#' @param yval the column name for the y-axis values.
+#' @param id the column name for unique identifiers.
+#' @param ndigits the number of digits after the decimal to round to in the tooltip (overrides signif).
+#' @param signif the number of significant figures to display in the tooltip.
+#' @param xlab the label on the x-axis.
+#' @param ylab the label on the y-axis.
+#' @param main the title for the plot.
+#' @param height the height of the plot (in pixels).
+#' @param width the width of the plot (in pixels).
+#' @param colval the colours for each data point.
+#' @param annot the columns to display in the tooltip.
+#' @param ... additional arguments depending on input object type.
+#' @return A chart object containing the information to create an interactive scatter plot.
 #' @examples
-#' 
+#' data(iris)
+#' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
+#' glimma(plot1, c(1,1))
+#'
+
 glScatter <- function(x, ...) {
 	UseMethod("glScatter")
 }
 
-glScatter.default <- function(x, xval="x", yval="y", 
+glScatter.default <- function(x, xval="x", yval="y", id=NULL,
 								ndigits=NULL, signif=6,
 								xlab=xval, ylab=yval, main=NULL,
 								height=400, width=500,
@@ -44,6 +61,7 @@ glScatter.default <- function(x, xval="x", yval="y",
 	out <- list(
 				x = xval,
 				y = yval,
+				id = id,
 				ndigits = ndigits,
 				signif = signif,
 				xlab = xlab,
@@ -84,6 +102,11 @@ constructScatterPlot <- function(chart, index) {
 
 	y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
 	command <- paste0(command, y.lab)
+
+	if (!is.null(chart$id)) {
+		id <- paste0(".id(", quotify(chart$id), ")")
+		command <- paste0(command, id)
+	}
 
 	anno <- paste0(".tooltip(glimma.chartInfo[", index - 1, "].anno)")
 	command <- paste0(command, anno)

@@ -21,5 +21,5 @@ glMDSPlot.default <- function(x, k=8) {
 	eigs <- data.frame(name=1:8, val=fit$eig)
 
 	scatter <- glScatter(dims, xval="dim1", yval="dim2")
-	bar <- 
+	# bar <- glBar()
 }

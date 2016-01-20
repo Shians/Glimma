@@ -1,7 +1,18 @@
 #' Create an interactive bar plot object
 #' 
-#' @param x A data.frame containing data to plot
-#' @return 
+#' @param x the data.frame containing data to plot.
+#' @param names.arg the column name for the label on each bar.
+#' @param ndigits the number of digits after the decimal to round to in the tooltip (overrides signif).
+#' @param signif the number of significant figures to display in the tooltip.
+#' @param xlab the label on the x-axis.
+#' @param ylab the label on the y-axis.
+#' @param main the title for the plot.
+#' @param height the height of the plot (in pixels).
+#' @param width the width of the plot (in pixels).
+#' @param colval the colours for each data point.
+#' @param annot the columns to display in the tooltip.
+#' @param ... addutional arguments depending on input object type.
+#' @return A chart object containing the information to create an interactive bar plot.
 #' @examples
 #' 
 glBar <- function(x, ...) {
