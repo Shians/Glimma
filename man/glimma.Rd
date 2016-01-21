@@ -4,12 +4,16 @@
 \alias{glimma}
 \title{Core glimma plot manager. Generates environment for glimma plots.}
 \usage{
-glimma(..., layout = c(1, 1))
+glimma(..., layout = c(1, 1), folder = "glimma", overwrite = FALSE)
 }
 \arguments{
-\item{...}{chart or link objects}
+\item{...}{the jschart or jslink objects for processing.}
 
-\item{layout}{numeric vector specifying rows and columns of plots to create.}
+\item{layout}{the numeric vector representing the number of rows and columns in plot window.}
+
+\item{folder}{the name of the folder to save plots to.}
+
+\item{overwrite}{the option to overwrite existing folder if it already exists.}
 }
 \value{
 Generates interactive plots based on filling layout row by row from left to right.

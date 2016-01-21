@@ -2,6 +2,7 @@
 #' 
 #' @param x A data.frame containing data to plot
 #' @return a "chart" object containing information used by glimma to create plots
+#' @export
 #' @examples
 #' 
 

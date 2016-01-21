@@ -6,6 +6,7 @@
 #' @param dest the action that is performed in the "to" plot.
 #' @param flag indicates special links for particular chart types.
 #' @param both creates symmetric links whereby the "dest" action in "to" also triggers the "src" action in "from".
+#' @export
 #' @return a link object containing the plot linking information.
 #' @examples 
 #' 
@@ -18,5 +19,7 @@ link <- function(from, to, src, dest, flag=NULL, both=FALSE) {
 	}
 	out$type <- "link"
 	out$flag <- flag
+
+	class(out) <- "jslink"
 	return(out)
 }
