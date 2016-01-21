@@ -13,11 +13,15 @@
 #' @param annot the columns to display in the tooltip.
 #' @param ... addutional arguments depending on input object type.
 #' @return A chart object containing the information to create an interactive bar plot.
+#' @export
 #' @examples
-#' 
+#'
+
 glBar <- function(x, ...) {
 	UseMethod("glBar")
 }
+
+#' @export
 
 glBar.default <- function(x, yval, names.arg=rownames(x), 
 							ndigits=NULL, signif=6,
@@ -66,11 +70,8 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 	out	
 }
 
-
-constructBarPlot <- function(chart, index) {
-	write.out <- writeMaker("data.js")
-
-	command <- "glimma.charts.push(glimma.plot.barChart()"
+constructBarPlot <- function(chart, index, write.out) {
+	command <- "glimma.charts.push.chart.barChart()"
 
 	height <- paste0(".height(", chart$height, ")")
 	command <- paste0(command, height)
