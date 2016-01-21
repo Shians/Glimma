@@ -1,7 +1,9 @@
 #' Core glimma plot manager. Generates environment for glimma plots.
 #' 
-#' @param ... chart or link objects
-#' @param layout numeric vector specifying rows and columns of plots to create.
+#' @param ... the jschart or jslink objects for processing.
+#' @param layout the numeric vector representing the number of rows and columns in plot window.
+#' @param folder the name of the folder to save plots to.
+#' @param overwrite the option to overwrite existing folder if it already exists.
 #' @return Generates interactive plots based on filling layout row by row from left to right.
 #' @export
 #' @examples
@@ -53,7 +55,7 @@ glimma <- function(..., layout=c(1,1), folder="glimma", overwrite=FALSE) {
 			} else if (args[[i]]$type == "scatter") {
 			# Write json data
 				write.data(paste0("glimma.chartData.push(", args[[i]]$json, ");\n"))
-				
+
 			# Write plot information
 				args[[i]]$json <- NULL
 				chartInfo <- makeChartJson(args[[i]])
@@ -64,7 +66,7 @@ glimma <- function(..., layout=c(1,1), folder="glimma", overwrite=FALSE) {
 			} else if (args[[i]]$type == "bar") {
 			# Write json data
 				write.data(paste0("glimma.chartData.push(", args[[i]]$json, ");\n"))
-				
+
 			# Write plot information
 				args[[i]]$json <- NULL
 				chartInfo <- makeChartJson(args[[i]])
