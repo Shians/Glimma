@@ -1,16 +1,19 @@
 <!DOCTYPE html>
-<meta charset="utf-8" />
-<html lang="en">
-<style>
-
-</style>
+<html lang='en'>
+<meta charset='utf-8' />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <head>
-	<script src="js/jquery-2.1.4.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="js/d3.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="js/helper/format_bootstrap.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/glimma.min.js"></script>
+	<link rel="stylesheet" href="css/glimma.min.css">
+	<title>Glimma Plots</title>
 </head>
 <body>
-	<script src="js/helper/init.js" type="text/javascript" charset="utf-8"></script>
+	<div class="container">
+	</div>
+	<script src="js/data.js"></script>
+	<script>
+		glimma.init.initialise();
+		glimma.init.processLinkages();
+	</script>
 </body>
 </html>
