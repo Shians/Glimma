@@ -122,3 +122,16 @@ pathMaker <- function(path) {
     return(paste0(path, x))
   }
 }
+
+# Function to convert colour strings into hex codes
+CharToHexCol <- function(x) {
+  out <- apply(as.character(as.hexmode(col2rgb(x, alpha=FALSE))), 2, function(x) {paste0("#", paste0(x, collapse=""))})
+  sapply(out, function(x) { ifelse(x=="#000", "#000000", x) })
+}
+
+# Functions to convert numbers into corresponding hex codes for colours
+NumToHexCol <- function(x) {
+  col <- palette()[as.integer(col)]
+  out <- apply(as.character(as.hexmode(col2rgb(x, alpha=FALSE))), 2, function(x) {paste0("#", paste0(x, collapse=""))})
+  sapply(out, function(x) { ifelse(x=="#000", "#000000", x) })
+}
