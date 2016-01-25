@@ -14,12 +14,23 @@
 
 glimma <- function(..., layout=c(1,1), folder="glimma", overwrite=FALSE) {
 	nplots <- 0
+
+	##
+	# Input checking
 	for (i in list(...)) {
 		if (class(i) == "jschart") {
 			nplots <- nplots + 1
 		}
 	}
 	
+	if (!is.numeric(layout) || !(length(layout) == 2)) {
+		stop("layout must be numeric vector of length 2")
+	}
+
+	if (layout[2] < 1 || layout[2] > 6) {
+		stop("number of columns must be between 1 and 6")
+	}
+
 	if (nplots > layout[1] * layout[2]) {
 		stop("More plots than available layout cells")
 	}
@@ -29,6 +40,11 @@ glimma <- function(..., layout=c(1,1), folder="glimma", overwrite=FALSE) {
 			stop(paste(folder, "already exists"))
 		}
 	}
+	#
+	##
+
+	# Normalise input
+	layout <- round(layout)
 
 	# Convert variable arguments into list
 	args <- list(...)
