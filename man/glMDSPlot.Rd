@@ -7,10 +7,14 @@
 glMDSPlot(x, ...)
 }
 \arguments{
-\item{x}{A data.frame containing data to plot}
+\item{x}{the data.frame containing data to plot.}
+
+\item{top}{the number of top genes used to calculate distances.}
+
+\item{labels}{the haracter vector of sample names or labels. Defaults to colnames(x).}
 }
 \value{
-a "chart" object containing information used by glimma to create plots
+a "chart" object containing information used by glimma to create plots.
 }
 \description{
 Create an interactive bar plot object

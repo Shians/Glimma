@@ -1,7 +1,10 @@
 #' Create an interactive bar plot object
 #' 
-#' @param x A data.frame containing data to plot
-#' @return a "chart" object containing information used by glimma to create plots
+#' @param x the data.frame containing data to plot.
+#' @param top the number of top genes used to calculate distances.
+#' @param labels the haracter vector of sample names or labels. Defaults to colnames(x).
+#' @param gene.selection
+#' @return a "chart" object containing information used by glimma to create plots.
 #' @export
 #' @examples
 #' 
@@ -10,27 +13,17 @@ glMDSPlot <- function(x, ...) {
   UseMethod("glMDSPlot")
 }
 
-glMDSPlot.default <- function(x, k=8) {
-	# Make json out of data
-	x <- data.frame(x)
-	d <- dist(x)
-	fit <- cmdscale(d, eig=TRUE, k=k)
+#' @export
 
-	dims <- fit$points
-	colnames(dims) <- paste0("dim", 1:ncol(dims))
-
-	eigs <- data.frame(name=1:8, val=fit$eig)
-
-	scatter <- glScatter(dims, xval="dim1", yval="dim2")
-	# bar <- glBar()
-}
-
-
-glMDSplot.default <- function(x, col, top=500, labels = NULL, gene.selection = "pairwise", dir=NULL, launch=TRUE, main=NULL) {
-	#------------------------------------------------------------
-  	# Check for errors
-  	#------------------------------------------------------------
-
+# Code taken from plotMDS of limma bioConductor package with alterations
+glMDSPlot.default <- function(x, top=500, labels=NULL, gene.selection="pairwise",
+								main=NULL) {
+	#	Multi-dimensional scaling with top-distance
+	#	Di Wu and Gordon Smyth
+	#	19 March 2009.  Last modified 14 Jan 2015
+	#	Modified by Shian Su on 25 Jan 2016
+	##
+	# Check Inputs
 	x <- as.matrix(x)
 	nsamples <- ncol(x)
 
@@ -53,121 +46,67 @@ glMDSplot.default <- function(x, col, top=500, labels = NULL, gene.selection = "
 	} else {
 		labels <- as.character(labels)
 	}
-
-	#------------------------------------------------------------
-	# Process input
-	#------------------------------------------------------------
-	# If no output directory is provided, set to current working directory
-	if (is.null(dir)) {
-		dir <- getwd()
-	}
-
-	# Locate files in package library
-	page.path <- system.file("report_page", package="Glimma")
-	files <- paste(page.path, c("mds_plot.js", "mds_plot.html", "plot_styles.css", "mds_styles.css", "utilities.js", "js", "css"), sep="/")
-
-	# Make report page directory and copy over data
-	if (substr(dir, nchar(dir), nchar(dir)) == "/") {
-		dir.create(paste(dir, "report_page", sep=""), showWarnings=FALSE)
-		report.path <- paste(dir, "report_page", sep="")
-	} else {
-		dir.create(paste(dir, "report_page", sep="/"), showWarnings=FALSE)
-		report.path <- paste(dir, "report_page", sep="/")
-	}
-	file.copy(from=files, to=report.path, recursive=TRUE)
-
-	data.filename <- paste(report.path, "/mds_data.js", sep="")
+	#
+	##
+	
+	plot.title <- quotify(main)
 
 	gene.selection <- match.arg(gene.selection, c("pairwise", "common"))
+
+	#	Distance matrix from pairwise leading fold changes
 	dd <- matrix(0, nrow=nsamples, ncol=nsamples, dimnames=list(cn,cn))
-	if (gene.selection == "pairwise") {
+	if(gene.selection == "pairwise") {
+#		Distance measure is mean of top squared deviations for each pair of arrays
 		topindex <- nprobes - top + 1L
 		for (i in 2L:(nsamples)) {
 			for (j in 1L:(i - 1L)) {
-				dd[i, j] = sqrt(mean(sort.int((x[, i] - x[, j])^2, partial = topindex)[topindex:nprobes]))
+				dd[i,j] <- sqrt(mean(sort.int((x[, i] - x[, j]) ^ 2, partial=topindex)[topindex:nprobes]))
 			}
 		}
-	} else if (gene.selection == "common") {
-		if (nprobes > top) {
-			s <- rowMeans((x -  rowMeans(x))^2)
-			o <- order(s, decreasing=TRUE)
-			x <- x[o[1L:top], , drop=FALSE]
-		}
-		for (i in 2L:nsamples) {
-			dd[i, 1L:(i - 1L)] = sqrt(colMeans((x[, i] - x[, 1:(i - 1), drop = FALSE])^2))
-		}
-	}
-	# Calculated MDS coordinates
-	a1 <- suppressWarnings(cmdscale(as.dist(dd), k=min(10, nsamples-1), eig=TRUE))
-
-	dmatrix <- a1$points
-	eigvals <- round(a1$eig, 3)[1:10]
-	eigvals[is.na(eigvals)] <- 0
-	eigsum <- round(sum(a1$eig), 3)
-	
-	# Function to convert colour strings into hex codes
-	CharToHexCol <- function(x) {
-		out <- apply(as.character(as.hexmode(col2rgb(x, alpha=FALSE))), 2, function(x) {paste0("#", paste0(x, collapse=""))})
-		sapply(out, function(x) { ifelse(x=="#000", "#000000", x) })
-	}
-
-	# Functions to convert numbers into corresponding hex codes for colours
-	NumToHexCol <- function(x) {
-		col <- palette()[as.integer(col)]
-		out <- apply(as.character(as.hexmode(col2rgb(x, alpha=FALSE))), 2, function(x) {paste0("#", paste0(x, collapse=""))})
-		sapply(out, function(x) { ifelse(x=="#000", "#000000", x) })
-	}
-
-	if (is.null(dim(col))) {
-		if (is.character(col)) {
-			cols <- ChartoHexCol(col)
-		} else if (is.factor(col) || is.numeric(col)) {
-			cols <- NumToHexCol(col)
-		} else {
-			stop("input col must not of class 'interger', 'factor' or 'character'")
-		}		
 	} else {
-		matdim <- dim(col)
-		factors <- colnames(col)
-		if (is.character(col)) {
-			cols <- matrix(ChartoHexCol(col), matdim[1], matdim[2])
-			colnames(cols) <- factors
-		} else if (is.factor(col) || is.numeric(col)) {
-			cols <- matrix(NumToHexCol(col), matdim[1], matdim[2])
-			colnames(cols) <- factors
-		} else {
-			stop("input col must not of class 'interger', 'factor' or 'character'")
+#		Same genes used for all comparisons
+		if(nprobes > top) {
+			s <- rowMeans((x-rowMeans(x))^2)
+			o <- order(s,decreasing=TRUE)
+			x <- x[o[1L:top],,drop=FALSE]
 		}
+		for (i in 2L:(nsamples))
+			dd[i,1L:(i-1L)] <- sqrt(colMeans((x[,i]-x[,1:(i-1),drop=FALSE])^2))
+		axislabel <- "Principal Component"
 	}
+
+#	Multi-dimensional scaling
+	a1 <- suppressWarnings(cmdscale(as.dist(dd), k=min(nsamples, 8), eig=TRUE))
+	class(a1) <- "MDS"
+
+	glMDSPlot(a1)
+}
+
+#' @export
+
+glMDSPlot.DGEList <- function (x, top=500, labels=NULL, gene.selection="pairwise",
+								main=NULL) {
+	x <- cpm(x, log=TRUE)
+	glMDSPlot.default(x, top=500, labels=NULL, gene.selection="pairwise", main=NULL)
+}
+
+#' @export
+
+glMDSPlot.MDS <- function(x, labels=NULL) {
+	#	Method for MDS objects
+	points <- x$points
 	
-	#------------------------------------------------------------
-	# Generate javascript strings
-	#------------------------------------------------------------
-	
-	if (is.null(dim(col))) {
-		multicol <- quotify("false")
-		col <- objectify("col", arrayify(cols))
+	if (is.null(labels)) {
+		points <- data.frame(points)
+		names(points) <- paste0("dim", 1:ncol(points))
 	} else {
-		multicol <- quotify("true")
-		col <- objectify(colnames(cols), apply(cols, 2, arrayify))
+		points <- data.frame(points, labels)
 	}
 
-	dmatrix <- data.frame(dmatrix)
-	colnames(dmatrix) <- as.character(1:ncol(dmatrix))
-	dimjs <- makeDFJson(dmatrix)
+	eigen <- data.frame(name = 1:8, eigen=round(x$eig[1:8]/sum(x$eig), 2))
 
-	labeljs <- arrayify(quotify(labels))
+	plot1 <- glScatter(points, xval="dim1", yval="dim2", main="MDS Plot")
+	plot2 <- glBar(eigen, names.arg="name", yval="eigen", height=200, width=300)
 
-	eigjs <- arrayify(paste(eigvals, collapse=","))
-
-	plot.title <- quotify(main)
-
-	#------------------------------------------------------------
-  	# Output
-  	#------------------------------------------------------------
-  
-	data.filename <- paste(report.path, "/mds_data.js", sep="")
-	printJsonToFile(c(dimjs, labeljs, col, eigjs, eigsum, plot.title), filename=data.filename,
-					varname=c("dim", "lab", "col", "eigenVals", "eigenSum", "pageTitle"))
-
+	glimma(plot1, plot2, layout=c(1, 2), html="MDS")
 }
