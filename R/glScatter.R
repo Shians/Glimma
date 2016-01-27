@@ -56,9 +56,13 @@ glScatter.default <- function(x, xval="x", yval="y", id=NULL,
 	if (any(is.na(match(annot, names(x))))) {
 		stop(paste("not all values in annot correspond to a column"))
 	}
+	#
+	##
+
+	# Normalise input
+	x <- data.frame(x)
 
 	# Make json out of data
-	x <- data.frame(x)
 	json <- makeDFJson(x)
 
 	out <- list(

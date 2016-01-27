@@ -71,7 +71,7 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 }
 
 constructBarPlot <- function(chart, index, write.out) {
-	command <- "glimma.charts.push.chart.barChart()"
+	command <- "glimma.charts.push(glimma.chart.barChart()"
 
 	height <- paste0(".height(", chart$height, ")")
 	command <- paste0(command, height)

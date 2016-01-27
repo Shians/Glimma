@@ -22,7 +22,7 @@ bsRowEnd <- function() {
 
 # Function to write a column cell for BootStrap.js
 bsCol <- function(size, class="plot-device", type="md") {
-	col.type <- quotify(paste("col", type, size, sep="-"))
+	col.type <- quotify(paste("col", size, type, sep="-"))
 	tag <- paste0("<div class=", col.type, "></div>")
 	writeMaker(tag)
 }

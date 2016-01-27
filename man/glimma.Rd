@@ -4,14 +4,17 @@
 \alias{glimma}
 \title{Core glimma plot manager. Generates environment for glimma plots.}
 \usage{
-glimma(..., layout = c(1, 1), folder = "glimma", overwrite = FALSE)
+glimma(..., layout = c(1, 1), folder = "glimma", html = "index",
+  overwrite = FALSE)
 }
 \arguments{
 \item{...}{the jschart or jslink objects for processing.}
 
 \item{layout}{the numeric vector representing the number of rows and columns in plot window.}
 
-\item{folder}{the name of the folder to save plots to.}
+\item{folder}{the name of the fold to save html file to.}
+
+\item{html}{the name of the html file to save plots to.}
 
 \item{overwrite}{the option to overwrite existing folder if it already exists.}
 }

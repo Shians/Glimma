@@ -2,7 +2,8 @@
 #' 
 #' @param ... the jschart or jslink objects for processing.
 #' @param layout the numeric vector representing the number of rows and columns in plot window.
-#' @param folder the name of the folder to save plots to.
+#' @param folder the name of the fold to save html file to.
+#' @param html the name of the html file to save plots to.
 #' @param overwrite the option to overwrite existing folder if it already exists.
 #' @return Generates interactive plots based on filling layout row by row from left to right.
 #' @export
@@ -12,14 +13,25 @@
 #' glimma(plot1, c(1,1))
 #'
 
-glimma <- function(..., layout=c(1,1), folder="glimma", overwrite=FALSE) {
+glimma <- function(..., layout=c(1,1), folder="glimma", html="index", overwrite=FALSE) {
 	nplots <- 0
+
+	##
+	# Input checking
 	for (i in list(...)) {
 		if (class(i) == "jschart") {
 			nplots <- nplots + 1
 		}
 	}
 	
+	if (!is.numeric(layout) || !(length(layout) == 2)) {
+		stop("layout must be numeric vector of length 2")
+	}
+
+	if (layout[2] < 1 || layout[2] > 6) {
+		stop("number of columns must be between 1 and 6")
+	}
+
 	if (nplots > layout[1] * layout[2]) {
 		stop("More plots than available layout cells")
 	}
@@ -29,6 +41,14 @@ glimma <- function(..., layout=c(1,1), folder="glimma", overwrite=FALSE) {
 			stop(paste(folder, "already exists"))
 		}
 	}
+	#
+	##
+
+	# Normalise input
+	folder <- ifelse(char(folder, nchar(folder)) == "/" || char(folder, nchar(folder)) == "\\", 
+					substring(folder, 1, nchar(folder) - 1),
+					folder) # If folder ends with /
+	layout <- round(layout)
 
 	# Convert variable arguments into list
 	args <- list(...)
@@ -40,7 +60,7 @@ glimma <- function(..., layout=c(1,1), folder="glimma", overwrite=FALSE) {
 	index.path <- system.file(package="Glimma", "index.html")
 	js.path <- system.file(package="Glimma", "js")
 	css.path <- system.file(package="Glimma", "css")
-	file.copy(index.path, folder, recursive=TRUE)
+	file.copy(index.path, paste(folder, paste0(html, ".html"), sep="/"))
 	file.copy(js.path, folder, recursive=TRUE)
 	file.copy(css.path, folder, recursive=TRUE)
 
