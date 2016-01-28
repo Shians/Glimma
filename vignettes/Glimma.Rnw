@@ -1,0 +1,74 @@
+%\VignetteIndexEntry{Glimma Vignette}
+%\VignetteKeyword{RNA-Seq}
+%\VignetteKeyword{differential expression}
+%\VignetteKeyword{interactive graphics}
+%\VignettePackage{Glimma}
+\documentclass{article}
+
+\textwidth=6.2in
+\textheight=8.5in
+\oddsidemargin=0.2in
+\evensidemargin=0.2in
+\headheight=0in
+\headsep=0in
+
+<<style-Sweave, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@ 
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Overview of the Glimma package}
+\author{Shian Su, Matthew E. Ritchie}
+\date{28 January 2016\\
+Revised 28 January 2016}
+\maketitle
+
+\tableofcontents
+
+\Biocpkg{Glimma} is a \Bioconductor{} package for interactive visualization of the 
+results from a differential expression analysis of RNA-sequencing data. 
+This functionality is intended to enhance reporting capabilities so that
+results can be explored more easily.
+
+\Biocpkg{Glimma} extends some of the popular plotting capabilities from the 
+\Biocpkg{limma} package \cite{limma} such as multi-dimensional scaling (MDS) plots, 
+that can be useful for visualising relationships between samples, and mean-difference 
+plots (MD plots) for summarising results from comparisons of interest. 
+The choice of displays and layouts used was inspired by visualisations
+in the Degust software \cite{Degust}.
+
+The \Biocpkg{Glimma} package is designed to handle RNA-seq diffrential expression 
+results from the \Biocpkg{limma}, \Biocpkg{edgeR} \cite{edgeR} and \Biocpkg{DESeq2} 
+\cite{DESeq2} packages.
+
+In this vignette we demonstate the two main plotting capabilities of this package using 
+a published RNA-seq dataset.
+
+\section{Interactive multi-dimensional scaling plots}
+
+Example from \cite{Smchd1} of \Rfunction{glMDSPlot} inspired by
+\Rfunction{plotMDS} from \Biocpkg{limma}.
+
+\section{Interactive Mean-Difference plots}
+
+Example from \cite{Smchd1} of \Rfunction{glMDPlot} inspired by
+\Rfunction{plotMD} from \Biocpkg{limma}.
+
+\begin{thebibliography}{}
+\bibitem[1]{limma} Ritchie ME, Phipson B, Wu D, Hu Y, Law CW, Shi W, Smyth GK. (2015) limma powers differential
+expression analyses for RNA-sequencing and microarray studies, {\it Nucleic Acids Research}, {\bf 43}(7):e47.
+\bibitem[2]{Degust} Powell DR. (2015) Degust: Visualize, explore and appreciate RNA-seq differential gene-expression
+data, \url{http://victorian-bioinformatics-consortium.github.io/degust/}.
+\bibitem[3]{edgeR} Robinson MD, McCarthy DJ, Smyth GK. (2010) edgeR: a Bioconductor package for differential
+expression analysis of digital gene expression data, {\it
+  Bioinformatics}, {\bf 26}(1):139--40.
+\bibitem[4]{DESeq2} Love MI, Huber W, Anders S. (2014) Moderated estimation of fold change and dispersion for
+RNA-seq data with DESeq2, {\it Genome Biology}, {\bf 15}(12):550.
+\bibitem[5]{Smchd1} Liu R, Chen K, Jansz N, Blewitt ME, Ritchie, ME (2016) Transcriptional profiling of the epigenetic
+regulator Smchd1, {\it Genomics Data}, {\bf 7}:144--7.
+\end{thebibliography}
+
+\end{document}
