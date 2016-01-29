@@ -70,7 +70,7 @@ x = x[sel,]
 ## Make MDS plot
 par(mfrow=c(1,2))
 plotMDS(x, label=1:ncol(x), main="MDS plot", col=as.numeric(genotype))
-legend("topright",legend=c("Wild Type","Smchd1-null"), pch=20, col=1:2, text.col=1:2)
+legend("topright",legend=c("Smchd1-null","Wild Type"), pch=20, col=1:2, text.col=1:2)
 
 ## Normalize the data using TMM
 x = calcNormFactors(x, method="TMM")
