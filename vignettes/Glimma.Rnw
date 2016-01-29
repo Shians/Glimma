@@ -5,49 +5,105 @@
 %\VignettePackage{Glimma}
 \documentclass{article}
 
-\textwidth=6.2in
-\textheight=8.5in
-\oddsidemargin=0.2in
-\evensidemargin=0.2in
-\headheight=0in
-\headsep=0in
-
 <<style-Sweave, eval=TRUE, echo=FALSE, results=tex>>=
 BiocStyle::latex()
 @ 
 
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 \begin{document}
 
 \title{Overview of the Glimma package}
 \author{Shian Su, Matthew E. Ritchie}
 \date{28 January 2016\\
-Revised 28 January 2016}
+Revised 29 January 2016}
 \maketitle
 
 \tableofcontents
 
+\section{Introduction}
+  
 \Biocpkg{Glimma} is a \Bioconductor{} package for interactive visualization of the 
 results from a differential expression analysis of RNA-sequencing data. 
 This functionality is intended to enhance reporting capabilities so that
-results can be explored more easily.
+results can be explored more easily by end-users.
 
 \Biocpkg{Glimma} extends some of the popular plotting capabilities from the 
-\Biocpkg{limma} package \cite{limma} such as multi-dimensional scaling (MDS) plots, 
+\Biocpkg{limma} package \cite{limma} such as multidimensional scaling (MDS) plots, 
 that can be useful for visualising relationships between samples, and mean-difference 
 plots (MD plots) for summarising results from comparisons of interest. 
-The choice of displays and layouts used was inspired by visualisations
-in the Degust software \cite{Degust}.
+The choice of displays and layouts used was inspired by visualisations in the Degust 
+software \cite{Degust}.
 
-The \Biocpkg{Glimma} package is designed to handle RNA-seq diffrential expression 
+The \Biocpkg{Glimma} package is designed to handle RNA-seq differential expression 
 results from the \Biocpkg{limma}, \Biocpkg{edgeR} \cite{edgeR} and \Biocpkg{DESeq2} 
-\cite{DESeq2} packages.
+\cite{DESeq2} packages. Figure~\ref{fig:overview} below provides an overview of this functionality.
+
+\begin{figure}
+  \centerline{\includegraphics[width=0.65\linewidth]{GlimmaWorkFlow.pdf}}
+  \caption{Overview of package workflow.}
+  \label{fig:overview}
+\end{figure}
 
 In this vignette we demonstate the two main plotting capabilities of this package using 
-a published RNA-seq dataset.
+a published RNA-seq dataset \cite{Smchd1}.
 
-\section{Interactive multi-dimensional scaling plots}
+\section{Getting Started}
+
+We first perform a basic differential expression analysis on an RNA-seq data set involving 
+Lymphoma cell-lines with either wild-type or null levels of the gene {\it Smchd1} \cite{Smchd1}.
+This experiment was analysed using a {\it limma-voom} pipeline \cite{voom, voomqwts} 
+that tests for differential expression relative to a particular fold-change using treat \cite{treat}. 
+The plots that \Biocpkg{Glimma} extends are shown in Figure~\ref{fig:static}.
+
+<<basicanalysis, eval=TRUE, echo=TRUE, fig=TRUE, width=10, height=5, include=FALSE>>=
+library(edgeR)
+library(limma)
+load("LymphomaRNAseq.rda")
+class(x)
+
+## Filter out genes with low counts
+sel = rowSums(cpm(x$counts)>0.5)>=3
+x = x[sel,]
+
+## Make MDS plot
+par(mfrow=c(1,2))
+plotMDS(x, label=1:ncol(x), main="MDS plot", col=as.numeric(genotype))
+legend("topright",legend=c("Wild Type","Smchd1-null"), pch=20, col=1:2, text.col=1:2)
+
+## Normalize the data using TMM
+x = calcNormFactors(x, method="TMM")
+
+## Set up design matrix
+genotype = relevel(x$samples$group, "Smchd1-null")
+des = model.matrix(~genotype)
+des
+
+## Apply voom with sample quality weights and fit linear model
+v=voomWithQualityWeights(x, design=des, normalization="none", plot=FALSE)
+vfit = lmFit(v,des)
+
+## Apply treat relative to a fold-change of 1.5
+vtfit=treat(vfit,lfc=log2(1.5))
+vfit= eBayes(vfit)
+results = decideTests(vfit,p.value=0.01)
+summary(results)
+
+## Make a mean-difference (MD) plot of the results
+plotMD(vfit,col=2, status=results[,2], hl.col=c("blue", "red"), 
+       legend="topright", main="MD plot: Wild-type vs Smchd1")
+@
+
+\begin{figure}
+  \centerline{\includegraphics[width=\linewidth]{Glimma-basicanalysis}}
+  \caption{Examples of static MDS plot (left) and mean-difference plot (right) for 
+    the Lymphoma RNA-seq data set. \Biocpkg{Glimma} extends these functions, 
+    adding various interactive features to each.}
+  \label{fig:static}
+\end{figure}
+
+\section{Interactive multidimensional scaling plots}
 
 Example from \cite{Smchd1} of \Rfunction{glMDSPlot} inspired by
 \Rfunction{plotMDS} from \Biocpkg{limma}.
@@ -63,12 +119,18 @@ expression analyses for RNA-sequencing and microarray studies, {\it Nucleic Acid
 \bibitem[2]{Degust} Powell DR. (2015) Degust: Visualize, explore and appreciate RNA-seq differential gene-expression
 data, \url{http://victorian-bioinformatics-consortium.github.io/degust/}.
 \bibitem[3]{edgeR} Robinson MD, McCarthy DJ, Smyth GK. (2010) edgeR: a Bioconductor package for differential
-expression analysis of digital gene expression data, {\it
-  Bioinformatics}, {\bf 26}(1):139--40.
+expression analysis of digital gene expression data, {\it Bioinformatics}, {\bf 26}(1):139--40.
 \bibitem[4]{DESeq2} Love MI, Huber W, Anders S. (2014) Moderated estimation of fold change and dispersion for
 RNA-seq data with DESeq2, {\it Genome Biology}, {\bf 15}(12):550.
 \bibitem[5]{Smchd1} Liu R, Chen K, Jansz N, Blewitt ME, Ritchie, ME (2016) Transcriptional profiling of the epigenetic
 regulator Smchd1, {\it Genomics Data}, {\bf 7}:144--7.
+\bibitem[6]{voom} Law CW, Chen Y, Shi W, Smyth GK (2014) Voom: precision weights unlock linear model analysis 
+  tools for RNA-seq read counts, {\it Genome Biology}, {\bf 15}:R29.
+\bibitem[7]{voomqwts} Liu R, Holik AZ, Su S, Jansz N, Chen K, Leong HS, Blewitt ME, Asselin-Labat ML, Smyth GK, 
+  Ritchie ME (2015) Why weight? Combining voom with estimates of sample quality improves power in RNA-seq analyses,
+  {\it Nucleic Acids Research}, {\bf 43}(15):e97.
+\bibitem[8]{treat} McCarthy DJ, Smyth GK (2009) Testing significance relative to a fold-change threshold is a TREAT, 
+  {\it Bioinformatics}, {\bf 25}(6):765-71.
 \end{thebibliography}
 
 \end{document}
