@@ -1,16 +1,24 @@
-#' Create an interactive bar plot object
+#' Draw an interactive MDS plot
 #' 
 #' @param x the data.frame containing data to plot.
 #' @param top the number of top genes used to calculate distances.
 #' @param labels the haracter vector of sample names or labels. Defaults to colnames(x).
-#' @param gene.selection
-#' @return a "chart" object containing information used by glimma to create plots.
+#' @param gene.selection the method for calculating distances.
+#' @return writes an interactive MDS plot
 #' @export
 #' @examples
 #' 
 
 glMDSPlot <- function(x, ...) {
   UseMethod("glMDSPlot")
+}
+
+#' @export
+
+glMDSPlot.DGEList <- function (x, top=500, labels=1:ncol(x), gene.selection="pairwise",
+								main="MDS Plot") {
+	x <- cpm(x, log=TRUE)
+	glMDSPlot.default(x, top=500, labels=labels, gene.selection="pairwise", main=main)
 }
 
 #' @export
@@ -41,11 +49,6 @@ glMDSPlot.default <- function(x, top=500, labels=NULL, gene.selection="pairwise"
 	nprobes <- nrow(x)
 	top <- min(top, nprobes)
 
-	if (is.null(labels)) {
-		labels <- paste("Sample", 1:nsamples)
-	} else {
-		labels <- as.character(labels)
-	}
 	#
 	##
 	
@@ -79,34 +82,24 @@ glMDSPlot.default <- function(x, top=500, labels=NULL, gene.selection="pairwise"
 	a1 <- suppressWarnings(cmdscale(as.dist(dd), k=min(nsamples, 8), eig=TRUE))
 	class(a1) <- "MDS"
 
-	glMDSPlot(a1)
+	glMDSPlot.hidden(a1, labels=labels, main=main)
 }
 
-#' @export
-
-glMDSPlot.DGEList <- function (x, top=500, labels=NULL, gene.selection="pairwise",
-								main=NULL) {
-	x <- cpm(x, log=TRUE)
-	glMDSPlot.default(x, top=500, labels=NULL, gene.selection="pairwise", main=NULL)
-}
-
-#' @export
-
-glMDSPlot.MDS <- function(x, labels=NULL) {
+glMDSPlot.hidden <- function(x, labels=NULL, main=NULL) {
 	#	Method for MDS objects
 	points <- x$points
 	
-	if (is.null(labels)) {
-		points <- data.frame(points)
-		names(points) <- paste0("dim", 1:ncol(points))
-	} else {
-		points <- data.frame(points, labels)
-	}
+	points <- data.frame(points)
+	names(points) <- paste0("dim", 1:ncol(points))
+	points <- data.frame(points, label=labels)
 
 	eigen <- data.frame(name = 1:8, eigen=round(x$eig[1:8]/sum(x$eig), 2))
 
-	plot1 <- glScatter(points, xval="dim1", yval="dim2", main="MDS Plot")
-	plot2 <- glBar(eigen, names.arg="name", yval="eigen", height=200, width=300)
-
-	glimma(plot1, plot2, layout=c(1, 2), html="MDS")
+	plot1 <- glScatter(points, xval="dim1", yval="dim2", xlab="Dimension 1", ylab="Dimension 2",
+						 colval="label", main=main)
+	plot2 <- glBar(eigen, names.arg="name", yval="eigen", ylab="Magnitude", height=300, width=300)
+	link1 <- link(2, 1, flag="mds")
+	# TODO: Add labels to annotation
+	glimma(plot1, plot2, link1, layout=c(1, 2), annot=c("label", "dim1", "dim2"),
+			html="MDS", overwrite=TRUE)
 }

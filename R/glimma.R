@@ -54,7 +54,9 @@ glimma <- function(..., layout=c(1,1), folder="glimma", html="index", overwrite=
 	args <- list(...)
 
 	# Create folder
-	dir.create(folder)
+	if (!dir.exists(folder)) {
+		dir.create(folder)
+	}
 
 	# Create file
 	index.path <- system.file(package="Glimma", "index.html")
@@ -68,35 +70,37 @@ glimma <- function(..., layout=c(1,1), folder="glimma", html="index", overwrite=
 	cat("", file=data.path, sep="")
 	write.data <- writeMaker(data.path)
 
-	actions <- data.frame(from=0, to=0, src="none", dest="none") # Dummy row
+	actions <- data.frame(from=0, to=0, src="none", dest="none", flag="none") # Dummy row
 	data.list <- list()
 
 	for (i in 1:length(args)) {
-		if (class(args[[i]]) == "jslink" || class(args[[i]]) == "jschart") {
+		if (class(args[[i]]) == "jslink" || class(args[[i]]) == "jschart" || class(args[[i]]) == "jsinput") {
 			if (args[[i]]$type == "link") {
 				actions <- rbind(actions, args[[i]]$link)
 			} else if (args[[i]]$type == "scatter") {
 			# Write json data
-				write.data(paste0("glimma.chartData.push(", args[[i]]$json, ");\n"))
+				write.data(paste0("glimma.storage.chartData.push(", args[[i]]$json, ");\n"))
 
 			# Write plot information
 				args[[i]]$json <- NULL
 				chartInfo <- makeChartJson(args[[i]])
-				write.data(paste0("glimma.chartInfo.push(", chartInfo, ");\n"))
+				write.data(paste0("glimma.storage.chartInfo.push(", chartInfo, ");\n"))
 
 			# Write plot call
 				constructScatterPlot(args[[i]], i, write.data)
 			} else if (args[[i]]$type == "bar") {
 			# Write json data
-				write.data(paste0("glimma.chartData.push(", args[[i]]$json, ");\n"))
+				write.data(paste0("glimma.storage.chartData.push(", args[[i]]$json, ");\n"))
 
 			# Write plot information
 				args[[i]]$json <- NULL
 				chartInfo <- makeChartJson(args[[i]])
-				write.data(paste0("glimma.chartInfo.push(", chartInfo, ");\n"))
+				write.data(paste0("glimma.storage.chartInfo.push(", chartInfo, ");\n"))
 
 			# Write plot call
 				constructBarPlot(args[[i]], i, write.data)
+			} else if (args[[i]]$type == "autcomplete") {
+
 			}
 		}
 	}
@@ -104,9 +108,9 @@ glimma <- function(..., layout=c(1,1), folder="glimma", html="index", overwrite=
 	# Write linkage
 	if (nrow(actions) > 1) {
 		actions.js <- makeDFJson(actions[-1, ])
-		write.data(paste0("glimma.linkage = ", actions.js, ";\n"))
+		write.data(paste0("glimma.storage.linkage = ", actions.js, ";\n"))
 	} else {
-		write.data("glimma.linkage = [];\n")
+		write.data("glimma.storage.linkage = [];\n")
 	}
 
 	# Generate layout

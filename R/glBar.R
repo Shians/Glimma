@@ -44,7 +44,7 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 		}
 	}
 	
-
+	# TODO: Consider using rjson package?
 	# Make json out of data
 	x <- data.frame(x)
 	json <- makeDFJson(x)
@@ -71,7 +71,7 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 }
 
 constructBarPlot <- function(chart, index, write.out) {
-	command <- "glimma.charts.push(glimma.chart.barChart()"
+	command <- "glimma.storage.charts.push(glimma.chart.barChart()"
 
 	height <- paste0(".height(", chart$height, ")")
 	command <- paste0(command, height)
@@ -91,7 +91,7 @@ constructBarPlot <- function(chart, index, write.out) {
 	y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
 	command <- paste0(command, y.lab)
 
-	main <- paste0(".title(glimma.chartInfo[", index - 1, "].title)")
+	main <- paste0(".title(glimma.storage.chartInfo[", index - 1, "].title)")
 	command <- paste0(command, main)
 
 	if (!is.null(chart$ndigits)) {
