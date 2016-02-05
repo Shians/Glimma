@@ -11,14 +11,27 @@
 #' @examples 
 #' 
 
-link <- function(from, to, src, dest, flag=NULL, both=FALSE) {
+link <- function(from, to, src="none", dest="none", flag="none", both=FALSE) {
 	out <- list()
-	out$link <- data.frame(from=from, to=to, src=src, dest=dest)
-	if (both) {
-		out$link <- rbind(out$link, data.frame(from=to, to=from, src=dest, dest=src))
+
+	if (src != "none" && dest == "none") {
+		stop("src cannot be defined while dest is 'none'")
 	}
+
+	if (src == "none" && dest != "none") {
+		stop("dest cannot be defined while src is 'none'")
+	}	
+
+	if (src == "none" && dest == "none" && flag == "none") {
+		stop("'src', 'dest' and 'flag' cannot simultaneously be 'none'")
+	}
+
+	out$link <- data.frame(from=from, to=to, src=src, dest=dest, flag=flag)
+	if (both) {
+		out$link <- rbind(out$link, data.frame(from=to, to=from, src=dest, dest=src, flag=flag))
+	}
+
 	out$type <- "link"
-	out$flag <- flag
 
 	class(out) <- "jslink"
 	return(out)
