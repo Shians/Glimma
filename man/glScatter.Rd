@@ -15,7 +15,7 @@ glScatter(x, ...)
 
 \item{yval}{the column name for the y-axis values.}
 
-\item{id}{the column name for unique identifiers.}
+\item{idval}{the column name for unique identifiers.}
 
 \item{ndigits}{the number of digits after the decimal to round to in the tooltip (overrides signif).}
 

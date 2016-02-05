@@ -2,10 +2,11 @@
 
 S3method(glBar,default)
 S3method(glMDSPlot,DGEList)
-S3method(glMDSPlot,MDS)
 S3method(glMDSPlot,default)
 S3method(glScatter,default)
+export(constructAutocomplete)
 export(glBar)
+export(glMDPlot.DGEList)
 export(glMDSPlot)
 export(glScatter)
 export(glimma)
