@@ -62,45 +62,28 @@ glimma <- function(..., layout=c(1,1), folder="glimma", html="index", overwrite=
 	index.path <- system.file(package="Glimma", "index.html")
 	js.path <- system.file(package="Glimma", "js")
 	css.path <- system.file(package="Glimma", "css")
-	file.copy(index.path, paste(folder, paste0(html, ".html"), sep="/"))
-	file.copy(js.path, folder, recursive=TRUE)
-	file.copy(css.path, folder, recursive=TRUE)
+	file.copy(index.path, paste(folder, paste0(html, ".html"), sep="/"), overwrite=overwrite)
+	file.copy(js.path, folder, recursive=TRUE, overwrite=overwrite)
+	file.copy(css.path, folder, recursive=TRUE, overwrite=overwrite)
 
 	data.path <- paste(folder, "js", "data.js", sep="/")
 	cat("", file=data.path, sep="")
 	write.data <- writeMaker(data.path)
 
+	# Initialise data variables
 	actions <- data.frame(from=0, to=0, src="none", dest="none", flag="none") # Dummy row
+	inputs <- data.frame(target=0, action="none", idval="none", flag="none") # Dummy row
 	data.list <- list()
 
+	# Process arguments
 	for (i in 1:length(args)) {
 		if (class(args[[i]]) == "jslink" || class(args[[i]]) == "jschart" || class(args[[i]]) == "jsinput") {
 			if (args[[i]]$type == "link") {
 				actions <- rbind(actions, args[[i]]$link)
-			} else if (args[[i]]$type == "scatter") {
-			# Write json data
-				write.data(paste0("glimma.storage.chartData.push(", args[[i]]$json, ");\n"))
-
-			# Write plot information
-				args[[i]]$json <- NULL
-				chartInfo <- makeChartJson(args[[i]])
-				write.data(paste0("glimma.storage.chartInfo.push(", chartInfo, ");\n"))
-
-			# Write plot call
-				constructScatterPlot(args[[i]], i, write.data)
-			} else if (args[[i]]$type == "bar") {
-			# Write json data
-				write.data(paste0("glimma.storage.chartData.push(", args[[i]]$json, ");\n"))
-
-			# Write plot information
-				args[[i]]$json <- NULL
-				chartInfo <- makeChartJson(args[[i]])
-				write.data(paste0("glimma.storage.chartInfo.push(", chartInfo, ");\n"))
-
-			# Write plot call
-				constructBarPlot(args[[i]], i, write.data)
-			} else if (args[[i]]$type == "autcomplete") {
-
+			} else if (args[[i]]$type == "autocomplete") {
+				inputs <- rbind(inputs, args[[i]]$input)
+			} else {
+				processPlot(write.data, args[[i]]$type, args[[i]], i)
 			}
 		}
 	}
@@ -113,7 +96,32 @@ glimma <- function(..., layout=c(1,1), folder="glimma", html="index", overwrite=
 		write.data("glimma.storage.linkage = [];\n")
 	}
 
+	# Write input fields
+	if (nrow(inputs) > 1) {
+		inputs.js <- makeDFJson(inputs[-1, ])
+		write.data(paste0("glimma.storage.input = ", inputs.js, ";\n"))
+	} else {
+		write.data("glimma.storage.input = [];\n")
+	}
+
 	# Generate layout
 	layout <- paste0("glimma.layout.setupGrid(d3.select(\".container\"), \"md\", ", "[", layout[1], ",", layout[2], "]);\n")
 	write.data(layout)
+}
+
+processPlot <- function(write.data, type, chart, index) {
+	# Write json data
+	write.data(paste0("glimma.storage.chartData.push(", chart$json, ");\n"))
+
+	# Write plot information
+	chart$json <- NULL
+	chartInfo <- makeChartJson(chart)
+	write.data(paste0("glimma.storage.chartInfo.push(", chartInfo, ");\n"))
+
+	# Write plot call
+	if (type == "scatter") {
+		constructScatterPlot(chart, index, write.data)
+	} else if (type == "bar") {
+		constructBarPlot(chart, index, write.data)	
+	}
 }
