@@ -2,10 +2,10 @@
 % Please edit documentation in R/glSearch.R
 \name{glAutocomplete}
 \alias{glAutocomplete}
-\title{Create a jsinput object containing information for glimm function to 
+\title{Create a jsinput object containing information for glimma function to 
 generate an autocompletion field.}
 \usage{
-glAutocomplete(index, idcol)
+glAutocomplete(target, action)
 }
 \arguments{
 \item{index}{the index of the chart from which data is obtained}
@@ -16,7 +16,7 @@ glAutocomplete(index, idcol)
 a jsinput object containing the data for creating an autocomplete field
 }
 \description{
-Create a jsinput object containing information for glimm function to 
+Create a jsinput object containing information for glimma function to 
 generate an autocompletion field.
 }
 \examples{
