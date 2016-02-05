@@ -127,7 +127,7 @@ constructScatterPlot <- function(chart, index, write.out) {
 		command <- paste0(command, x.is.ord)
 	}
 
-	y.func <- paste0(".y(function (d) { return d", chart$y, "; })")
+	y.func <- paste0(".y(function (d) { return d.", chart$y, "; })")
 	command <- paste0(command, y.func)
 
 	y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
@@ -157,7 +157,7 @@ constructScatterPlot <- function(chart, index, write.out) {
 	command <- paste0(command, nformat)
 
 	if (!is.null(chart$col)) {
-		c.func <- paste0(".col(function(d) { return d[", quotify(chart$col), "]; })")
+		c.func <- paste0(".col(function(d) { return d.", chart$col, "; })")
 		command <- paste0(command, c.func)	
 	}
 

@@ -79,13 +79,13 @@ constructBarPlot <- function(chart, index, write.out) {
 	width <- paste0(".width(", chart$width, ")")
 	command <- paste0(command, width)
 
-	x.func <- paste0(".id(function (d) { return d[", quotify(chart$names), "]; })")
+	x.func <- paste0(".id(function (d) { return d.", quotify(chart$names), "; })")
 	command <- paste0(command, x.func)
 
 	x.lab <- paste0(".xlab(", quotify(chart$xlab), ")")
 	command <- paste0(command, x.lab)
 
-	y.func <- paste0(".y(function (d) { return d[", quotify(chart$y), "]; })")
+	y.func <- paste0(".y(function (d) { return d.", quotify(chart$y), "; })")
 	command <- paste0(command, y.func)
 
 	y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
