@@ -2,7 +2,7 @@
 #' 
 #' @param x the data.frame containing data to plot.
 #' @param top the number of top genes used to calculate distances.
-#' @param labels the haracter vector of sample names or labels. Defaults to colnames(x).
+#' @param labels the character vector of sample names or labels. Defaults to colnames(x).
 #' @param gene.selection the method for calculating distances.
 #' @return writes an interactive MDS plot
 #' @export
@@ -56,10 +56,10 @@ glMDSPlot.default <- function(x, top=500, labels=NULL, gene.selection="pairwise"
 
 	gene.selection <- match.arg(gene.selection, c("pairwise", "common"))
 
-	#	Distance matrix from pairwise leading fold changes
+	# Distance matrix from pairwise leading fold changes
 	dd <- matrix(0, nrow=nsamples, ncol=nsamples, dimnames=list(cn,cn))
-	if(gene.selection == "pairwise") {
-#		Distance measure is mean of top squared deviations for each pair of arrays
+	if (gene.selection == "pairwise") {
+	# Distance measure is mean of top squared deviations for each pair of arrays
 		topindex <- nprobes - top + 1L
 		for (i in 2L:(nsamples)) {
 			for (j in 1L:(i - 1L)) {
@@ -67,8 +67,8 @@ glMDSPlot.default <- function(x, top=500, labels=NULL, gene.selection="pairwise"
 			}
 		}
 	} else {
-#		Same genes used for all comparisons
-		if(nprobes > top) {
+	# Same genes used for all comparisons
+		if (nprobes > top) {
 			s <- rowMeans((x-rowMeans(x))^2)
 			o <- order(s,decreasing=TRUE)
 			x <- x[o[1L:top],,drop=FALSE]
@@ -78,7 +78,7 @@ glMDSPlot.default <- function(x, top=500, labels=NULL, gene.selection="pairwise"
 		axislabel <- "Principal Component"
 	}
 
-#	Multi-dimensional scaling
+	# Multi-dimensional scaling
 	a1 <- suppressWarnings(cmdscale(as.dist(dd), k=min(nsamples, 8), eig=TRUE))
 	class(a1) <- "MDS"
 

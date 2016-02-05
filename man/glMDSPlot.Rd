@@ -2,7 +2,7 @@
 % Please edit documentation in R/glMD.R, R/glMDSPlot.R
 \name{glMDSPlot}
 \alias{glMDSPlot}
-\title{Darw an interactive MD plot}
+\title{Draw an interactive MD plot}
 \usage{
 glMDSPlot(x, ...)
 
@@ -15,17 +15,17 @@ glMDSPlot(x, ...)
 
 \item{top}{the number of top genes used to calculate distances.}
 
-\item{labels}{the haracter vector of sample names or labels. Defaults to colnames(x).}
+\item{labels}{the character vector of sample names or labels. Defaults to colnames(x).}
 
 \item{gene.selection}{the method for calculating distances.}
 }
 \value{
-writes an interactive MDS plot
+writes an interactive MD plot
 
 writes an interactive MDS plot
 }
 \description{
-Darw an interactive MD plot
+Draw an interactive MD plot
 
 Draw an interactive MDS plot
 }

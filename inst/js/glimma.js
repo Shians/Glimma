@@ -37671,13 +37671,14 @@ require("./init/index");
 require("./helper/index");
 require("./chart/index");
 require("./layout/index");
-},{"./chart/index":19,"./helper/index":21,"./init/index":26,"./layout/index":31,"bootstrap":1,"d3":14,"jquery":16,"jquery-ui":15}],25:[function(require,module,exports){
+},{"./chart/index":19,"./helper/index":21,"./init/index":26,"./layout/index":32,"bootstrap":1,"d3":14,"jquery":16,"jquery-ui":15}],25:[function(require,module,exports){
 window.glimma = {
 	storage: {
 		chartData: [],
 		chartInfo: [],
 		charts: [],
-		linkage: []		
+		linkage: [],
+		input: []		
 	}
 };
 
@@ -37688,8 +37689,8 @@ require("./init");
 
 require("./initialise");
 require("./process_linkage");
-
-},{"./glimma":25,"./init":27,"./initialise":28,"./process_linkage":29}],27:[function(require,module,exports){
+require("./process_inputs");
+},{"./glimma":25,"./init":27,"./initialise":28,"./process_inputs":29,"./process_linkage":30}],27:[function(require,module,exports){
 window.glimma.init = {};
 },{}],28:[function(require,module,exports){
 // Cycle through constructed plots
@@ -37703,13 +37704,35 @@ glimma.init.initialise = function() {
 
 glimma.init.initialize = glimma.init.initialise;
 },{}],29:[function(require,module,exports){
+// Function to process the inputs at initialisation
+
+glimma.init.processInputs = function () {
+	for (var i = 0; i < glimma.storage.input.length; i++) {
+		(function() {
+			var buttonInfo = glimma.storage.input[i],
+				chart = glimma.storage.charts[i],
+				container = glimma.storage.charts[i].container,
+				options = glimma.storage.chartData[i].map(function (d) { return d[buttonInfo.idval]; }),
+				button = glimma.layout.addAutoInput(container, options);
+
+				button.addAction(function (d) {
+					chart[buttonInfo.action](d);
+				});
+		}());
+	}
+};
+},{}],30:[function(require,module,exports){
+// Function to process the action linkages between charts
+
 glimma.init.processLinkages = function () {
-	for (var i=0; i<glimma.storage.linkage.length; i++) {
-		(function () {
+	for (var i = 0; i < glimma.storage.linkage.length; i++) {
+		// Closure to retain the indices
+		(function () { 
 			var from = glimma.storage.linkage[i].from - 1;
 			var to = glimma.storage.linkage[i].to - 1;
 			
-			if (glimma.storage.linkage[i].flag === "mds") {
+			// Special mds linkage
+			if (glimma.storage.linkage[i].flag === "mds") { 
 				glimma.storage.charts[from].on("click", 
 					function (d) {
 						if (d.name < 8) {
@@ -37729,9 +37752,10 @@ glimma.init.processLinkages = function () {
 						}
 					}
 				);
+			// Default linkage
 			} else {
 				var src = glimma.storage.linkage[i].src;
-				var dest = glimma.storage.linkage[i].dest;	
+				var dest = glimma.storage.linkage[i].dest;
 
 				if (dest == "hover" && dest == "hover") {
 					glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
@@ -37750,7 +37774,7 @@ glimma.init.processLinkages = function () {
 	}	
 };
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /**
  * Create an input button with 
  * @return {Object}
@@ -37758,8 +37782,7 @@ glimma.init.processLinkages = function () {
 glimma.layout.addAutoInput = function(selection, options, float) {
 	float = typeof float !== "undefined" ? float : "left";
 
-	var row = glimma.layout.bsAddRow(selection)
-					.style("float", float);
+	var row = glimma.layout.bsAddRow(selection);
 
 	function addButton(selection, options) {
 		var input = selection.append("input");
@@ -37800,14 +37823,14 @@ glimma.layout.addAutoInput = function(selection, options, float) {
 
 	return addButton(row, options);
 };
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 require("./layout");
 
 require("./utilities");
 require("./autoinput");
-},{"./autoinput":30,"./layout":32,"./utilities":33}],32:[function(require,module,exports){
+},{"./autoinput":31,"./layout":33,"./utilities":34}],33:[function(require,module,exports){
 glimma.layout = {};
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 //* REQUIRES BOOTSTRAP.JS LIBRARY *//
 /**
  * @param  {selection} selection d3 selection to add row to.
