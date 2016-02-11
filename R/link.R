@@ -11,7 +11,7 @@
 #' @examples 
 #' 
 
-link <- function(from, to, src="none", dest="none", flag="none", both=FALSE) {
+link <- function(from, to, src="none", dest="none", flag="none", both=FALSE, info=NULL) {
 	out <- list()
 
 	if (src != "none" && dest == "none") {
@@ -26,9 +26,9 @@ link <- function(from, to, src="none", dest="none", flag="none", both=FALSE) {
 		stop("'src', 'dest' and 'flag' cannot simultaneously be 'none'")
 	}
 
-	out$link <- data.frame(from=from, to=to, src=src, dest=dest, flag=flag)
+	out$link <- data.frame(from=from, to=to, src=src, dest=dest, flag=flag, info=info)
 	if (both) {
-		out$link <- rbind(out$link, data.frame(from=to, to=from, src=dest, dest=src, flag=flag))
+		out$link <- rbind(out$link, data.frame(from=to, to=from, src=dest, dest=src, flag=flag, info=info))
 	}
 
 	out$type <- "link"
