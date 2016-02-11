@@ -32,7 +32,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 								ndigits=NULL, signif=6,
 								xlab=xval, ylab=yval, main=NULL,
 								height=400, width=500,
-								colval=NULL, annot=c(xval, yval),
+								colval=NULL, annot=c(xval, yval), annot.lab=NULL,
 								flag=NULL, info=NULL, hide=FALSE) {
 	##
 	# Input checking
@@ -96,6 +96,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 				yord = y.ord,
 				col = colval,
 				anno = annot,
+				annoLabels = annot.lab,
 				height = height,
 				width = width,
 				json = json,
@@ -149,6 +150,11 @@ constructScatterPlot <- function(chart, index, write.out) {
 
 	anno <- paste0(".tooltip(glimma.storage.chartInfo[", index - 1, "].anno)")
 	command <- paste0(command, anno)
+
+	if (!is.null(chart$annoLabels)) {
+		annoLabels <- paste0(".tooltipLabels(glimma.storage.chartInfo[", index - 1, "].annoLabels)")
+		command <- paste0(command, annoLabels)
+	}
 
 	main <- paste0(".title(glimma.storage.chartInfo[", index - 1, "].title)")
 	command <- paste0(command, main)
