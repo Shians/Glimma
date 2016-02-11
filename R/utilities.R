@@ -20,14 +20,7 @@ objectify <- function(x, y) {
 	paste("{", paste(x, y, sep=":", collapse=","), "}", sep="")
 }
 
-#' Create json from data.frame
-#' 
-#' @param df A data.frame object
-#' @return character string containing data.frame in json format
-#' @examples
-#' data(iris)
-#' makeDFJson(iris)
-
+# Function to create a JSON from a data.frame
 makeDFJson <- function(df) {
 	df <- data.frame(df)
 

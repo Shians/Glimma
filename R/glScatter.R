@@ -19,7 +19,7 @@
 #' @examples
 #' data(iris)
 #' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
-#' glimma(plot1, c(1,1))
+#' glimma(plot1, c(1,1), overwrite=TRUE)
 #'
 
 glScatter <- function(x, ...) {
@@ -33,7 +33,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 								xlab=xval, ylab=yval, main=NULL,
 								height=400, width=500,
 								colval=NULL, annot=c(xval, yval),
-								flag=NULL, info=NULL) {
+								flag=NULL, info=NULL, hide=FALSE) {
 	##
 	# Input checking
 	if (!is.character(xval)) {
@@ -102,7 +102,8 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 				type = "scatter",
 				title = main,
 				flag = flag,
-				info = info
+				info = info,
+				hide = hide
 			)
 
 	class(out) <- "jschart"
@@ -119,7 +120,7 @@ constructScatterPlot <- function(chart, index, write.out) {
 	width <- paste0(".width(", chart$width, ")")
 	command <- paste0(command, width)
 
-	x.func <- paste0(".x(function (d) { return d.", chart$x, "; })")
+	x.func <- paste0(".x(function (d) { return d[", quotify(chart$x), "]; })")
 	command <- paste0(command, x.func)
 
 	x.lab <- paste0(".xlab(", quotify(chart$xlab), ")")
@@ -130,7 +131,7 @@ constructScatterPlot <- function(chart, index, write.out) {
 		command <- paste0(command, x.is.ord)
 	}
 
-	y.func <- paste0(".y(function (d) { return d.", chart$y, "; })")
+	y.func <- paste0(".y(function (d) { return d[", quotify(chart$y), "]; })")
 	command <- paste0(command, y.func)
 
 	y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
@@ -142,7 +143,7 @@ constructScatterPlot <- function(chart, index, write.out) {
 	}
 
 	if (!is.null(chart$id)) {
-		id <- paste0(".id(function (d) { return d.", chart$id, "; })")
+		id <- paste0(".id(function (d) { return d[", quotify(chart$id), "]; })")
 		command <- paste0(command, id)
 	}
 
@@ -160,7 +161,7 @@ constructScatterPlot <- function(chart, index, write.out) {
 	command <- paste0(command, nformat)
 
 	if (!is.null(chart$col)) {
-		c.func <- paste0(".col(function(d) { return d.", chart$col, "; })")
+		c.func <- paste0(".col(function(d) { return d[", quotify(chart$col), "]; })")
 		command <- paste0(command, c.func)	
 	}
 
