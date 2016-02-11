@@ -32,7 +32,8 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 								ndigits=NULL, signif=6,
 								xlab=xval, ylab=yval, main=NULL,
 								height=400, width=500,
-								colval=NULL, annot=c(xval, yval)) {
+								colval=NULL, annot=c(xval, yval),
+								flag=NULL, info=NULL) {
 	##
 	# Input checking
 	if (!is.character(xval)) {
@@ -99,7 +100,9 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 				width = width,
 				json = json,
 				type = "scatter",
-				title = main
+				title = main,
+				flag = flag,
+				info = info
 			)
 
 	class(out) <- "jschart"

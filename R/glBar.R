@@ -11,6 +11,7 @@
 #' @param width the width of the plot (in pixels).
 #' @param colval the colours for each data point.
 #' @param annot the columns to display in the tooltip.
+#' @param flag the special flag to indicate special plot.
 #' @param ... addutional arguments depending on input object type.
 #' @return A chart object containing the information to create an interactive bar plot.
 #' @export
@@ -27,7 +28,8 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 							ndigits=NULL, signif=6,
 							xlab=NULL, ylab=yval, main=NULL,
 							height=400, width=500,
-							colval=NULL, annot=yval) {
+							colval=NULL, annot=yval,
+							flag=NULL, info=NULL) {
 	##
 	# Input checking
 	if (is.na(match(yval, names(x)))) {
@@ -62,7 +64,9 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 				width = width,
 				json = json,
 				type = "bar",
-				title = main
+				title = main,
+				flag = flag,
+				info = info
 			)
 
 	class(out) <- "jschart"
