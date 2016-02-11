@@ -30,6 +30,8 @@ glBar(x, ...)
 \item{colval}{the colours for each data point.}
 
 \item{annot}{the columns to display in the tooltip.}
+
+\item{flag}{the special flag to indicate special plot.}
 }
 \value{
 A chart object containing the information to create an interactive bar plot.

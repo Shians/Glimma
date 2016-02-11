@@ -37069,6 +37069,14 @@ glimma.chart.barChart = function() {
 		container.call(chart);
 	};
 
+	chart.hide = function () {
+		container.style("display", "none");
+	};
+
+	chart.show = function () {
+		container.style("display", "block");
+	};
+
 	d3.rebind(chart, dispatcher, "on");
 	
 	return chart;
@@ -37095,8 +37103,8 @@ glimma.chart.scatterChart = function() {
 		yValue = function (d) { return d.y; },
 		idValue = function (d) { return d.id; },
 		idMap = function (d) { return d; },
-		sizeValue = function (d) { return 2; }, //TODO: Maybe add size scale?
-		cValue = function (d) { return "black"; }, //TODO: Hex colour values
+		sizeValue = function () { return 2; }, //TODO: Maybe add size scale?
+		cValue = function () { return "black"; }, //TODO: Hex colour values
 		tooltip = ["x", "y"],
 		titleValue = "",
 		xLabel = "",
@@ -37104,6 +37112,7 @@ glimma.chart.scatterChart = function() {
 		xScale = d3.scale.linear(),
 		yScale = d3.scale.linear(),
 		cScale = d3.scale.category10(),
+		cFixed = false,
 		xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0),
 		yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(6, 0);
 
@@ -37155,11 +37164,15 @@ glimma.chart.scatterChart = function() {
 				xScale.domain(data.map(xValue).unique())
 					.rangePoints([0, width - margin.left - margin.right], 1);
 			}
+			
 			if (yOrd) {
 				yScale.domain(data.map(yValue).unique())
 					.rangePoints([height - margin.top - margin.bottom, 0], 1);
 			}
-			if (cScale.domain() == []) {
+
+			if (cFixed) {
+				cScale = function (d) { return d; };
+			} else if (cScale.domain() == []) {
 				cScale.domain(data.map(function (d) { return cValue(d); }).unique()); //TODO: Allow fill with cValue without mapping
 			}
 		}
@@ -37432,6 +37445,16 @@ glimma.chart.scatterChart = function() {
 		return chart;
 	};
 
+	chart.fixedCol = function(_) {
+		cFixed = _;
+		if (_) {
+			cScale = function (d) { return d; };
+		} else {
+			cScale = d3.scale.category10();
+		}
+		return chart;
+	};
+
 	chart.xIsOrdinal = function() {
 		xScale = d3.scale.ordinal();
 		xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0);
@@ -37608,6 +37631,14 @@ glimma.chart.scatterChart = function() {
 		container.call(chart);
 	};
 
+	chart.hide = function () {
+		container.style("display", "none");
+	};
+
+	chart.show = function () {
+		container.style("display", "block");
+	};
+
 	d3.rebind(chart, dispatcher, "on");
 	
 	return chart;
@@ -37696,8 +37727,30 @@ window.glimma.init = {};
 // Cycle through constructed plots
 glimma.init.initialise = function() {
 	if (d3.select(".glimma-plot.available").node()) {
-		for (var i=0; i<glimma.storage.chartInfo.length; i++) {
-			d3.select(".glimma-plot.available").datum(glimma.storage.chartData[i]).call(glimma.storage.charts[i]);
+		for (var i = 0; i < glimma.storage.chartInfo.length; i++) {
+			if (glimma.storage.chartInfo[i].flag === "mdplot") {
+				var temp = function (d) {
+								if (d.PValue > 0.05) {
+									return "#858585";
+								} else if (d.PValue < 0.05) {
+									if (d.logFC < 0) {
+										return "#A8243E";
+									} else {
+										return "#5571A2";
+									}
+								}
+							};
+				glimma.storage.charts[i].col(temp)
+										.fixedCol(true);
+
+				d3.select(".glimma-plot.available")
+					.datum(glimma.storage.chartData[i])
+					.call(glimma.storage.charts[i]);
+			} else {
+				d3.select(".glimma-plot.available")
+					.datum(glimma.storage.chartData[i])
+					.call(glimma.storage.charts[i]);
+			}
 		}
 	}
 };
