@@ -71,7 +71,7 @@ glimma <- function(..., layout=c(1,1), folder="glimma", html="index", overwrite=
 	write.data <- writeMaker(data.path)
 
 	# Initialise data variables
-	actions <- data.frame(from=0, to=0, src="none", dest="none", flag="none") # Dummy row
+	actions <- data.frame(from=0, to=0, src="none", dest="none", flag="none", info="none") # Dummy row
 	inputs <- data.frame(target=0, action="none", idval="none", flag="none") # Dummy row
 	data.list <- list()
 
