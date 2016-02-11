@@ -4,7 +4,7 @@
 \alias{glMDSPlot.DGELRT}
 \title{Draw an interactive MD plot}
 \usage{
-\method{glMDSPlot}{DGELRT}(x, counts, anno)
+\method{glMDSPlot}{DGELRT}(x, counts, anno, group, samples)
 }
 \arguments{
 \item{x}{the DGELRT object.}

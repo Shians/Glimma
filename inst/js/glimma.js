@@ -37067,14 +37067,17 @@ glimma.chart.barChart = function() {
 
 	chart.update = function () {
 		container.call(chart);
+		return chart;
 	};
 
 	chart.hide = function () {
 		container.style("display", "none");
+		return chart;
 	};
 
 	chart.show = function () {
 		container.style("display", "block");
+		return chart;
 	};
 
 	d3.rebind(chart, dispatcher, "on");
@@ -37277,6 +37280,7 @@ glimma.chart.scatterChart = function() {
 						.attr("class", "point")
 						.attr("r", function (d) { return sizeValue(d); })
 						.style("fill", function (d) { return cScale(cValue(d)); })
+						.on("click", function (d) { dispatcher.click(d); })
 						.on("mouseover", function (d) { dispatcher.hover(d); })
 						.on("mouseout", function (d) { dispatcher.leave(d); });
 
@@ -37335,6 +37339,7 @@ glimma.chart.scatterChart = function() {
 			// Assign dispatcher events
 			dispatcher.on("hover", function (d) { chart.hover(d); });
 			dispatcher.on("leave", function (d) { chart.leave(d); });
+			dispatcher.on("click", function (d) { chart.click(d); });
 		}
 	}
 
@@ -37597,6 +37602,7 @@ glimma.chart.scatterChart = function() {
 			_highlight(data);
 			_showTooltip(data);	
 		}
+		return chart;
 	};
 
 	chart.leave = function(data) {
@@ -37604,6 +37610,12 @@ glimma.chart.scatterChart = function() {
 			_hideTooltip();
 			_lowlight();	
 		}
+		return chart;
+	};
+
+	chart.click = function(data) {
+		chart.hover(data);
+		return chart;
 	};
 
 	chart.highlightById = function(id) {
@@ -37616,27 +37628,35 @@ glimma.chart.scatterChart = function() {
 		} else {
 			console.log("Not found");
 		}
+		return chart;
 	};
 
 	chart.rescale = function(extent) {
 		_rescale(extent);
+		return chart;
 	};
 
 	chart.update = function() {
 		container.call(chart);
+		return chart;
 	};
 
 	chart.refresh = function () {
 		extent = null;
 		container.call(chart);
+		return chart;
 	};
 
 	chart.hide = function () {
 		container.style("display", "none");
+		return chart;
 	};
 
 	chart.show = function () {
-		container.style("display", "block");
+		if (container.style("display") !== "block") {
+			container.style("display", "block");
+		}
+		return chart;
 	};
 
 	d3.rebind(chart, dispatcher, "on");
@@ -37728,7 +37748,10 @@ window.glimma.init = {};
 glimma.init.initialise = function() {
 	if (d3.select(".glimma-plot.available").node()) {
 		for (var i = 0; i < glimma.storage.chartInfo.length; i++) {
-			if (glimma.storage.chartInfo[i].flag === "mdplot") {
+			var chartInfo = glimma.storage.chartInfo[i];
+
+			// MD Plot initialisation
+			if (chartInfo.flag === "mdplot") {
 				var temp = function (d) {
 								if (d.PValue > 0.05) {
 									return "#858585";
@@ -37746,10 +37769,16 @@ glimma.init.initialise = function() {
 				d3.select(".glimma-plot.available")
 					.datum(glimma.storage.chartData[i])
 					.call(glimma.storage.charts[i]);
+			// Default initialisation
 			} else {
 				d3.select(".glimma-plot.available")
 					.datum(glimma.storage.chartData[i])
 					.call(glimma.storage.charts[i]);
+			}
+
+			// Hide plots if required
+			if (chartInfo.hide === "TRUE") {
+				glimma.storage.charts[i].hide();
 			}
 		}
 	}
@@ -37783,9 +37812,11 @@ glimma.init.processLinkages = function () {
 		(function () { 
 			var from = glimma.storage.linkage[i].from - 1;
 			var to = glimma.storage.linkage[i].to - 1;
+
+			var flag = glimma.storage.linkage[i].flag;
 			
 			// Special mds linkage
-			if (glimma.storage.linkage[i].flag === "mds") { 
+			if (flag === "mds") { 
 				glimma.storage.charts[from].on("click", 
 					function (d) {
 						if (d.name < 8) {
@@ -37805,6 +37836,26 @@ glimma.init.processLinkages = function () {
 						}
 					}
 				);
+			} else if (flag === "byKey") {
+				var src = glimma.storage.linkage[i].src;
+				var dest = glimma.storage.linkage[i].dest;
+
+				var key = glimma.storage.linkage[i].info;
+
+
+				if (dest === "xChange") {
+					glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
+						var updateKey = (typeof d[key] === "number") ? "X" + String(d[key]) : d[key];
+						glimma.storage.charts[to].x(function (d) { return d[updateKey]; });
+						glimma.storage.charts[to].refresh().show();
+					});
+				} else if (dest === "yChange") {
+					glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
+						var updateKey = (typeof d[key] === "number") ? "X" + String(d[key]) : d[key];
+						glimma.storage.charts[to].y(function (d) { return d[updateKey]; });
+						glimma.storage.charts[to].refresh().show();
+					});
+				}
 			// Default linkage
 			} else {
 				var src = glimma.storage.linkage[i].src;
