@@ -37109,6 +37109,7 @@ glimma.chart.scatterChart = function() {
 		sizeValue = function () { return 2; }, //TODO: Maybe add size scale?
 		cValue = function () { return "black"; }, //TODO: Hex colour values
 		tooltip = ["x", "y"],
+		tooltipAlt = [],
 		titleValue = "",
 		xLabel = "",
 		yLabel = "",
@@ -37188,6 +37189,8 @@ glimma.chart.scatterChart = function() {
 										.attr("class", "title center-align")
 										.style("width", width + "px")
 										.html(titleValue);
+			} else {
+				titleDiv.html(titleValue);
 			}
 		}
 
@@ -37413,7 +37416,19 @@ glimma.chart.scatterChart = function() {
 	chart.tooltip = function(_) {
 		if (!arguments.length) return tooltip;
 		tooltip = typeof _ === "string" ? [_] : _;
+		if (tooltip.length !== tooltipAlt.length) {
+			tooltipAlt = [];
+		}
 		return chart;
+	};
+
+	chart.tooltipLabels = function(_) {
+		if (!arguments.length) return tooltipAlt;
+		var temp = typeof _ === "string" ? [_] : _;
+		if (temp.length === tooltip.length) {
+			tooltipAlt = temp;
+		}
+		return chart;	
 	};
 
 	chart.data = function(_) {
@@ -37514,18 +37529,25 @@ glimma.chart.scatterChart = function() {
 	}
 
 	function _showTooltip(data) {
-
+		// Remove existing tooltip
 		container.select(".tooltip")
 					.select("table")
 					.remove();
-
+		// Create table for tooltip
 		var table = container.select(".tooltip")
 								.append("table");
-
+		// Populate tooltip
 		for (var i=0; i<tooltip.length; i++) {
 			var row = table.append("tr");
 
-			row.append("td").attr("class", "right-align tooltip-cell").html(tooltip[i]);
+			// Property name
+			if (tooltipAlt.length !== 0) {
+				row.append("td").attr("class", "right-align tooltip-cell").html(tooltipAlt[i]);
+			} else {
+				row.append("td").attr("class", "right-align tooltip-cell").html(tooltip[i]);
+			}
+
+			// Property value
 			if (typeof data[tooltip[i]] == "number") {
 				if (ndigits === null) {
 					row.append("td").attr("class", "left-align tooltip-cell")
@@ -37752,17 +37774,7 @@ glimma.init.initialise = function() {
 
 			// MD Plot initialisation
 			if (chartInfo.flag === "mdplot") {
-				var temp = function (d) {
-								if (d.PValue > 0.05) {
-									return "#858585";
-								} else if (d.PValue < 0.05) {
-									if (d.logFC < 0) {
-										return "#A8243E";
-									} else {
-										return "#5571A2";
-									}
-								}
-							};
+				var temp = function (d) { return d.col; };
 				glimma.storage.charts[i].col(temp)
 										.fixedCol(true);
 
@@ -37836,26 +37848,26 @@ glimma.init.processLinkages = function () {
 						}
 					}
 				);
-			} else if (flag === "byKey") {
+			} else if (flag === "byKey") { // TODO: Alter tooltip on change.
 				var src = glimma.storage.linkage[i].src;
 				var dest = glimma.storage.linkage[i].dest;
 
 				var key = glimma.storage.linkage[i].info;
 
-
 				if (dest === "xChange") {
 					glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
 						var updateKey = (typeof d[key] === "number") ? "X" + String(d[key]) : d[key];
-						glimma.storage.charts[to].x(function (d) { return d[updateKey]; });
+						glimma.storage.charts[to].x(function (d) { return d[updateKey]; }).title(String(d[key]));
 						glimma.storage.charts[to].refresh().show();
 					});
 				} else if (dest === "yChange") {
 					glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
 						var updateKey = (typeof d[key] === "number") ? "X" + String(d[key]) : d[key];
-						glimma.storage.charts[to].y(function (d) { return d[updateKey]; });
+						glimma.storage.charts[to].y(function (d) { return d[updateKey]; }).title(String(d[key]));
 						glimma.storage.charts[to].refresh().show();
 					});
 				}
+
 			// Default linkage
 			} else {
 				var src = glimma.storage.linkage[i].src;
