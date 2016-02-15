@@ -7,6 +7,7 @@ Author: Shian Su
 Maintainer: Shian Su <su.s@wehi.edu.au>
 Description: This package generates interactive plots in a HTML page using
     d3.js.
+Suggests: BiocStyle, limma
 License: GPL-3
 URL: https://github.com/Shians/Glimma
 BugReports: https://github.com/Shians/Glimma/issues
