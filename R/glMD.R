@@ -24,7 +24,7 @@ glMDPlot <- function(x, ...) {
 #' 
 
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
-							p.adj.method="BH", search.by="Symbol", display.cols=c("GeneID"), ...) {
+							p.adj.method="BH", search.by="Symbols", display.cols=c("GeneID"), ...) {
 
 	if (ncol(counts) != length(samples)) {
 		stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
@@ -46,12 +46,12 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 							 Adj.PValue = p.adjust(x$table$PValue, method=p.adj.method))
 
 	sample.exp <- data.frame(Sample = samples,
-							 Group = factor(group),
+							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
 	xval <- "logCPM"
 	yval <- "logFC"
-	idval <- "Symbol"
+	idval <- "Symbols"
 
 	plot1 <- glScatter(data.table, xval=xval, yval=yval, xlab="Average log CPM", idval=search.by, ylab="log-fold-change",
 					   annot=c(display.cols, "logCPM", "logFC", "Adj.PValue"), flag="mdplot", ndigits=4)
