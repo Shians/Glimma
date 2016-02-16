@@ -37487,6 +37487,18 @@ glimma.chart.scatterChart = function() {
 		return chart;
 	};
 
+	chart.xIsLog = function() {
+		xScale = d3.scale.log();
+		xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0);
+		return chart;
+	};
+
+	chart.yIsLog = function() {
+		yScale = d3.scale.log();
+		yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(6, 0);
+		return chart;
+	};
+
 	chart.xIsLinear = function() {
 		xScale = d3.scale.linear();
 		xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0);

@@ -2,11 +2,12 @@
 % Please edit documentation in R/glMD.R
 \name{glMDPlot.MArrayLM}
 \alias{glMDPlot.MArrayLM}
-\title{Draw an interactive MD plot}
+\title{Draw an interactive MD plot from a MArrayLM object}
 \usage{
 \method{glMDPlot}{MArrayLM}(x, counts, anno, groups, samples, status = rep(0,
   nrow(x)), coef = ncol(x$coefficients), p.adj.method = "BH",
-  search.by = "Symbol", display.cols = c("GeneID"), ...)
+  search.by = "Symbol", display.columns = c("GeneID"), cols = c("#858585",
+  "#B32222", "#0000FF"), ...)
 }
 \arguments{
 \item{x}{the MArrayLM object.}
@@ -23,7 +24,7 @@
 writes an interactive MD plot
 }
 \description{
-Draw an interactive MD plot
+Draw an interactive MD plot from a MArrayLM object
 }
 \examples{
 
