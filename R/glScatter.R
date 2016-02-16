@@ -29,7 +29,7 @@ glScatter <- function(x, ...) {
 #' @export
 
 glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
-								ndigits=NULL, signif=6,
+								ndigits=NULL, signif=6, log="",
 								xlab=xval, ylab=yval, main=NULL,
 								height=400, width=500,
 								colval=NULL, annot=c(xval, yval), annot.lab=NULL,
@@ -83,6 +83,8 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 
 	x.ord <- is.factor(x[[xval]])
 	y.ord <- is.factor(x[[yval]])
+	x.log <- "x" %in% unlist(strsplit(log, NULL))
+	y.log <- "y" %in% unlist(strsplit(log, NULL))
 
 	out <- list(
 				x = xval,
@@ -94,6 +96,8 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 				ylab = ylab,
 				xord = x.ord,
 				yord = y.ord,
+				xlog = x.log,
+				ylog = y.log,
 				col = colval,
 				anno = annot,
 				annoLabels = annot.lab,
@@ -132,6 +136,11 @@ constructScatterPlot <- function(chart, index, write.out) {
 		command <- paste0(command, x.is.ord)
 	}
 
+	if (chart$xlog) {
+		x.is.log <- paste0(".xIsLog()")
+		command <- paste0(command, x.is.log)
+	}
+
 	y.func <- paste0(".y(function (d) { return d[", quotify(chart$y), "]; })")
 	command <- paste0(command, y.func)
 
@@ -141,6 +150,11 @@ constructScatterPlot <- function(chart, index, write.out) {
 	if (chart$yord) {
 		y.is.ord <- paste0(".yIsOrdinal()")
 		command <- paste0(command, y.is.ord)
+	}
+
+	if (chart$ylog) {
+		y.is.log <- paste0(".yIsLog()")
+		command <- paste0(command, y.is.log)
 	}
 
 	if (!is.null(chart$id)) {

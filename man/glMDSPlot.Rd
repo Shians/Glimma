@@ -9,11 +9,7 @@ glMDSPlot(x, ...)
 \arguments{
 \item{x}{the data.frame containing data to plot.}
 
-\item{top}{the number of top genes used to calculate distances.}
-
-\item{labels}{the character vector of sample names or labels. Defaults to colnames(x).}
-
-\item{gene.selection}{the method for calculating distances.}
+\item{...}{additional arguments affecting the plots produced.}
 }
 \value{
 writes an interactive MDS plot

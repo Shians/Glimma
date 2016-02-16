@@ -18,6 +18,6 @@ Draw an interactive MD plot
 
 }
 \seealso{
-\code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.MArrayLM}}
+\code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}
 }
 

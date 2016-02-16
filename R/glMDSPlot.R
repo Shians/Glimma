@@ -1,9 +1,7 @@
 #' Draw an interactive MDS plot
 #' 
 #' @param x the data.frame containing data to plot.
-#' @param top the number of top genes used to calculate distances.
-#' @param labels the character vector of sample names or labels. Defaults to colnames(x).
-#' @param gene.selection the method for calculating distances.
+#' @param ... additional arguments affecting the plots produced.
 #' @return writes an interactive MDS plot
 #' @export
 #' @examples
@@ -13,6 +11,7 @@ glMDSPlot <- function(x, ...) {
   UseMethod("glMDSPlot")
 }
 
+#' Draw an interactive MD plot from a DGEList object
 #' @export
 
 glMDSPlot.DGEList <- function (x, top=500, labels=1:ncol(x), gene.selection="pairwise",
@@ -24,7 +23,7 @@ glMDSPlot.DGEList <- function (x, top=500, labels=1:ncol(x), gene.selection="pai
 #' @export
 
 # Code taken from plotMDS of limma bioConductor package with alterations
-glMDSPlot.default <- function(x, top=500, labels=NULL, gene.selection="pairwise",
+glMDSPlot.hidden <- function(x, top=500, labels=NULL, gene.selection="pairwise",
 								main=NULL) {
 	#	Multi-dimensional scaling with top-distance
 	#	Di Wu and Gordon Smyth
