@@ -13,7 +13,7 @@ glMDPlot <- function(x, ...) {
 
 # Hidden internal functions for use by edgeR and limma based plotting
 
-glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, ...) {
+glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.by, ...) {
 	plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC", xlab="Average log CPM", idval="Symbols", ylab="log-fold-change",
 					   annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"), flag="mdplot", ndigits=4)
 
@@ -23,7 +23,7 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, ...) {
 						ndigits=4, hide=TRUE, ...)
 
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
-	button1 <- glAutoinput(1, "highlightById", "Symbol")
+	button1 <- glAutoinput(1, "highlightById", search.by)
 
 	glimma(plot1, plot2, button1, link1, layout=c(1,2), overwrite=TRUE)
 }
@@ -73,7 +73,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns)
+	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, ...)
 }
 
 #' Draw an interactive MD plot from a DGELRT objet
@@ -141,7 +141,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, ...)
+	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, ...)
 }
 
 #' Draw an interactive MD plot from a DESeqDataSet object
@@ -161,7 +161,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 #' 
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x)), 
-									search.by="Symbol", display.columns=c("GeneID"),
+									search.by="Symbols", display.columns=c("GeneID"),
 									cols=c("#0000FF", "#858585", "#B32222"), ...) {
 	
 	res <- results(x)
@@ -200,7 +200,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 						ndigits=4, hide=TRUE, ...)
 
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
-	button1 <- glAutoinput(1, "highlightById", "Symbol")
+	button1 <- glAutoinput(1, "highlightById", search.by)
 
 	glimma(plot1, plot2, button1, link1, layout=c(1,2), overwrite=TRUE)
 }
