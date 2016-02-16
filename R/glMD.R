@@ -108,17 +108,15 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 
 	col <- sapply(status, colourise)
 
-	data.table <- data.frame(logFC = x$coefficients[,coef], 
-							 logCPM = x$Amean,
-							 col = col,
-							 PValue = x$p.value[,coef], anno)
+	plotting.data <- data.frame(logFC = x$coefficients[,coef], 
+								 logCPM = x$Amean,
+								 col = col,
+								 PValue = x$p.value[,coef], anno)
 
 	sample.exp <- data.frame(Sample = samples,
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-
-	reload(inst("Glimma"))
 	plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC", xlab="Average log CPM", idval="Symbols", ylab="log-fold-change",
 					   annot=c("Symbols", "logCPM", "logFC"), flag="mdplot")
 
