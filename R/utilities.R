@@ -145,3 +145,8 @@ NumToHexCol <- function(x) {
 	out <- apply(as.character(as.hexmode(col2rgb(x, alpha=FALSE))), 2, function(x) {paste0("#", paste0(x, collapse=""))})
 	sapply(out, function(x) { ifelse(x=="#000", "#000000", x) })
 }
+
+# Function to check if values are valid hexadecimal expressions
+is.hex <- function(x) {
+	(grepl("#[[:xdigit:]]{6}", x) | grepl("#[[:xdigit:]]{8}", x))
+}
