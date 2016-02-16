@@ -31,7 +31,7 @@ makeDFJson <- function(df) {
 	}
 
 	coln <- paste(quotify(colnames(df)), ":", sep="")
-	temp <- t(apply(df, 1, function (x) { paste(coln, x, sep="") }))
+	temp <- t(apply(df, 1, function (x) { paste(coln, ifelse(is.na(x), "\"NA\"", x), sep="") }))
 	temp <- apply(temp, 1, function (x) { paste("{", paste(x, collapse=","), "}", sep="") })
 
 	output <- paste("[", paste(temp, collapse=","), "]", sep="")
