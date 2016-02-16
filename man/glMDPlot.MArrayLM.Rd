@@ -6,8 +6,8 @@
 \usage{
 \method{glMDPlot}{MArrayLM}(x, counts, anno, groups, samples, status = rep(0,
   nrow(x)), coef = ncol(x$coefficients), p.adj.method = "BH",
-  search.by = "Symbol", display.columns = c("GeneID"), cols = c("#858585",
-  "#B32222", "#0000FF"), ...)
+  search.by = "Symbols", display.columns = c("GeneID"),
+  cols = c("#0000FF", "#858585", "#B32222"), ...)
 }
 \arguments{
 \item{x}{the MArrayLM object.}
@@ -18,10 +18,19 @@
 
 \item{samples}{the names of the samples.}
 
+\item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.}
+
+\item{coef}{integer or character index vector indicating which column of object to plot.}
+
+\item{p.adj.method}{character vector indicating multiple testing correction method. (defauls to "BH")}
+
+\item{search.by}{the name of the column which will be used to search for data points. (should contain unique values)}
+
+\item{display.columns}{character vector containing names of columns to display in mouseover tooltips.}
+
+\item{cols}{vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)}
+
 \item{group}{the factor containing experimental groups of the samples.}
-}
-\value{
-writes an interactive MD plot
 }
 \description{
 Draw an interactive MD plot from a MArrayLM object

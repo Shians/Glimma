@@ -11,13 +11,7 @@ glMDPlot <- function(x, ...) {
   UseMethod("glMDPlot")
 }
 
-#' Draw an interactive MD plot
-#' 
-#' @param plotting.data
-#' @param sample.exp
-#' @param display.columns
-#' @examples
-#' 
+# Hidden internal functions for use by edgeR and limma based plotting
 
 glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, ...) {
 	plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC", xlab="Average log CPM", idval="Symbols", ylab="log-fold-change",
@@ -41,13 +35,12 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, ...) {
 #' @param anno the data.frame containing gene annotations.
 #' @param group the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param status
-#' @param coef
-#' @param p.adj.method
-#' @param search.by
-#' @param display.columns
-#' @param cols
-#' @return writes an interactive MD plot
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
+#' @param coef integer or character index vector indicating which column of object to plot.
+#' @param p.adj.method character vector indicating multiple testing correction method. (defauls to "BH")
+#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @method glMDPlot DGELRT
 #' @export
 #' @examples
@@ -90,13 +83,12 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 #' @param anno the data.frame containing gene annotations.
 #' @param group the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param status
-#' @param coef
-#' @param p.adj.method
-#' @param search.by
-#' @param display.columns
-#' @param cols
-#' @return writes an interactive MD plot
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
+#' @param coef integer or character index vector indicating which column of object to plot.
+#' @param p.adj.method character vector indicating multiple testing correction method. (defauls to "BH")
+#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @method glMDPlot DGEExact
 #' @export
 #' @examples
@@ -111,13 +103,12 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param anno the data.frame containing gene annotations.
 #' @param group the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param status
-#' @param coef
-#' @param p.adj.method
-#' @param search.by
-#' @param display.columns
-#' @param cols
-#' @return writes an interactive MD plot
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
+#' @param coef integer or character index vector indicating which column of object to plot.
+#' @param p.adj.method character vector indicating multiple testing correction method. (defauls to "BH")
+#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @method glMDPlot MArrayLM
 #' @export
 #' @examples
@@ -160,7 +151,10 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 #' @param anno the data.frame containing gene annotations.
 #' @param group the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @return writes an interactive MD plot
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
+#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @method glMDPlot DESeqDataSet
 #' @export
 #' @examples
