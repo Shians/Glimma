@@ -2,7 +2,7 @@
 % Please edit documentation in R/glMDSPlot.R
 \name{glMDSPlot}
 \alias{glMDSPlot}
-\title{Create an interactive bar plot object}
+\title{Draw an interactive MDS plot}
 \usage{
 glMDSPlot(x, ...)
 }
@@ -11,13 +11,15 @@ glMDSPlot(x, ...)
 
 \item{top}{the number of top genes used to calculate distances.}
 
-\item{labels}{the haracter vector of sample names or labels. Defaults to colnames(x).}
+\item{labels}{the character vector of sample names or labels. Defaults to colnames(x).}
+
+\item{gene.selection}{the method for calculating distances.}
 }
 \value{
-a "chart" object containing information used by glimma to create plots.
+writes an interactive MDS plot
 }
 \description{
-Create an interactive bar plot object
+Draw an interactive MDS plot
 }
 \examples{
 

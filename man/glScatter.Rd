@@ -15,7 +15,7 @@ glScatter(x, ...)
 
 \item{yval}{the column name for the y-axis values.}
 
-\item{id}{the column name for unique identifiers.}
+\item{idval}{the column name for unique identifiers.}
 
 \item{ndigits}{the number of digits after the decimal to round to in the tooltip (overrides signif).}
 
@@ -44,7 +44,7 @@ Create an interactive scatter plot object
 \examples{
 data(iris)
 plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
-glimma(plot1, c(1,1))
+glimma(plot1, c(1,1), overwrite=TRUE)
 
 }
 

@@ -68,6 +68,7 @@ sel = rowSums(cpm(x$counts)>0.5)>=3
 x = x[sel,]
 
 ## Make MDS plot
+genotype = relevel(x$samples$group, "Smchd1-null")
 par(mfrow=c(1,2))
 plotMDS(x, label=1:ncol(x), main="MDS plot", col=as.numeric(genotype))
 legend("topright",legend=c("Smchd1-null","Wild Type"), pch=20, col=1:2, text.col=1:2)
@@ -76,7 +77,6 @@ legend("topright",legend=c("Smchd1-null","Wild Type"), pch=20, col=1:2, text.col
 x = calcNormFactors(x, method="TMM")
 
 ## Set up design matrix
-genotype = relevel(x$samples$group, "Smchd1-null")
 des = model.matrix(~genotype)
 des
 

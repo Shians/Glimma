@@ -11,6 +11,7 @@
 #' @param width the width of the plot (in pixels).
 #' @param colval the colours for each data point.
 #' @param annot the columns to display in the tooltip.
+#' @param flag the special flag to indicate special plot.
 #' @param ... addutional arguments depending on input object type.
 #' @return A chart object containing the information to create an interactive bar plot.
 #' @export
@@ -27,7 +28,8 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 							ndigits=NULL, signif=6,
 							xlab=NULL, ylab=yval, main=NULL,
 							height=400, width=500,
-							colval=NULL, annot=yval) {
+							colval=NULL, annot=yval,
+							flag=NULL, info=NULL) {
 	##
 	# Input checking
 	if (is.na(match(yval, names(x)))) {
@@ -44,7 +46,7 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 		}
 	}
 	
-
+	# TODO: Consider using rjson package?
 	# Make json out of data
 	x <- data.frame(x)
 	json <- makeDFJson(x)
@@ -62,7 +64,9 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 				width = width,
 				json = json,
 				type = "bar",
-				title = main
+				title = main,
+				flag = flag,
+				info = info
 			)
 
 	class(out) <- "jschart"
@@ -71,7 +75,7 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 }
 
 constructBarPlot <- function(chart, index, write.out) {
-	command <- "glimma.charts.push(glimma.chart.barChart()"
+	command <- "glimma.storage.charts.push(glimma.chart.barChart()"
 
 	height <- paste0(".height(", chart$height, ")")
 	command <- paste0(command, height)
@@ -91,7 +95,7 @@ constructBarPlot <- function(chart, index, write.out) {
 	y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
 	command <- paste0(command, y.lab)
 
-	main <- paste0(".title(glimma.chartInfo[", index - 1, "].title)")
+	main <- paste0(".title(glimma.storage.chartInfo[", index - 1, "].title)")
 	command <- paste0(command, main)
 
 	if (!is.null(chart$ndigits)) {

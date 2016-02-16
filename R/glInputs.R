@@ -1,0 +1,18 @@
+#' Helper function for writing input fields in interactive Glimma plots
+#' 
+#' @param target the index of the plot which receives the event and performs an action.
+#' @param action the action to be performed at target plot using input information.
+#' @param flag indicates special flags for custom features.
+#' @export
+#' @return a input object containing the input field information.
+#' @examples 
+#' 
+
+glAutoinput <- function(target, action, idval="none", flag="none") {
+	out <- list()
+	out$input <- data.frame(target=target, action=action, idval=idval, flag=flag)
+	out$type <- "autocomplete"
+	class(out) <- "jsinput"
+	
+	return(out)
+}

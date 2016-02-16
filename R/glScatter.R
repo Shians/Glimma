@@ -3,7 +3,7 @@
 #' @param x the data.frame containing data to plot.
 #' @param xval the column name for the x-axis values.
 #' @param yval the column name for the y-axis values.
-#' @param id the column name for unique identifiers.
+#' @param idval the column name for unique identifiers.
 #' @param ndigits the number of digits after the decimal to round to in the tooltip (overrides signif).
 #' @param signif the number of significant figures to display in the tooltip.
 #' @param xlab the label on the x-axis.
@@ -19,7 +19,7 @@
 #' @examples
 #' data(iris)
 #' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
-#' glimma(plot1, c(1,1))
+#' glimma(plot1, c(1,1), overwrite=TRUE)
 #'
 
 glScatter <- function(x, ...) {
@@ -28,11 +28,12 @@ glScatter <- function(x, ...) {
 
 #' @export
 
-glScatter.default <- function(x, xval="x", yval="y", id=NULL,
+glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 								ndigits=NULL, signif=6,
 								xlab=xval, ylab=yval, main=NULL,
 								height=400, width=500,
-								colval=NULL, annot=c(xval, yval)) {
+								colval=NULL, annot=c(xval, yval), annot.lab=NULL,
+								flag=NULL, info=NULL, hide=FALSE) {
 	##
 	# Input checking
 	if (!is.character(xval)) {
@@ -53,6 +54,20 @@ glScatter.default <- function(x, xval="x", yval="y", id=NULL,
 		stop(paste(yval, "does not correspond to a column"))
 	}
 
+	if (!is.null(colval)) {
+		if (is.na(match(colval, names(x)))) {
+			stop(paste(colval, "does not correspond to a column"))
+		}
+	}
+
+	if (!is.null(idval)) {
+		if (is.na(match(idval, names(x)))) {
+			stop(paste(idval, "does not correspond to a column"))
+		}
+	}
+	# TODO: Ensure uniqueness of identifiers
+	# TODO: Generate default identifiers if not present
+
 	if (any(is.na(match(annot, names(x))))) {
 		stop(paste("not all values in annot correspond to a column"))
 	}
@@ -62,24 +77,34 @@ glScatter.default <- function(x, xval="x", yval="y", id=NULL,
 	# Normalise input
 	x <- data.frame(x)
 
+	# TODO: Consider using rjson package?
 	# Make json out of data
 	json <- makeDFJson(x)
+
+	x.ord <- is.factor(x[[xval]])
+	y.ord <- is.factor(x[[yval]])
 
 	out <- list(
 				x = xval,
 				y = yval,
-				id = id,
+				id = idval,
 				ndigits = ndigits,
 				signif = signif,
 				xlab = xlab,
 				ylab = ylab,
+				xord = x.ord,
+				yord = y.ord,
 				col = colval,
 				anno = annot,
+				annoLabels = annot.lab,
 				height = height,
 				width = width,
 				json = json,
 				type = "scatter",
-				title = main
+				title = main,
+				flag = flag,
+				info = info,
+				hide = hide
 			)
 
 	class(out) <- "jschart"
@@ -88,7 +113,7 @@ glScatter.default <- function(x, xval="x", yval="y", id=NULL,
 }
 
 constructScatterPlot <- function(chart, index, write.out) {
-	command <- "glimma.charts.push(glimma.chart.scatterChart()"
+	command <- "glimma.storage.charts.push(glimma.chart.scatterChart()"
 
 	height <- paste0(".height(", chart$height, ")")
 	command <- paste0(command, height)
@@ -102,21 +127,36 @@ constructScatterPlot <- function(chart, index, write.out) {
 	x.lab <- paste0(".xlab(", quotify(chart$xlab), ")")
 	command <- paste0(command, x.lab)
 
+	if (chart$xord) {
+		x.is.ord <- paste0(".xIsOrdinal()")
+		command <- paste0(command, x.is.ord)
+	}
+
 	y.func <- paste0(".y(function (d) { return d[", quotify(chart$y), "]; })")
 	command <- paste0(command, y.func)
 
 	y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
 	command <- paste0(command, y.lab)
 
+	if (chart$yord) {
+		y.is.ord <- paste0(".yIsOrdinal()")
+		command <- paste0(command, y.is.ord)
+	}
+
 	if (!is.null(chart$id)) {
-		id <- paste0(".id(", quotify(chart$id), ")")
+		id <- paste0(".id(function (d) { return d[", quotify(chart$id), "]; })")
 		command <- paste0(command, id)
 	}
 
-	anno <- paste0(".tooltip(glimma.chartInfo[", index - 1, "].anno)")
+	anno <- paste0(".tooltip(glimma.storage.chartInfo[", index - 1, "].anno)")
 	command <- paste0(command, anno)
 
-	main <- paste0(".title(glimma.chartInfo[", index - 1, "].title)")
+	if (!is.null(chart$annoLabels)) {
+		annoLabels <- paste0(".tooltipLabels(glimma.storage.chartInfo[", index - 1, "].annoLabels)")
+		command <- paste0(command, annoLabels)
+	}
+
+	main <- paste0(".title(glimma.storage.chartInfo[", index - 1, "].title)")
 	command <- paste0(command, main)
 
 	if (!is.null(chart$ndigits)) {
