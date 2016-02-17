@@ -2,6 +2,7 @@
 #' 
 #' @param ... the jschart or jslink objects for processing.
 #' @param layout the numeric vector representing the number of rows and columns in plot window.
+#' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
 #' @param overwrite the option to overwrite existing folder if it already exists.
@@ -13,7 +14,7 @@
 #' glimma(plot1, c(1,1), overwrite=TRUE)
 #'
 
-glimma <- function(..., layout=c(1,1), folder="glimma-plots", html="index", overwrite=FALSE) {
+glimma <- function(..., layout=c(1,1), path=getwd(), folder="glimma-plots", html="index", overwrite=FALSE) {
 	nplots <- 0
 
 	##
@@ -37,9 +38,13 @@ glimma <- function(..., layout=c(1,1), folder="glimma-plots", html="index", over
 	}
 
 	if (overwrite == FALSE) {
-		if (file.exists(folder)) {
-			stop(paste(folder, "already exists"))
+		if (file.exists(file.path(path, folder))) {
+			stop(paste(file.path(path, folder), "already exists"))
 		}
+	}
+
+	if (!file.exists(path)) {
+		stop(paste(path, "does not exist"))
 	}
 	#
 	##
@@ -54,19 +59,19 @@ glimma <- function(..., layout=c(1,1), folder="glimma-plots", html="index", over
 	args <- list(...)
 
 	# Create folder
-	if (!dir.exists(folder)) {
-		dir.create(folder)
+	if (!dir.exists(file.path(path, folder))) {
+		dir.create(file.path(path, folder))
 	}
 
 	# Create file
 	index.path <- system.file(package="Glimma", "index.html")
 	js.path <- system.file(package="Glimma", "js")
 	css.path <- system.file(package="Glimma", "css")
-	file.copy(index.path, paste(folder, paste0(html, ".html"), sep="/"), overwrite=overwrite)
-	file.copy(js.path, folder, recursive=TRUE, overwrite=overwrite)
-	file.copy(css.path, folder, recursive=TRUE, overwrite=overwrite)
+	file.copy(index.path, file.path(path, folder, paste0(html, ".html")), overwrite=overwrite)
+	file.copy(js.path, file.path(path, folder), recursive=TRUE, overwrite=overwrite)
+	file.copy(css.path, file.path(path, folder), recursive=TRUE, overwrite=overwrite)
 
-	data.path <- paste(folder, "js", "data.js", sep="/")
+	data.path <- file.path(path, folder, "js", "data.js")
 	cat("", file=data.path, sep="")
 	write.data <- writeMaker(data.path)
 
