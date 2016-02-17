@@ -13,13 +13,14 @@ glMDPlot <- function(x, ...) {
 
 # Hidden internal functions for use by edgeR and limma based plotting
 
-glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.by, default.col, ...) {
+glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.by, default.col, id.column="Symbols", 
+							path, folder, html, ...) {
 
 	# Reordering so that significant points appear on top of insignificant points.
 	plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ], 
 						   plotting.data[plotting.data$col != default.col, ])
 
-	plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC", xlab="Average log CPM", idval="Symbols", ylab="log-fold-change",
+	plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC", xlab="Average log CPM", idval=id.column, ylab="log-fold-change",
 					   annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"), flag="mdplot", ndigits=4)
 
 	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
@@ -30,7 +31,7 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
 	button1 <- glAutoinput(1, "highlightById", search.by)
 
-	glimma(plot1, plot2, button1, link1, layout=c(1,2), overwrite=TRUE)
+	glimma(plot1, plot2, button1, link1, layout=c(1,2), path=path, folder=folder, html=html, overwrite=TRUE)
 }
 
 #' Draw an interactive MD plot from a DGELRT object
@@ -52,8 +53,18 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 #' 
 
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
-							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"), 
-							cols=c("#0000FF", "#858585", "#B32222"), ...) {
+							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
+							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="index", ...) {
+
+	##
+	# Input checking
+	
+	if (length(status) != nrow(x)) {
+		stop("The status vector should have same length as the number of columns as main input object.")
+	}
+
+	#
+	##
 
 	if (any(!is.hex(cols))) {
 		cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
@@ -78,11 +89,13 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 	plotting.data <- data.frame(anno, x$table, col = col, 
 							 Adj.PValue = p.adjust(x$table$PValue, method=p.adj.method))
 
+	rownames(counts) <- plotting.data[[id.column]]
+
 	sample.exp <- data.frame(Sample = samples,
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], ...)
+	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, ...)
 }
 
 #' Draw an interactive MD plot from a DGELRT objet
@@ -124,8 +137,18 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' 
 
 glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
-							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"),
-							cols=c("#0000FF", "#858585", "#B32222"), ...) {
+							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
+							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="index", ...) {
+
+	##
+	# Input checking
+	
+	if (length(status) != nrow(x)) {
+		stop("The status vector should have same length as the number of columns as main input object.")
+	}
+
+	#
+	##
 
 	if (any(!is.hex(cols))) {
 		cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
@@ -150,11 +173,13 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 								 Adj.PValue = p.adjust(x$p.value[,coef], method=p.adj.method),
 								 anno)
 
+	rownames(counts) <- plotting.data[[id.column]]
+
 	sample.exp <- data.frame(Sample = samples,
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], ...)
+	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, ...)
 }
 
 #' Draw an interactive MD plot from a DESeqDataSet object
@@ -174,8 +199,18 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 #' 
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x)), 
-									search.by="Symbols", display.columns=c("GeneID"),
-									cols=c("#0000FF", "#858585", "#B32222"), ...) {
+									search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
+									cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="index", ...) {
+
+	##
+	# Input checking
+	
+	if (length(status) != nrow(x)) {
+		stop("The status vector should have same length as the number of columns as main input object.")
+	}
+
+	#
+	##
 
 	if (any(!is.hex(cols))) {
 		cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
@@ -203,6 +238,8 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 								 PValue = res.df$pvalue,
 								 Adj.PValue = res.df$padj,
 								 anno)
+
+	rownames(counts) <- plotting.data[[id.column]]
 
 	sample.exp <- data.frame(Sample = samples,
 							 Group = factor(groups),
