@@ -13,7 +13,12 @@ glMDPlot <- function(x, ...) {
 
 # Hidden internal functions for use by edgeR and limma based plotting
 
-glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.by, ...) {
+glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.by, default.col, ...) {
+
+	# Reordering so that significant points appear on top of insignificant points.
+	plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ], 
+						   plotting.data[plotting.data$col != default.col, ])
+
 	plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC", xlab="Average log CPM", idval="Symbols", ylab="log-fold-change",
 					   annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"), flag="mdplot", ndigits=4)
 
@@ -50,6 +55,10 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"), 
 							cols=c("#0000FF", "#858585", "#B32222"), ...) {
 
+	if (any(!is.hex(cols))) {
+		cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
+	}
+
 	if (ncol(counts) != length(samples)) {
 		stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
 	}
@@ -73,7 +82,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, ...)
+	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], ...)
 }
 
 #' Draw an interactive MD plot from a DGELRT objet
@@ -118,6 +127,10 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"),
 							cols=c("#0000FF", "#858585", "#B32222"), ...) {
 
+	if (any(!is.hex(cols))) {
+		cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
+	}
+
 	colourise <- function(x) {
 		if (x == -1) {
 			return(cols[1])
@@ -141,7 +154,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, ...)
+	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], ...)
 }
 
 #' Draw an interactive MD plot from a DESeqDataSet object
@@ -163,6 +176,10 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x)), 
 									search.by="Symbols", display.columns=c("GeneID"),
 									cols=c("#0000FF", "#858585", "#B32222"), ...) {
+
+	if (any(!is.hex(cols))) {
+		cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
+	}
 	
 	res <- results(x)
 	res.df <- as.data.frame(res)
