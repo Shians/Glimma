@@ -6,7 +6,8 @@
 \usage{
 \method{glMDPlot}{DESeqDataSet}(x, anno, groups, samples, status = rep(0,
   nrow(x)), search.by = "Symbols", display.columns = c("GeneID"),
-  cols = c("#0000FF", "#858585", "#B32222"), ...)
+  id.column = "GeneID", cols = c("#0000FF", "#858585", "#B32222"),
+  path = getwd(), folder = "glimma-plots", html = "index", ...)
 }
 \arguments{
 \item{x}{the DESeqDataSet object.}
