@@ -89,7 +89,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 	plotting.data <- data.frame(anno, x$table, col = col, 
 							 Adj.PValue = p.adjust(x$table$PValue, method=p.adj.method))
 
-	rownames(counts) <- plotting.data[[id.column]]
+	rownames(counts) <- make.names(plotting.data[[id.column]])
 
 	sample.exp <- data.frame(Sample = samples,
 							 Group = factor(groups),
@@ -173,7 +173,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 								 Adj.PValue = p.adjust(x$p.value[,coef], method=p.adj.method),
 								 anno)
 
-	rownames(counts) <- plotting.data[[id.column]]
+	rownames(counts) <- make.names(plotting.data[[id.column]])
 
 	sample.exp <- data.frame(Sample = samples,
 							 Group = factor(groups),
@@ -239,7 +239,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 								 Adj.PValue = res.df$padj,
 								 anno)
 
-	rownames(counts) <- plotting.data[[id.column]]
+	rownames(counts) <- make.names(plotting.data[[id.column]])
 
 	sample.exp <- data.frame(Sample = samples,
 							 Group = factor(groups),
