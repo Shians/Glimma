@@ -21,12 +21,12 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 						   plotting.data[plotting.data$col != default.col, ])
 
 	plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC", xlab="Average log CPM", idval=id.column, ylab="log-fold-change",
-					   annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"), flag="mdplot", ndigits=4)
+					   annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"), flag="mdplot", ndigits=4, ...)
 
 	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
 						annot.lab=c("Sample", "logCPM"), 
-						ndigits=4, hide=TRUE, ...)
+						ndigits=4, hide=TRUE)
 
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
 	button1 <- glAutoinput(1, "highlightById", search.by)
@@ -239,19 +239,19 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 								 Adj.PValue = res.df$padj,
 								 anno)
 
-	rownames(counts) <- make.names(plotting.data[[id.column]])
+	rownames(norm.counts) <- make.names(plotting.data[[id.column]])
 
 	sample.exp <- data.frame(Sample = samples,
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts(x)), log=TRUE)))
 	
 	plot1 <- glScatter(plotting.data, xval="logMean", yval="logFC", xlab="Mean Expression", idval="Symbols", ylab="log-fold-change",
-					   annot=c(display.columns, "logMean", "logFC", "PValue"), flag="mdplot", ndigits=4)
+					   annot=c(display.columns, "logMean", "logFC", "PValue"), flag="mdplot", ndigits=4, ...)
 
 	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
 						annot.lab=c("Sample", "logCPM"), 
-						ndigits=4, hide=TRUE, ...)
+						ndigits=4, hide=TRUE)
 
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
 	button1 <- glAutoinput(1, "highlightById", search.by)
