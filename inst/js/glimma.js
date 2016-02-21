@@ -37868,13 +37868,13 @@ glimma.init.processLinkages = function () {
 
 				if (dest === "xChange") {
 					glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
-						var updateKey = (typeof d[key] === "number") ? "X" + String(d[key]) : d[key];
+						var updateKey = (/^[0-9].*$/.test(d[key])) ? "X" + String(d[key]) : d[key];
 						glimma.storage.charts[to].x(function (d) { return d[updateKey]; }).title(String(d[key]));
 						glimma.storage.charts[to].refresh().show();
 					});
 				} else if (dest === "yChange") {
 					glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
-						var updateKey = (typeof d[key] === "number") ? "X" + String(d[key]) : d[key];
+						var updateKey = (/^[0-9].*$/.test(d[key])) ? "X" + String(d[key]) : d[key];
 						glimma.storage.charts[to].y(function (d) { return d[updateKey]; }).title(String(d[key]));
 						glimma.storage.charts[to].refresh().show();
 					});
