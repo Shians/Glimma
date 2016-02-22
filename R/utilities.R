@@ -5,6 +5,22 @@ stopType <- function(type, name="x") {
 	stop(paste("input", name, "not of class", type))
 }
 
+# Helper function for asserting object class
+assertClass <- function(x, type) {
+	if (!is(x, type)) {
+		arg.name <- deparse(substitute(x))
+		stopType(type, arg.name)
+	}
+}
+
+# Check if data.frame contols all the listed columns
+hasColumns <- function(df, columns) {
+	if (!all(columns %in% names(df))) {
+		violations <- paste(quotify(columns[columns %in% names(df)]), collaps=", ")
+		paste(violations, "cannot be found in", deparse(substitute(df)))
+	}
+}
+
 # Function to add double quotes onto the start and end of the strings
 quotify <- function(x) {
 	paste("\"", x, "\"", sep="")
