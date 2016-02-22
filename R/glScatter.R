@@ -29,6 +29,7 @@ glScatter <- function(x, ...) {
 #' @export
 
 glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
+								x.jitter = 0, y.jitter = 0,
 								ndigits=NULL, signif=6, log="",
 								xlab=xval, ylab=yval, main=NULL,
 								height=400, width=500,
@@ -36,15 +37,9 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 								flag=NULL, info=NULL, hide=FALSE) {
 	##
 	# Input checking
-	if (!is.character(xval)) {
-		stopType("character", "xval")
-	}
-	if (!is.character(yval)) {
-		stopType("character", "yval")	
-	}
-	if (!is.character(annot)) {
-		stopType("character", "annot")	
-	}
+	assertClass(xval, "character")
+	assertClass(yval, "character")
+	assertClass(annot, "character")
 
 	if (is.na(match(xval, names(x)))) {
 		stop(paste(xval, "does not correspond to a column"))

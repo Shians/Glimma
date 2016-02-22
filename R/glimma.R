@@ -14,7 +14,7 @@
 #' glimma(plot1, c(1,1), overwrite=TRUE)
 #'
 
-glimma <- function(..., layout=c(1,1), path=getwd(), folder="glimma-plots", html="index", overwrite=FALSE) {
+glimma <- function(..., layout=c(1,1), path=getwd(), folder="glimma-plots", html="index", overwrite=FALSE, launch=TRUE) {
 	nplots <- 0
 
 	##
@@ -112,6 +112,11 @@ glimma <- function(..., layout=c(1,1), path=getwd(), folder="glimma-plots", html
 	# Generate layout
 	layout <- paste0("glimma.layout.setupGrid(d3.select(\".container\"), \"md\", ", "[", layout[1], ",", layout[2], "]);\n")
 	write.data(layout)
+
+	# Launch page if required
+	if (launch) {
+		browseURL(file.path(path, folder, paste0(html, ".html")))
+	}
 }
 
 processPlot <- function(write.data, type, chart, index) {
@@ -120,7 +125,7 @@ processPlot <- function(write.data, type, chart, index) {
 
 	# Write plot information
 	chart$json <- NULL
-	chartInfo <- makeChartJson(chart)
+	chartInfo <- makeChartJson(chart) 
 	write.data(paste0("glimma.storage.chartInfo.push(", chartInfo, ");\n"))
 
 	# Write plot call

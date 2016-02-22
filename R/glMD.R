@@ -14,7 +14,7 @@ glMDPlot <- function(x, ...) {
 # Hidden internal functions for use by edgeR and limma based plotting
 
 glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.by, default.col, id.column="Symbols", 
-							path, folder, html, ...) {
+							path, folder, html, launch, ...) {
 
 	# Reordering so that significant points appear on top of insignificant points.
 	plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ], 
@@ -31,7 +31,7 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
 	button1 <- glAutoinput(1, "highlightById", search.by)
 
-	glimma(plot1, plot2, button1, link1, layout=c(1,2), path=path, folder=folder, html=html, overwrite=TRUE)
+	glimma(plot1, plot2, button1, link1, layout=c(1,2), path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
 }
 
 #' Draw an interactive MD plot from a DGELRT object
@@ -54,7 +54,7 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
 							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
-							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="index", ...) {
+							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot", launch=TRUE, ...) {
 
 	##
 	# Input checking
@@ -95,7 +95,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, ...)
+	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, ...)
 }
 
 #' Draw an interactive MD plot from a DGELRT objet
@@ -138,7 +138,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 
 glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
 							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
-							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="index", ...) {
+							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot", launch=TRUE, ...) {
 
 	##
 	# Input checking
@@ -179,7 +179,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, ...)
+	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, ...)
 }
 
 #' Draw an interactive MD plot from a DESeqDataSet object
@@ -200,7 +200,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x)), 
 									search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
-									cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="index", ...) {
+									cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot", launch=TRUE, ...) {
 
 	##
 	# Input checking
@@ -256,5 +256,5 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
 	button1 <- glAutoinput(1, "highlightById", search.by)
 
-	glimma(plot1, plot2, button1, link1, layout=c(1,2), overwrite=TRUE)
+	glimma(plot1, plot2, button1, link1, layout=c(1,2), path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
 }
