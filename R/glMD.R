@@ -1,14 +1,14 @@
 #' Draw an interactive MD plot
 #' 
 #' @param x the data.frame containing data to plot.
-#' @param ... additional arguments affecting the plots produced.
+#' @param ... additional arguments affecting the plots produced. See specific methods for detailed arguments.
 #' @export
 #' @seealso \code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}
 #' @examples
 #' 
 
 glMDPlot <- function(x, ...) {
-  UseMethod("glMDPlot")
+	UseMethod("glMDPlot")
 }
 
 # Hidden internal functions for use by edgeR and limma based plotting
@@ -47,6 +47,7 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param launch TRUE to launch plot after call.
 #' @method glMDPlot DGELRT
 #' @export
 #' @examples
@@ -54,7 +55,8 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
 							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
-							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot", launch=TRUE, ...) {
+							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot",
+							launch=TRUE, ...) {
 
 	##
 	# Input checking
@@ -111,6 +113,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param launch TRUE to launch plot after call.
 #' @method glMDPlot DGEExact
 #' @export
 #' @examples
@@ -131,6 +134,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param launch TRUE to launch plot after call.
 #' @method glMDPlot MArrayLM
 #' @export
 #' @examples
@@ -138,7 +142,8 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 
 glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
 							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
-							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot", launch=TRUE, ...) {
+							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot",
+							launch=TRUE, ...) {
 
 	##
 	# Input checking
@@ -193,14 +198,16 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param launch TRUE to launch plot after call.
 #' @method glMDPlot DESeqDataSet
 #' @export
 #' @examples
 #' 
 
-glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x)), 
+glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x)),
 									search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
-									cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot", launch=TRUE, ...) {
+									cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot",
+									launch=TRUE, ...) {
 
 	##
 	# Input checking
@@ -250,7 +257,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 
 	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
-						annot.lab=c("Sample", "logCPM"), 
+						annot.lab=c("Sample", "logCPM"), x.jitter = 20,
 						ndigits=4, hide=TRUE)
 
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
