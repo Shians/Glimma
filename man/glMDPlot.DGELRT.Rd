@@ -8,7 +8,8 @@
   nrow(x)), coef = ncol(x$coefficients), p.adj.method = "BH",
   search.by = "Symbols", display.columns = c("GeneID"),
   id.column = "GeneID", cols = c("#0000FF", "#858585", "#B32222"),
-  path = getwd(), folder = "glimma-plots", html = "index", ...)
+  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
+  launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DGELRT object.}

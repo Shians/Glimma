@@ -37113,6 +37113,8 @@ glimma.chart.scatterChart = function() {
 		titleValue = "",
 		xLabel = "",
 		yLabel = "",
+		xJitter = false,
+		yJitter = false,
 		xScale = d3.scale.linear(),
 		yScale = d3.scale.linear(),
 		cScale = d3.scale.category10(),
@@ -37371,6 +37373,14 @@ glimma.chart.scatterChart = function() {
 		return chart;
 	};
 
+	chart.xJitter = function(_) {
+		if (!arguments.length) return xValue;
+		if (typeof _ === "boolean") {
+			xValue = _;
+		}
+		return chart;
+	};
+
 	chart.xlab = function(_) {
 		if (!arguments.length) return xLabel;
 		xLabel = _;
@@ -37380,6 +37390,14 @@ glimma.chart.scatterChart = function() {
 	chart.y = function(_) {
 		if (!arguments.length) return yValue;
 		yValue = _;
+		return chart;
+	};
+
+	chart.yJitter = function(_) {
+		if (!arguments.length) return yValue;
+		if (typeof _ === "boolean") {
+			yValue = _;
+		}
 		return chart;
 	};
 
