@@ -25,13 +25,15 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 
 	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
-						annot.lab=c("Sample", "logCPM"), 
+						annot.lab=c("Sample", "logCPM"), x.jitter = 30,
 						ndigits=4, hide=TRUE)
 
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
+	link2 <- link(1, 2, "click", "yChange", flag="byKey", info="GeneID")
 	button1 <- glAutoinput(1, "highlightById", search.by)
 
-	glimma(plot1, plot2, button1, link1, layout=c(1,2), path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+	glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
+			path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
 }
 
 #' Draw an interactive MD plot from a DGELRT object
@@ -257,11 +259,13 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 
 	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
-						annot.lab=c("Sample", "logCPM"), x.jitter = 20,
+						annot.lab=c("Sample", "logCPM"), x.jitter = 30,
 						ndigits=4, hide=TRUE)
 
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
+	link2 <- link(1, 2, "click", "yChange", flag="byKey", info="GeneID")
 	button1 <- glAutoinput(1, "highlightById", search.by)
 
-	glimma(plot1, plot2, button1, link1, layout=c(1,2), path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+	glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
+			path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
 }

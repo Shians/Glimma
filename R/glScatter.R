@@ -88,7 +88,9 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 				ndigits = ndigits,
 				signif = signif,
 				xlab = xlab,
+				xjitter = x.jitter,
 				ylab = ylab,
+				yjitter = y.jitter,
 				xord = x.ord,
 				yord = y.ord,
 				xlog = x.log,
@@ -126,6 +128,9 @@ constructScatterPlot <- function(chart, index, write.out) {
 	x.lab <- paste0(".xlab(", quotify(chart$xlab), ")")
 	command <- paste0(command, x.lab)
 
+	x.jitter <- paste0(".xJitter(", chart$xjitter, ")")
+	command <- paste0(command, x.jitter)
+
 	if (chart$xord) {
 		x.is.ord <- paste0(".xIsOrdinal()")
 		command <- paste0(command, x.is.ord)
@@ -141,6 +146,9 @@ constructScatterPlot <- function(chart, index, write.out) {
 
 	y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
 	command <- paste0(command, y.lab)
+
+	y.jitter <- paste0(".yJitter(", chart$yjitter, ")")
+	command <- paste0(command, y.jitter)
 
 	if (chart$yord) {
 		y.is.ord <- paste0(".yIsOrdinal()")
