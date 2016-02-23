@@ -12,7 +12,7 @@
 #' @examples 
 #' 
 
-link <- function(from, to, src="none", dest="none", flag="none", both=FALSE, info=NULL) {
+link <- function(from, to, src="none", dest="none", flag="none", both=FALSE, info="none") {
 	out <- list()
 
 	if (src != "none" && dest == "none") {

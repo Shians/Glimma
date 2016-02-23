@@ -5,10 +5,10 @@
 \title{Draw an interactive MD plot from a DESeqDataSet object}
 \usage{
 \method{glMDPlot}{DESeqDataSet}(x, anno, groups, samples, status = rep(0,
-  nrow(x)), search.by = "Symbols", display.columns = c("GeneID"),
-  id.column = "GeneID", cols = c("#0000FF", "#858585", "#B32222"),
-  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
-  launch = TRUE, ...)
+  nrow(x)), search.by = "Symbols", jitter = 30,
+  display.columns = c("GeneID"), id.column = "GeneID", cols = c("#0000FF",
+  "#858585", "#B32222"), path = getwd(), folder = "glimma-plots",
+  html = "MD-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DESeqDataSet object.}

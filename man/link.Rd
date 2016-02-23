@@ -5,7 +5,7 @@
 \title{Helper function for writing the link properties in interactive Glimma plots}
 \usage{
 link(from, to, src = "none", dest = "none", flag = "none", both = FALSE,
-  info = NULL)
+  info = "none")
 }
 \arguments{
 \item{from}{the index of the plot from which the event is dispatched.}
