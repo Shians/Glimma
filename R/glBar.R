@@ -1,6 +1,20 @@
 #' Create an interactive bar plot object
 #' 
 #' @param x the data.frame containing data to plot.
+#' @param ... additional arguments depending on input object type.
+#' @return A chart object containing the information to create an interactive bar plot.
+#' @export
+#' @examples
+#'
+
+glBar <- function(x, ...) {
+	UseMethod("glBar")
+}
+
+#' Default method for interactive bar plot
+#' 
+#' @param x the data.frame containing data to plot.
+#' @param yval the column name for the x-axis values.
 #' @param names.arg the column name for the label on each bar.
 #' @param ndigits the number of digits after the decimal to round to in the tooltip (overrides signif).
 #' @param signif the number of significant figures to display in the tooltip.
@@ -12,16 +26,9 @@
 #' @param colval the colours for each data point.
 #' @param annot the columns to display in the tooltip.
 #' @param flag the special flag to indicate special plot.
-#' @param ... addutional arguments depending on input object type.
+#' @param info additional information for plotting.
+#' @param ... additional arguments.
 #' @return A chart object containing the information to create an interactive bar plot.
-#' @export
-#' @examples
-#'
-
-glBar <- function(x, ...) {
-	UseMethod("glBar")
-}
-
 #' @export
 
 glBar.default <- function(x, yval, names.arg=rownames(x), 
@@ -29,7 +36,7 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 							xlab=NULL, ylab=yval, main=NULL,
 							height=400, width=500,
 							colval=NULL, annot=yval,
-							flag=NULL, info=NULL) {
+							flag=NULL, info=NULL, ...) {
 	##
 	# Input checking
 	if (is.na(match(yval, names(x)))) {

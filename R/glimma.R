@@ -6,13 +6,15 @@
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
 #' @param overwrite the option to overwrite existing folder if it already exists.
+#' @param launch TRUE to launch plot after call.
 #' @return Generates interactive plots based on filling layout row by row from left to right.
 #' @export
 #' @examples
 #' data(iris)
 #' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
+#' \donttest{
 #' glimma(plot1, c(1,1), overwrite=TRUE)
-#'
+#' }
 
 glimma <- function(..., layout=c(1,1), path=getwd(), folder="glimma-plots", html="index", overwrite=FALSE, launch=TRUE) {
 	nplots <- 0

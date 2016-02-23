@@ -41,14 +41,19 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 #' @param x the DGELRT object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
-#' @param group the factor containing experimental groups of the samples.
+#' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defauls to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param id.column the column containing unique identifiers for each gene.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param path the path in which the folder will be created.
+#' @param folder the name of the fold to save html file to.
+#' @param html the name of the html file to save plots to.
+#' @param ... additional arguments to be passed onto the MD plot.
 #' @param launch TRUE to launch plot after call.
 #' @method glMDPlot DGELRT
 #' @export
@@ -107,14 +112,19 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 #' @param x the DGEExact object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
-#' @param group the factor containing experimental groups of the samples.
+#' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defauls to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param id.column the column containing unique identifiers for each gene.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param path the path in which the folder will be created.
+#' @param folder the name of the fold to save html file to.
+#' @param html the name of the html file to save plots to.
+#' @param ... additional arguments to be passed onto the MD plot.
 #' @param launch TRUE to launch plot after call.
 #' @method glMDPlot DGEExact
 #' @export
@@ -128,14 +138,19 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param x the MArrayLM object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
-#' @param group the factor containing experimental groups of the samples.
+#' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defauls to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param id.column the column containing unique identifiers for each gene.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param path the path in which the folder will be created.
+#' @param folder the name of the fold to save html file to.
+#' @param html the name of the html file to save plots to.
+#' @param ... additional arguments to be passed onto the MD plot.
 #' @param launch TRUE to launch plot after call.
 #' @method glMDPlot MArrayLM
 #' @export
@@ -192,14 +207,18 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 #' Draw an interactive MD plot from a DESeqDataSet object
 #' 
 #' @param x the DESeqDataSet object.
-#' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
-#' @param group the factor containing experimental groups of the samples.
+#' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param id.column the column containing unique identifiers for each gene.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param path the path in which the folder will be created.
+#' @param folder the name of the fold to save html file to.
+#' @param html the name of the html file to save plots to.
+#' @param ... additional arguments to be passed onto the MD plot.
 #' @param launch TRUE to launch plot after call.
 #' @method glMDPlot DESeqDataSet
 #' @export

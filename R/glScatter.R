@@ -1,11 +1,32 @@
 #' Create an interactive scatter plot object
 #' 
 #' @param x the data.frame containing data to plot.
+#' @param ... additional arguments depending on input object type.
+#' @return A chart object containing the information to create an interactive scatter plot.
+#' @export
+#' @examples
+#' data(iris)
+#' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
+#' \donttest{
+#' glimma(plot1, c(1,1), overwrite=TRUE)
+#' }
+#'
+
+glScatter <- function(x, ...) {
+	UseMethod("glScatter")
+}
+
+#' Default method for creating an interactive scatter plot
+#' 
+#' @param x the data.frame containing data to plot.
 #' @param xval the column name for the x-axis values.
 #' @param yval the column name for the y-axis values.
+#' @param x.jitter the amount of jittering to add to values along the x axis.
+#' @param y.jitter the amount of jittering to add to values along the y axis.
 #' @param idval the column name for unique identifiers.
 #' @param ndigits the number of digits after the decimal to round to in the tooltip (overrides signif).
 #' @param signif the number of significant figures to display in the tooltip.
+#' @param log a character string which contains "x" if the x axis is to be logarithmic, "y" if the y axis is to be logarithmic and "xy" or "yx" if both axes are to be logarithmic.
 #' @param xlab the label on the x-axis.
 #' @param ylab the label on the y-axis.
 #' @param main the title for the plot.
@@ -13,19 +34,12 @@
 #' @param width the width of the plot (in pixels).
 #' @param colval the colours for each data point.
 #' @param annot the columns to display in the tooltip.
-#' @param ... additional arguments depending on input object type.
+#' @param annot.lab alternative labels for the values displayed in the tooltip.
+#' @param flag the special flag to indicate special plot.
+#' @param info additional information for plotting.
+#' @param hide TRUE to hide the plot when page starts.
+#' @param ... additional arguments.
 #' @return A chart object containing the information to create an interactive scatter plot.
-#' @export
-#' @examples
-#' data(iris)
-#' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
-#' glimma(plot1, c(1,1), overwrite=TRUE)
-#'
-
-glScatter <- function(x, ...) {
-	UseMethod("glScatter")
-}
-
 #' @export
 
 glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
@@ -34,7 +48,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
 								xlab=xval, ylab=yval, main=NULL,
 								height=400, width=500,
 								colval=NULL, annot=c(xval, yval), annot.lab=NULL,
-								flag=NULL, info=NULL, hide=FALSE) {
+								flag=NULL, info=NULL, hide=FALSE, ...) {
 	##
 	# Input checking
 	assertClass(xval, "character")

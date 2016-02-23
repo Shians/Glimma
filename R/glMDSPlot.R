@@ -20,12 +20,13 @@ glMDSPlot <- function(x, ...) {
 #' @param gene.selection "pairwise" if most variable genes are to be chosen for each pair of samples or "common" to select the same genes for all comparisons.
 #' @param main the title of the plot.
 #' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments.
 #' 
 #' @export
 
 # Code taken from plotMDS of limma bioConductor package with alterations
 glMDSPlot.default <- function(x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x)), 
-								gene.selection="pairwise", main="MDS Plot", launch=TRUE) {
+								gene.selection="pairwise", main="MDS Plot", launch=TRUE, ...) {
 	#	Multi-dimensional scaling with top-distance
 	#	Di Wu and Gordon Smyth
 	#	19 March 2009.  Last modified 14 Jan 2015
@@ -107,9 +108,11 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x
 #' @param groups the experimental group to which samples belong.
 #' @param gene.selection "pairwise" if most variable genes are to be chosen for each pair of samples or "common" to select the same genes for all comparisons.
 #' @param main the title of the plot.
+#' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments.
 #' @export
 glMDSPlot.DGEList <- function (x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x)),
-								gene.selection="pairwise", main="MDS Plot", launch=TRUE) {
+								gene.selection="pairwise", main="MDS Plot", launch=TRUE, ...) {
 	x <- cpm(x, log=TRUE)
-	glMDSPlot.default(x, top=500, labels=labels, groups=groups, gene.selection="pairwise", main=main, launch=launch)
+	glMDSPlot.default(x, top=500, labels=labels, groups=groups, gene.selection="pairwise", main=main, launch=launch, ...)
 }

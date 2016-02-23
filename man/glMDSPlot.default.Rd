@@ -6,7 +6,7 @@
 \usage{
 \method{glMDSPlot}{default}(x, top = 500, labels = 1:ncol(x),
   groups = rep(1, ncol(x)), gene.selection = "pairwise",
-  main = "MDS Plot", launch = TRUE)
+  main = "MDS Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the object containing the gene expressions.}
@@ -22,6 +22,8 @@
 \item{main}{the title of the plot.}
 
 \item{launch}{TRUE to launch plot after call.}
+
+\item{...}{additional arguments.}
 }
 \description{
 Draw an interactive MDS plot
