@@ -12,9 +12,8 @@ glMDPlot <- function(x, ...) {
 }
 
 # Hidden internal functions for use by edgeR and limma based plotting
-
 glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.by, default.col, id.column="Symbols", 
-							path, folder, html, launch, ...) {
+							path, folder, html, launch, jitter, ...) {
 
 	# Reordering so that significant points appear on top of insignificant points.
 	plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ], 
@@ -25,7 +24,7 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 
 	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
-						annot.lab=c("Sample", "logCPM"), x.jitter = 30,
+						annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
 						ndigits=4, hide=TRUE)
 
 	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
@@ -61,7 +60,7 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 #' 
 
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
-							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
+							p.adj.method="BH", search.by="Symbols", jitter=30, display.columns=c("GeneID"), id.column="GeneID",
 							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot",
 							launch=TRUE, ...) {
 
@@ -104,7 +103,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, ...)
+	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, jitter=jitter, ...)
 }
 
 #' Draw an interactive MD plot from a DGELRT objet
@@ -158,7 +157,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' 
 
 glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
-							p.adj.method="BH", search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
+							p.adj.method="BH", search.by="Symbols", jitter=30, display.columns=c("GeneID"), id.column="GeneID",
 							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot",
 							launch=TRUE, ...) {
 
@@ -201,7 +200,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, ...)
+	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, jitter=jitter, ...)
 }
 
 #' Draw an interactive MD plot from a DESeqDataSet object
@@ -226,7 +225,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 #' 
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x)),
-									search.by="Symbols", display.columns=c("GeneID"), id.column="GeneID",
+									search.by="Symbols", jitter=30, display.columns=c("GeneID"), id.column="GeneID",
 									cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot",
 									launch=TRUE, ...) {
 

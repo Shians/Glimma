@@ -6,7 +6,7 @@
 \usage{
 \method{glMDPlot}{DGEExact}(x, counts, anno, groups, samples, status = rep(0,
   nrow(x)), coef = ncol(x$coefficients), p.adj.method = "BH",
-  search.by = "Symbols", display.columns = c("GeneID"),
+  search.by = "Symbols", jitter = 30, display.columns = c("GeneID"),
   id.column = "GeneID", cols = c("#0000FF", "#858585", "#B32222"),
   path = getwd(), folder = "glimma-plots", html = "MD-Plot",
   launch = TRUE, ...)
