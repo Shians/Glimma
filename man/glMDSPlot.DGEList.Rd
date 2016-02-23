@@ -6,7 +6,8 @@
 \usage{
 \method{glMDSPlot}{DGEList}(x, top = 500, labels = 1:ncol(x),
   groups = rep(1, ncol(x)), gene.selection = "pairwise",
-  main = "MDS Plot", launch = TRUE, ...)
+  main = "MDS Plot", path = getwd(), folder = "glimma-plots",
+  html = "MDS-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the object containing the gene expressions.}
@@ -20,6 +21,12 @@
 \item{gene.selection}{"pairwise" if most variable genes are to be chosen for each pair of samples or "common" to select the same genes for all comparisons.}
 
 \item{main}{the title of the plot.}
+
+\item{path}{the path in which the folder will be created.}
+
+\item{folder}{the name of the fold to save html file to.}
+
+\item{html}{the name of the html file to save plots to.}
 
 \item{launch}{TRUE to launch plot after call.}
 
