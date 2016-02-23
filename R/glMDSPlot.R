@@ -86,7 +86,7 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x
 	}
 
 	# Multi-dimensional scaling
-	a1 <- suppressWarnings(cmdscale(as.dist(dd), k=min(nsamples, 8), eig=TRUE))
+	a1 <- suppressWarnings(cmdscale(as.dist(dd), k=min(nsamples - 1, 8), eig=TRUE))
 
 	#	Method for MDS objects
 	points <- a1$points
@@ -102,7 +102,7 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x
 	plot2 <- glBar(eigen, names.arg="name", yval="eigen", ylab="Eigvenvalue", height=300, width=300)
 	link1 <- link(2, 1, flag="mds")
 
-	glimma(plot1, plot2, link1, layout=c(1, 2), html="MDS", overwrite=TRUE, 
+	glimma(plot1, plot2, link1, layout=c(1, 2), overwrite=TRUE, 
 			path=path, folder=folder, html=html, launch=launch)
 }
 
