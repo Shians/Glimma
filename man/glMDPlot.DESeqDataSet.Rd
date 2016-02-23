@@ -23,6 +23,8 @@
 
 \item{search.by}{the name of the column which will be used to search for data points. (should contain unique values)}
 
+\item{jitter}{the amount of jitter to apply to the samples in the expressions plot.}
+
 \item{display.columns}{character vector containing names of columns to display in mouseover tooltips.}
 
 \item{id.column}{the column containing unique identifiers for each gene.}
