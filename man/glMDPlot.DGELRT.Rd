@@ -32,6 +32,8 @@
 
 \item{cols}{vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)}
 
+\item{launch}{TRUE to launch plot after call.}
+
 \item{group}{the factor containing experimental groups of the samples.}
 }
 \description{

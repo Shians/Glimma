@@ -9,7 +9,7 @@ glMDSPlot(x, ...)
 \arguments{
 \item{x}{the data.frame containing data to plot.}
 
-\item{...}{additional arguments affecting the plots produced.}
+\item{...}{additional arguments affecting the plots produced. See specific methods for detailed arguments.}
 }
 \value{
 writes an interactive MDS plot
@@ -19,5 +19,8 @@ Draw an interactive MDS plot
 }
 \examples{
 
+}
+\seealso{
+\code{\link{glMDSPlot.default}}, \code{\link{glMDSPlot.DGEList}}
 }
 
