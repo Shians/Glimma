@@ -18,6 +18,8 @@
 
 \item{anno}{the data.frame containing gene annotations.}
 
+\item{groups}{the factor containing experimental groups of the samples.}
+
 \item{samples}{the names of the samples.}
 
 \item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.}
@@ -30,11 +32,19 @@
 
 \item{display.columns}{character vector containing names of columns to display in mouseover tooltips.}
 
+\item{id.column}{the column containing unique identifiers for each gene.}
+
 \item{cols}{vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)}
+
+\item{path}{the path in which the folder will be created.}
+
+\item{folder}{the name of the fold to save html file to.}
+
+\item{html}{the name of the html file to save plots to.}
 
 \item{launch}{TRUE to launch plot after call.}
 
-\item{group}{the factor containing experimental groups of the samples.}
+\item{...}{additional arguments to be passed onto the MD plot.}
 }
 \description{
 Draw an interactive MD plot from a DGELRT objet

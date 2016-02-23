@@ -19,6 +19,8 @@ glimma(..., layout = c(1, 1), path = getwd(), folder = "glimma-plots",
 \item{html}{the name of the html file to save plots to.}
 
 \item{overwrite}{the option to overwrite existing folder if it already exists.}
+
+\item{launch}{TRUE to launch plot after call.}
 }
 \value{
 Generates interactive plots based on filling layout row by row from left to right.

@@ -9,29 +9,7 @@ glBar(x, ...)
 \arguments{
 \item{x}{the data.frame containing data to plot.}
 
-\item{...}{addutional arguments depending on input object type.}
-
-\item{names.arg}{the column name for the label on each bar.}
-
-\item{ndigits}{the number of digits after the decimal to round to in the tooltip (overrides signif).}
-
-\item{signif}{the number of significant figures to display in the tooltip.}
-
-\item{xlab}{the label on the x-axis.}
-
-\item{ylab}{the label on the y-axis.}
-
-\item{main}{the title for the plot.}
-
-\item{height}{the height of the plot (in pixels).}
-
-\item{width}{the width of the plot (in pixels).}
-
-\item{colval}{the colours for each data point.}
-
-\item{annot}{the columns to display in the tooltip.}
-
-\item{flag}{the special flag to indicate special plot.}
+\item{...}{additional arguments depending on input object type.}
 }
 \value{
 A chart object containing the information to create an interactive bar plot.

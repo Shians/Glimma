@@ -19,6 +19,8 @@ link(from, to, src = "none", dest = "none", flag = "none", both = FALSE,
 \item{flag}{indicates special links for particular chart types.}
 
 \item{both}{creates symmetric links whereby the "dest" action in "to" also triggers the "src" action in "from".}
+
+\item{info}{additional info for creating the link.}
 }
 \value{
 a link object containing the plot linking information.

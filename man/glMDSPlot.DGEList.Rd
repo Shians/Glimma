@@ -6,7 +6,7 @@
 \usage{
 \method{glMDSPlot}{DGEList}(x, top = 500, labels = 1:ncol(x),
   groups = rep(1, ncol(x)), gene.selection = "pairwise",
-  main = "MDS Plot", launch = TRUE)
+  main = "MDS Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the object containing the gene expressions.}
@@ -20,6 +20,10 @@
 \item{gene.selection}{"pairwise" if most variable genes are to be chosen for each pair of samples or "common" to select the same genes for all comparisons.}
 
 \item{main}{the title of the plot.}
+
+\item{launch}{TRUE to launch plot after call.}
+
+\item{...}{additional arguments.}
 }
 \description{
 Draw an interactive MD plot from a DGEList object
