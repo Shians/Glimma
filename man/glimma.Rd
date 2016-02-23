@@ -5,7 +5,7 @@
 \title{Core glimma plot manager. Generates environment for glimma plots.}
 \usage{
 glimma(..., layout = c(1, 1), path = getwd(), folder = "glimma-plots",
-  html = "index", overwrite = FALSE)
+  html = "index", overwrite = FALSE, launch = TRUE)
 }
 \arguments{
 \item{...}{the jschart or jslink objects for processing.}

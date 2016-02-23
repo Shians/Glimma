@@ -8,7 +8,8 @@
   nrow(x)), coef = ncol(x$coefficients), p.adj.method = "BH",
   search.by = "Symbols", display.columns = c("GeneID"),
   id.column = "GeneID", cols = c("#0000FF", "#858585", "#B32222"),
-  path = getwd(), folder = "glimma-plots", html = "index", ...)
+  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
+  launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DGEExact object.}
@@ -30,6 +31,8 @@
 \item{display.columns}{character vector containing names of columns to display in mouseover tooltips.}
 
 \item{cols}{vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)}
+
+\item{launch}{TRUE to launch plot after call.}
 
 \item{group}{the factor containing experimental groups of the samples.}
 }

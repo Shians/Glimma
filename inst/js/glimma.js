@@ -37113,10 +37113,14 @@ glimma.chart.scatterChart = function() {
 		titleValue = "",
 		xLabel = "",
 		yLabel = "",
+		xJitter = 0,
+		yJitter = 0,
 		xScale = d3.scale.linear(),
 		yScale = d3.scale.linear(),
 		cScale = d3.scale.category10(),
 		cFixed = false,
+		holdTooltip = false,
+		tooltipData = {}, 
 		xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(6, 0),
 		yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(6, 0);
 
@@ -37135,6 +37139,9 @@ glimma.chart.scatterChart = function() {
 		xOrd = typeof xScale.rangeBands === "function";
 		yOrd = typeof yScale.rangeBands === "function";
 
+		if (typeof selection.data()[0][0].xJitter === "undefined") {
+			addJitter();
+		}
 		occupyContainer();
 		assignData();
 		createDimensions();
@@ -37149,6 +37156,14 @@ glimma.chart.scatterChart = function() {
 		drawPoints();
 		drawAxis();
 		bindDispatcher();
+
+		function addJitter() {
+			selection.data()[0] = selection.data()[0].map(function(d) {
+				d.xJitter = (Math.random() - 0.5) * xJitter;
+				d.yJitter = (Math.random() - 0.5) * yJitter;
+				return d;
+			});
+		}
 
 		function occupyContainer() {
 			chart.container = container = selection;
@@ -37290,11 +37305,11 @@ glimma.chart.scatterChart = function() {
 			// Update positions
 			if (cirContainer.node().childElementCount < 2000) {
 				cirContainer.transition()
-							.attr("cx", function (d) { return xScale(xValue(d)); })
-							.attr("cy", function (d) { return yScale(yValue(d)); });
+							.attr("cx", function (d) { return d.xJitter + xScale(xValue(d)); })
+							.attr("cy", function (d) { return d.yJitter + yScale(yValue(d)); });
 			} else {
-				cirContainer.attr("cx", function (d) { return xScale(xValue(d)); })
-							.attr("cy", function (d) { return yScale(yValue(d)); });
+				cirContainer.attr("cx", function (d) { return d.xJitter + xScale(xValue(d)); })
+							.attr("cy", function (d) { return d.yJitter + yScale(yValue(d)); });
 			}
 		}
 		
@@ -37340,7 +37355,7 @@ glimma.chart.scatterChart = function() {
 
 		function bindDispatcher() {
 			// Assign dispatcher events
-			dispatcher.on("hover", function (d) { chart.hover(d); });
+			dispatcher.on("hover", function (d) { if (!holdTooltip) chart.hover(d); });
 			dispatcher.on("leave", function (d) { chart.leave(d); });
 			dispatcher.on("click", function (d) { chart.click(d); });
 		}
@@ -37371,6 +37386,14 @@ glimma.chart.scatterChart = function() {
 		return chart;
 	};
 
+	chart.xJitter = function(_) {
+		if (!arguments.length) return xJitter;
+		if (typeof _ === "number") {
+			xJitter = _;
+		}
+		return chart;
+	};
+
 	chart.xlab = function(_) {
 		if (!arguments.length) return xLabel;
 		xLabel = _;
@@ -37380,6 +37403,14 @@ glimma.chart.scatterChart = function() {
 	chart.y = function(_) {
 		if (!arguments.length) return yValue;
 		yValue = _;
+		return chart;
+	};
+
+	chart.yJitter = function(_) {
+		if (!arguments.length) return yJitter;
+		if (typeof _ === "number") {
+			yJitter = _;
+		}
 		return chart;
 	};
 
@@ -37465,6 +37496,12 @@ glimma.chart.scatterChart = function() {
 		return chart;
 	};
 
+	chart.holdTooltip = function(_) {
+		if (!arguments.length) return holdTooltip;
+		if (typeof _ === "boolean") holdTooltip = _;
+		return chart;
+	};
+
 	chart.fixedCol = function(_) {
 		cFixed = _;
 		if (_) {
@@ -37518,8 +37555,8 @@ glimma.chart.scatterChart = function() {
 			c = front.append("circle");
 		}
 
-		c.attr("cx", xScale(xValue(data)))
-			.attr("cy", yScale(yValue(data)))
+		c.attr("cx", data.xJitter + xScale(xValue(data)))
+			.attr("cy", data.yJitter + yScale(yValue(data)))
 			.attr("r", sizeValue(data) + 2)
 			.style("opacity", 1)
 			.style("stroke", "white")
@@ -37573,10 +37610,10 @@ glimma.chart.scatterChart = function() {
 			}
 		}
 
-		tooltipLeft = xScale(xValue(data));
+		tooltipLeft = data.xJitter + xScale(xValue(data));
 		tooltipLeft += margin.left + margin.right;
 
-		tooltipTop = yScale(yValue(data));
+		tooltipTop = data.yJitter + yScale(yValue(data));
 		tooltipTop += margin.top + container.select("svg").node().offsetTop;
 		tooltipTop -= 3 + container.select(".tooltip").node().offsetHeight;
 		tooltipTop = tooltipTop < 0 ? 0 : tooltipTop;
@@ -37640,15 +37677,26 @@ glimma.chart.scatterChart = function() {
 	};
 
 	chart.leave = function(data) {
-		if (_withinExtent(data, extent) || xOrd || yOrd) {
-			_hideTooltip();
-			_lowlight();	
+		if (!holdTooltip) {
+			if (_withinExtent(data, extent) || xOrd || yOrd) {
+				_hideTooltip();
+				_lowlight();	
+			}
 		}
 		return chart;
 	};
 
 	chart.click = function(data) {
+		if (JSON.stringify(data) === JSON.stringify(tooltipData)) {
+			chart.holdTooltip(false);
+		} else {
+			chart.holdTooltip(true);
+		}
+
 		chart.hover(data);
+
+		tooltipData = data;
+
 		return chart;
 	};
 
@@ -37849,35 +37897,74 @@ glimma.init.processLinkages = function () {
 								var tmpstr2 = "Dimension " + d.name;
 								var tmpstr3 = "dim" + (d.name + 1);
 								var tmpstr4 = "Dimension " + (d.name + 1);
+
+								var old = glimma.storage.charts[to].tooltip().slice(0, -2);
+
 								glimma.storage.charts[to]
 									.x(function (d) { return d[tmpstr1]; })
 									.xlab(tmpstr2)
 									.y(function (d) { return d[tmpstr3]; })
 									.ylab(tmpstr4)
-									.tooltip(["labels", tmpstr1, tmpstr3]);
+									.tooltip(old.concat([tmpstr1, tmpstr3]));
 							}());
 							glimma.storage.charts[to].refresh();	
 						}
 					}
 				);
-			} else if (flag === "byKey") { // TODO: Alter tooltip on change.
+			} else if (flag === "byKey") {
 				var src = glimma.storage.linkage[i].src;
 				var dest = glimma.storage.linkage[i].dest;
 
 				var key = glimma.storage.linkage[i].info;
 
 				if (dest === "xChange") {
-					glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
-						var updateKey = (/^[0-9].*$/.test(d[key])) ? "X" + String(d[key]) : d[key];
-						glimma.storage.charts[to].x(function (d) { return d[updateKey]; }).title(String(d[key]));
-						glimma.storage.charts[to].refresh().show();
-					});
+					if (src === "click") {
+						glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
+							var updateKey = (/^[0-9].*$/.test(d[key])) ? "X" + String(d[key]) : d[key]; // Append X if starts with number
+
+							glimma.storage.charts[to].x(function (d) { return d[updateKey]; })
+														.title(String(d[key]))
+														.tooltip(["Sample", updateKey])
+														.refresh()
+														.show();
+						});
+					} else {
+						glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
+							if (!glimma.storage.charts[from].holdTooltip()) {
+								var updateKey = (/^[0-9].*$/.test(d[key])) ? "X" + String(d[key]) : d[key]; // Append X if starts with number
+
+								glimma.storage.charts[to].x(function (d) { return d[updateKey]; })
+															.title(String(d[key]))
+															.tooltip(["Sample", updateKey])
+															.refresh()
+															.show();
+							}
+						});
+					}
 				} else if (dest === "yChange") {
-					glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
-						var updateKey = (/^[0-9].*$/.test(d[key])) ? "X" + String(d[key]) : d[key];
-						glimma.storage.charts[to].y(function (d) { return d[updateKey]; }).title(String(d[key]));
-						glimma.storage.charts[to].refresh().show();
-					});
+					if (src === "click") {
+						glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
+							var updateKey = (/^[0-9].*$/.test(d[key])) ? "X" + String(d[key]) : d[key]; // Append X if starts with number
+
+							glimma.storage.charts[to].y(function (d) { return d[updateKey]; })
+														.title(String(d[key]))
+														.tooltip(["Sample", updateKey])
+														.refresh()
+														.show();
+						});	
+					} else {
+						glimma.storage.charts[from].on(src + ".chart" + from, function (d) {
+							if (!glimma.storage.charts[from].holdTooltip()) {
+								var updateKey = (/^[0-9].*$/.test(d[key])) ? "X" + String(d[key]) : d[key]; // Append X if starts with number
+
+								glimma.storage.charts[to].y(function (d) { return d[updateKey]; })
+															.title(String(d[key]))
+															.tooltip(["Sample", updateKey])
+															.refresh()
+															.show();
+							}
+						});	
+					}
 				}
 
 			// Default linkage

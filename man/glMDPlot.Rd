@@ -9,7 +9,7 @@ glMDPlot(x, ...)
 \arguments{
 \item{x}{the data.frame containing data to plot.}
 
-\item{...}{additional arguments affecting the plots produced.}
+\item{...}{additional arguments affecting the plots produced. See specific methods for detailed arguments.}
 }
 \description{
 Draw an interactive MD plot
