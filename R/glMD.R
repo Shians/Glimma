@@ -7,7 +7,7 @@
 #' @param x the data.frame containing data to plot.
 #' @param ... additional arguments affecting the plots produced. See specific methods for detailed arguments.
 #' 
-#' @seealso \code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}
+#' @seealso \code{\link{glMDPlot.default}}, \code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}
 #' 
 #' @examples
 #' 
@@ -18,7 +18,7 @@ glMDPlot <- function(x, ...) {
 }
 
 # Hidden internal functions for use by edgeR and limma based plotting
-glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.by, default.col, id.column="Symbols", 
+glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by, default.col, id.column,
 							path, folder, html, launch, jitter, ...) {
 
 	# Reordering so that significant points appear on top of insignificant points.
@@ -33,12 +33,108 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 						annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
 						ndigits=4, hide=TRUE)
 
-	link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
-	link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info="GeneID")
+	link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
+	link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
 	button1 <- glAutoinput(1, "highlightById", search.by)
 
 	glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
 			path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+}
+
+#' Glimma MD Plot
+#' 
+#' Draw an interactive MD plot from a DGELRT object
+#' 
+#' @author Shian Su
+#' 
+#' @param x the DGELRT object.
+#' @param xval the column to plot on x axis.
+#' @param yval the column to plot on y axis.
+#' @param counts the matrix containing all counts.
+#' @param anno the data.frame containing gene annotations.
+#' @param groups the factor containing experimental groups of the samples.
+#' @param samples the names of the samples.
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
+#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
+#' @param jitter the amount of jitter to apply to the samples in the expressions plot.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param id.column the column containing unique identifiers for each gene.
+#' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param path the path in which the folder will be created.
+#' @param folder the name of the fold to save html file to.
+#' @param html the name of the html file to save plots to.
+#' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments to be passed onto the MD plot.
+#' 
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+#' 
+#' @method glMDPlot default
+#' 
+#' @export
+
+glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples, status=rep(0, nrow(x)),
+							xlab=xval, ylab=yval,
+							search.by="Symbols", jitter=30, display.columns=c("GeneID"), id.column="GeneID",
+							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot",
+							launch=TRUE, ...) {
+
+	##
+	# Input checking
+	
+	if (length(status) != nrow(x)) {
+		stop("The status vector should have same length as the number of columns as main input object.")
+	}
+
+	#
+	##
+
+	if (any(!is.hex(cols))) {
+		cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
+	}
+
+	if (ncol(counts) != length(samples)) {
+		stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+	}
+
+	colourise <- function(x) {
+		if (x == -1) {
+			return(cols[1])
+		} else if (x == 0) {
+			return(cols[2])
+		} else if (x == 1) {
+			return(cols[3])
+		}
+	}
+
+	col <- sapply(status, colourise)
+
+	plotting.data <- data.frame(anno, x, col = col)
+
+	rownames(counts) <- make.names(plotting.data[[id.column]])
+
+	sample.exp <- data.frame(Sample = samples,
+							 Group = factor(groups),
+							 t(cpm(as.matrix(counts), log=TRUE)))
+
+	# Reordering so that significant points appear on top of insignificant points.
+	plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
+						   plotting.data[plotting.data$col != cols[2], ])
+
+	plot1 <- glScatter(plotting.data, xval=xval, yval=yval, xlab=xlab, idval=id.column, ylab=ylab,
+					   annot=c(display.columns, xval, yval), flag="mdplot", ndigits=4, ...)
+
+	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
+						annot=c("Sample", colnames(sample.exp)[3]), 
+						annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
+						ndigits=4, hide=TRUE)
+
+	link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
+	link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
+	button1 <- glAutoinput(1, "highlightById", search.by)
+
+	glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
+			path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+
 }
 
 #' Glimma MD Plot
@@ -66,7 +162,7 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot.
 #' 
-#' @return Draws a two-panel interactive MD plot in an html page. The left 
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
 #' 
 #' @method glMDPlot DGELRT
 #' 
@@ -118,7 +214,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, jitter=jitter, ...)
+	glMDPlot.wehi(plotting.data, sample.exp, display.columns, search.by, id.column=id.column, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, jitter=jitter, ...)
 }
 
 #' Glimma MD Plot
@@ -146,7 +242,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot.
 #' 
-#' @return Draws a two-panel interactive MD plot in an html page. The left 
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
 #' 
 #' @method glMDPlot DGEExact
 #' 
@@ -181,7 +277,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot.
 #' 
-#' @return Draws a two-panel interactive MD plot in an html page. The left 
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
 #' 
 #' @method glMDPlot MArrayLM
 #' 
@@ -233,7 +329,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts), log=TRUE)))
 
-	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, jitter=jitter, ...)
+	glMDPlot.wehi(plotting.data, sample.exp, display.columns, search.by, id.column=id.column, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, jitter=jitter, ...)
 }
 
 #' Glimma MD Plot
@@ -258,7 +354,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot.
 #' 
-#' @return Draws a two-panel interactive MD plot in an html page. The left 
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
 #' 
 #' @method glMDPlot DESeqDataSet
 #' 
@@ -308,12 +404,16 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 								 Adj.PValue = res.df$padj,
 								 anno)
 
+	# Reordering so that significant points appear on top of insignificant points.
+	plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
+						   plotting.data[plotting.data$col != cols[2], ])
+
 	rownames(norm.counts) <- make.names(plotting.data[[id.column]])
 
 	sample.exp <- data.frame(Sample = samples,
 							 Group = factor(groups),
 							 t(cpm(as.matrix(counts(x)), log=TRUE)))
-	
+
 	plot1 <- glScatter(plotting.data, xval="logMean", yval="logFC", xlab="Mean Expression", idval="Symbols", ylab="log-fold-change",
 					   annot=c(display.columns, "logMean", "logFC", "PValue"), flag="mdplot", ndigits=4, ...)
 
@@ -322,8 +422,8 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 						annot.lab=c("Sample", "logCPM"), x.jitter = 30,
 						ndigits=4, hide=TRUE)
 
-	link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
-	link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info="GeneID")
+	link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
+	link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
 	button1 <- glAutoinput(1, "highlightById", search.by)
 
 	glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
