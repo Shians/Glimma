@@ -2,7 +2,7 @@
 % Please edit documentation in R/glBar.R
 \name{glBar}
 \alias{glBar}
-\title{Create an interactive bar plot object}
+\title{Glimma MD Plot}
 \usage{
 glBar(x, ...)
 }
@@ -15,9 +15,12 @@ glBar(x, ...)
 A chart object containing the information to create an interactive bar plot.
 }
 \description{
-Create an interactive bar plot object
+Create an interactive bar plot object.
 }
 \examples{
 
+}
+\author{
+Shian Su
 }
 

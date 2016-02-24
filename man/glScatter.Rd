@@ -2,7 +2,7 @@
 % Please edit documentation in R/glScatter.R
 \name{glScatter}
 \alias{glScatter}
-\title{Create an interactive scatter plot object}
+\title{Glimma Scatter Plot}
 \usage{
 glScatter(x, ...)
 }
@@ -24,5 +24,8 @@ plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Specie
 glimma(plot1, c(1,1), overwrite=TRUE)
 }
 
+}
+\author{
+Shian Su
 }
 

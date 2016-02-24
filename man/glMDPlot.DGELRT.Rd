@@ -2,7 +2,7 @@
 % Please edit documentation in R/glMD.R
 \name{glMDPlot.DGELRT}
 \alias{glMDPlot.DGELRT}
-\title{Draw an interactive MD plot from a DGELRT object}
+\title{Glimma MD Plot}
 \usage{
 \method{glMDPlot}{DGELRT}(x, counts, anno, groups, samples, status = rep(0,
   nrow(x)), coef = ncol(x$coefficients), p.adj.method = "BH",
@@ -48,10 +48,16 @@
 
 \item{...}{additional arguments to be passed onto the MD plot.}
 }
+\value{
+Draws a two-panel interactive MD plot in an html page. The left
+}
 \description{
 Draw an interactive MD plot from a DGELRT object
 }
 \examples{
 
+}
+\author{
+Shian Su
 }
 

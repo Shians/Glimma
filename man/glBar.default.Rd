@@ -2,7 +2,7 @@
 % Please edit documentation in R/glBar.R
 \name{glBar.default}
 \alias{glBar.default}
-\title{Default method for interactive bar plot}
+\title{Glimma MD Plot}
 \usage{
 \method{glBar}{default}(x, yval, names.arg = rownames(x), ndigits = NULL,
   signif = 6, xlab = NULL, ylab = yval, main = NULL, height = 400,
@@ -44,6 +44,9 @@
 A chart object containing the information to create an interactive bar plot.
 }
 \description{
-Default method for interactive bar plot
+Default method for interactive bar plot.
+}
+\author{
+Shian Su
 }
 

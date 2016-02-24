@@ -2,7 +2,7 @@
 % Please edit documentation in R/glScatter.R
 \name{glScatter.default}
 \alias{glScatter.default}
-\title{Default method for creating an interactive scatter plot}
+\title{Glimma Scatter Plot}
 \usage{
 \method{glScatter}{default}(x, xval = "x", yval = "y", idval = NULL,
   x.jitter = 0, y.jitter = 0, ndigits = NULL, signif = 6, log = "",
@@ -58,5 +58,8 @@ A chart object containing the information to create an interactive scatter plot.
 }
 \description{
 Default method for creating an interactive scatter plot
+}
+\author{
+Shian Su
 }
 

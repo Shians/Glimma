@@ -1,11 +1,17 @@
+#' Glimma MD Plot
+#' 
 #' Draw an interactive MD plot
+#' 
+#' @author Shian Su
 #' 
 #' @param x the data.frame containing data to plot.
 #' @param ... additional arguments affecting the plots produced. See specific methods for detailed arguments.
-#' @export
+#' 
 #' @seealso \code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}
+#' 
 #' @examples
 #' 
+#' @export
 
 glMDPlot <- function(x, ...) {
 	UseMethod("glMDPlot")
@@ -27,15 +33,19 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 						annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
 						ndigits=4, hide=TRUE)
 
-	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
-	link2 <- link(1, 2, "click", "yChange", flag="byKey", info="GeneID")
+	link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
+	link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info="GeneID")
 	button1 <- glAutoinput(1, "highlightById", search.by)
 
 	glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
 			path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
 }
 
+#' Glimma MD Plot
+#' 
 #' Draw an interactive MD plot from a DGELRT object
+#' 
+#' @author Shian Su
 #' 
 #' @param x the DGELRT object.
 #' @param counts the matrix containing all counts.
@@ -53,12 +63,16 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns, search.b
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
-#' @param ... additional arguments to be passed onto the MD plot.
 #' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments to be passed onto the MD plot.
+#' 
+#' @return Draws a two-panel interactive MD plot in an html page. The left 
+#' 
 #' @method glMDPlot DGELRT
-#' @export
+#' 
 #' @examples
 #' 
+#' @export
 
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
 							p.adj.method="BH", search.by="Symbols", jitter=30, display.columns=c("GeneID"), id.column="GeneID",
@@ -107,7 +121,11 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, jitter=jitter, ...)
 }
 
+#' Glimma MD Plot
+#' 
 #' Draw an interactive MD plot from a DGELRT objet
+#' 
+#' @author Shian Su
 #' 
 #' @param x the DGEExact object.
 #' @param counts the matrix containing all counts.
@@ -125,16 +143,24 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
-#' @param ... additional arguments to be passed onto the MD plot.
 #' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments to be passed onto the MD plot.
+#' 
+#' @return Draws a two-panel interactive MD plot in an html page. The left 
+#' 
 #' @method glMDPlot DGEExact
-#' @export
+#' 
 #' @examples
 #' 
+#' @export
 
 glMDPlot.DGEExact <- glMDPlot.DGELRT
 
+#' Glimma MD Plot
+#' 
 #' Draw an interactive MD plot from a MArrayLM object
+#' 
+#' @author Shian Su
 #' 
 #' @param x the MArrayLM object.
 #' @param counts the matrix containing all counts.
@@ -152,12 +178,16 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
-#' @param ... additional arguments to be passed onto the MD plot.
 #' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments to be passed onto the MD plot.
+#' 
+#' @return Draws a two-panel interactive MD plot in an html page. The left 
+#' 
 #' @method glMDPlot MArrayLM
-#' @export
+#' 
 #' @examples
 #' 
+#' @export
 
 glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nrow(x)), coef=ncol(x$coefficients),
 							p.adj.method="BH", search.by="Symbols", jitter=30, display.columns=c("GeneID"), id.column="GeneID",
@@ -206,7 +236,11 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 	glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by, default.col=cols[2], path=path, folder=folder, html=html, launch=launch, jitter=jitter, ...)
 }
 
+#' Glimma MD Plot
+#' 
 #' Draw an interactive MD plot from a DESeqDataSet object
+#' 
+#' @author Shian Su
 #' 
 #' @param x the DESeqDataSet object.
 #' @param anno the data.frame containing gene annotations.
@@ -221,12 +255,16 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
-#' @param ... additional arguments to be passed onto the MD plot.
 #' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments to be passed onto the MD plot.
+#' 
+#' @return Draws a two-panel interactive MD plot in an html page. The left 
+#' 
 #' @method glMDPlot DESeqDataSet
-#' @export
+#' 
 #' @examples
 #' 
+#' @export
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x)),
 									search.by="Symbols", jitter=30, display.columns=c("GeneID"), id.column="GeneID",
@@ -284,8 +322,8 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 						annot.lab=c("Sample", "logCPM"), x.jitter = 30,
 						ndigits=4, hide=TRUE)
 
-	link1 <- link(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
-	link2 <- link(1, 2, "click", "yChange", flag="byKey", info="GeneID")
+	link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info="GeneID")
+	link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info="GeneID")
 	button1 <- glAutoinput(1, "highlightById", search.by)
 
 	glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),

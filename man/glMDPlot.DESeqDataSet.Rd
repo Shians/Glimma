@@ -2,7 +2,7 @@
 % Please edit documentation in R/glMD.R
 \name{glMDPlot.DESeqDataSet}
 \alias{glMDPlot.DESeqDataSet}
-\title{Draw an interactive MD plot from a DESeqDataSet object}
+\title{Glimma MD Plot}
 \usage{
 \method{glMDPlot}{DESeqDataSet}(x, anno, groups, samples, status = rep(0,
   nrow(x)), search.by = "Symbols", jitter = 30,
@@ -41,10 +41,16 @@
 
 \item{...}{additional arguments to be passed onto the MD plot.}
 }
+\value{
+Draws a two-panel interactive MD plot in an html page. The left
+}
 \description{
 Draw an interactive MD plot from a DESeqDataSet object
 }
 \examples{
 
+}
+\author{
+Shian Su
 }
 

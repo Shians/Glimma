@@ -1,9 +1,16 @@
+#' Glimma Scatter Plot
+#' 
 #' Create an interactive scatter plot object
+#' 
+#' @author Shian Su
 #' 
 #' @param x the data.frame containing data to plot.
 #' @param ... additional arguments depending on input object type.
+#' 
 #' @return A chart object containing the information to create an interactive scatter plot.
+#' 
 #' @export
+#' 
 #' @examples
 #' data(iris)
 #' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
@@ -16,7 +23,11 @@ glScatter <- function(x, ...) {
 	UseMethod("glScatter")
 }
 
+#' Glimma Scatter Plot
+#' 
 #' Default method for creating an interactive scatter plot
+#'
+#' @author Shian Su
 #' 
 #' @param x the data.frame containing data to plot.
 #' @param xval the column name for the x-axis values.
@@ -39,7 +50,9 @@ glScatter <- function(x, ...) {
 #' @param info additional information for plotting.
 #' @param hide TRUE to hide the plot when page starts.
 #' @param ... additional arguments.
+#' 
 #' @return A chart object containing the information to create an interactive scatter plot.
+#' 
 #' @export
 
 glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
