@@ -49,7 +49,7 @@
 \item{...}{additional arguments to be passed onto the MD plot.}
 }
 \value{
-Draws a two-panel interactive MD plot in an html page. The left
+Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
 }
 \description{
 Draw an interactive MD plot from a MArrayLM object

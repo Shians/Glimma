@@ -21,7 +21,7 @@ Create an interactive scatter plot object
 data(iris)
 plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
 \donttest{
-glimma(plot1, c(1,1), overwrite=TRUE)
+glimma(plot1, c(1,1))
 }
 
 }
