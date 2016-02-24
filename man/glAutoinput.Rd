@@ -2,7 +2,7 @@
 % Please edit documentation in R/glInputs.R
 \name{glAutoinput}
 \alias{glAutoinput}
-\title{Helper function for writing input fields in interactive Glimma plots}
+\title{Glimma Autocomplete Input}
 \usage{
 glAutoinput(target, action, idval = "none", flag = "none")
 }
@@ -19,7 +19,7 @@ glAutoinput(target, action, idval = "none", flag = "none")
 a input object containing the input field information.
 }
 \description{
-Helper function for writing input fields in interactive Glimma plots
+Create an autocompleted input field.
 }
 \examples{
 

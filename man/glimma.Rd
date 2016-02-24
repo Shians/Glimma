@@ -2,7 +2,7 @@
 % Please edit documentation in R/glimma.R
 \name{glimma}
 \alias{glimma}
-\title{Core glimma plot manager. Generates environment for glimma plots.}
+\title{Glimma plot manager}
 \usage{
 glimma(..., layout = c(1, 1), path = getwd(), folder = "glimma-plots",
   html = "index", overwrite = FALSE, launch = TRUE)
@@ -34,5 +34,6 @@ plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Specie
 \donttest{
 glimma(plot1, c(1,1), overwrite=TRUE)
 }
+
 }
 

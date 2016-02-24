@@ -1,3 +1,5 @@
+#' Plot linkages
+#' 
 #' Helper function for writing the link properties in interactive Glimma plots
 #' 
 #' @param from the index of the plot from which the event is dispatched.
@@ -7,12 +9,14 @@
 #' @param flag indicates special links for particular chart types.
 #' @param both creates symmetric links whereby the "dest" action in "to" also triggers the "src" action in "from".
 #' @param info additional info for creating the link.
-#' @export
+#' 
 #' @return a link object containing the plot linking information.
+#' 
 #' @examples 
 #' 
+#' @export
 
-link <- function(from, to, src="none", dest="none", flag="none", both=FALSE, info="none") {
+gllink <- function(from, to, src="none", dest="none", flag="none", both=FALSE, info="none") {
 	out <- list()
 
 	if (src != "none" && dest == "none") {

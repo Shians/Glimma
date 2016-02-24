@@ -1,4 +1,6 @@
-#' Helper function for writing input fields in interactive Glimma plots
+#' Glimma Autocomplete Input
+#' 
+#' Create an autocompleted input field.
 #' 
 #' @param target the index of the plot which receives the event and performs an action.
 #' @param action the action to be performed at target plot using input information.

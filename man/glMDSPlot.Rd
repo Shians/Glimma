@@ -2,7 +2,7 @@
 % Please edit documentation in R/glMDSPlot.R
 \name{glMDSPlot}
 \alias{glMDSPlot}
-\title{Draw an interactive MDS plot}
+\title{Glimma MDS Plot}
 \usage{
 glMDSPlot(x, ...)
 }
@@ -12,13 +12,16 @@ glMDSPlot(x, ...)
 \item{...}{additional arguments affecting the plots produced. See specific methods for detailed arguments.}
 }
 \value{
-writes an interactive MDS plot
+Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
 }
 \description{
-Draw an interactive MDS plot
+Draw an interactive MDS plot gene expression matrix with distances calculated from most variable genes.
 }
 \examples{
 
+}
+\author{
+Shian Su, Gordon Smyth
 }
 \seealso{
 \code{\link{glMDSPlot.default}}, \code{\link{glMDSPlot.DGEList}}

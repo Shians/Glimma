@@ -1,17 +1,27 @@
-#' Create an interactive bar plot object
+#' Glimma MD Plot
+#' 
+#' Create an interactive bar plot object.
+#' 
+#' @author Shian Su
 #' 
 #' @param x the data.frame containing data to plot.
 #' @param ... additional arguments depending on input object type.
+#' 
 #' @return A chart object containing the information to create an interactive bar plot.
-#' @export
+#' 
 #' @examples
 #'
+#' @export
 
 glBar <- function(x, ...) {
 	UseMethod("glBar")
 }
 
-#' Default method for interactive bar plot
+#' Glimma MD Plot
+#' 
+#' Default method for interactive bar plot.
+#' 
+#' @author Shian Su
 #' 
 #' @param x the data.frame containing data to plot.
 #' @param yval the column name for the x-axis values.
@@ -28,7 +38,9 @@ glBar <- function(x, ...) {
 #' @param flag the special flag to indicate special plot.
 #' @param info additional information for plotting.
 #' @param ... additional arguments.
+#' 
 #' @return A chart object containing the information to create an interactive bar plot.
+#' 
 #' @export
 
 glBar.default <- function(x, yval, names.arg=rownames(x), 
@@ -81,6 +93,7 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 	out	
 }
 
+# Helper for writing js commands to draw plot
 constructBarPlot <- function(chart, index, write.out) {
 	command <- "glimma.storage.charts.push(glimma.chart.barChart()"
 

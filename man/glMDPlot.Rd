@@ -2,7 +2,7 @@
 % Please edit documentation in R/glMD.R
 \name{glMDPlot}
 \alias{glMDPlot}
-\title{Draw an interactive MD plot}
+\title{Glimma MD Plot}
 \usage{
 glMDPlot(x, ...)
 }
@@ -16,6 +16,9 @@ Draw an interactive MD plot
 }
 \examples{
 
+}
+\author{
+Shian Su
 }
 \seealso{
 \code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}

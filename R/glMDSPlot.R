@@ -1,19 +1,31 @@
-#' Draw an interactive MDS plot
+#' Glimma MDS Plot
+#' 
+#' Draw an interactive MDS plot gene expression matrix with distances calculated from most variable genes.
+#' 
+#' @author Shian Su, Gordon Smyth
 #' 
 #' @param x the data.frame containing data to plot.
 #' @param ... additional arguments affecting the plots produced. See specific methods for detailed arguments.
-#' @return writes an interactive MDS plot
+#' 
+#' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
+#' 
 #' @seealso \code{\link{glMDSPlot.default}}, \code{\link{glMDSPlot.DGEList}}
-#' @export
+#' 
 #' @examples
 #' 
+#' @export
 
 glMDSPlot <- function(x, ...) {
 	UseMethod("glMDSPlot")
 }
 
-#' Draw an interactive MDS plot
-#' @param x the object containing the gene expressions.
+#' Glimma MDS Plot
+#' 
+#' Draw an interactive MDS plot from a gene expression matrix with distances calculated from most variable genes.
+#' 
+#' @author Shian Su, Gordon Smyth
+#' 
+#' @param x the matrix containing the gene expressions.
 #' @param top the number of top most variable genes to use.
 #' @param labels the labels for each sample.
 #' @param groups the experimental group to which samples belong.
@@ -24,6 +36,8 @@ glMDSPlot <- function(x, ...) {
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments.
+#' 
+#' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
 #' 
 #' @export
 
@@ -100,14 +114,19 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x
 	plot1 <- glScatter(points, xval="dim1", yval="dim2", xlab="Dimension 1", ylab="Dimension 2",
 						 annot=c("label", "group", "dim1", "dim2"), colval="group", main=main)
 	plot2 <- glBar(eigen, names.arg="name", yval="eigen", ylab="Eigvenvalue", height=300, width=300)
-	link1 <- link(2, 1, flag="mds")
+	link1 <- gllink(2, 1, flag="mds")
 
 	glimma(plot1, plot2, link1, layout=c(1, 2), overwrite=TRUE, 
 			path=path, folder=folder, html=html, launch=launch)
 }
 
-#' Draw an interactive MD plot from a DGEList object
-#' @param x the object containing the gene expressions.
+#' Glimma MDS Plot
+#' 
+#' Draw an interactive MD plot from a DGEList object with distances calculated from most variable genes.
+#' 
+#' @author Shian Su, Gordon Smyth
+#' 
+#' @param x the DGEList containing the gene expressions.
 #' @param top the number of top most variable genes to use.
 #' @param labels the labels for each sample.
 #' @param groups the experimental group to which samples belong.
@@ -118,6 +137,9 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments.
+#' 
+#' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
+#' 
 #' @export
 glMDSPlot.DGEList <- function (x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x)),
 								gene.selection="pairwise", main="MDS Plot", 
