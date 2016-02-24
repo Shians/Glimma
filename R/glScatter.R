@@ -9,8 +9,6 @@
 #' 
 #' @return A chart object containing the information to create an interactive scatter plot.
 #' 
-#' @export
-#' 
 #' @examples
 #' data(iris)
 #' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
@@ -18,6 +16,7 @@
 #' glimma(plot1, c(1,1))
 #' }
 #'
+#' @export
 
 glScatter <- function(x, ...) {
 	UseMethod("glScatter")
