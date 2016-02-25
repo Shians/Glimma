@@ -11,7 +11,7 @@ glAutoinput(target, action, idval = "none", flag = "none")
 
 \item{action}{the action to be performed at target plot using input information.}
 
-\item{idval}{the column from which the autcomplete list will be populated.}
+\item{idval}{the column from which the autocomplete list will be populated.}
 
 \item{flag}{indicates special flags for custom features.}
 }

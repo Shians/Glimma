@@ -13,7 +13,7 @@ assertClass <- function(x, type) {
 	}
 }
 
-# Check if data.frame contols all the listed columns
+# Check if data.frame controls all the listed columns
 hasColumns <- function(df, columns) {
 	if (!all(columns %in% names(df))) {
 		violations <- paste(quotify(columns[columns %in% names(df)]), collaps=", ")
