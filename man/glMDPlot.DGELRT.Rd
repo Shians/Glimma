@@ -22,11 +22,11 @@
 
 \item{samples}{the names of the samples.}
 
-\item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.}
+\item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.}
 
 \item{coef}{integer or character index vector indicating which column of object to plot.}
 
-\item{p.adj.method}{character vector indicating multiple testing correction method. (defauls to "BH")}
+\item{p.adj.method}{character vector indicating multiple testing correction method. (defaults to "BH")}
 
 \item{search.by}{the name of the column which will be used to search for data points. (should contain unique values)}
 

@@ -19,7 +19,7 @@
 
 \item{samples}{the names of the samples.}
 
-\item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.}
+\item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.}
 
 \item{search.by}{the name of the column which will be used to search for data points. (should contain unique values)}
 

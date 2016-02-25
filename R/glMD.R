@@ -54,7 +54,9 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param xlab the label on the x axis.
+#' @param ylab the label on the y axis.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
@@ -148,9 +150,9 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples, statu
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param coef integer or character index vector indicating which column of object to plot.
-#' @param p.adj.method character vector indicating multiple testing correction method. (defauls to "BH")
+#' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
@@ -228,9 +230,9 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, status=rep(0, nrow
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param coef integer or character index vector indicating which column of object to plot.
-#' @param p.adj.method character vector indicating multiple testing correction method. (defauls to "BH")
+#' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
@@ -263,9 +265,9 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param coef integer or character index vector indicating which column of object to plot.
-#' @param p.adj.method character vector indicating multiple testing correction method. (defauls to "BH")
+#' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
@@ -342,7 +344,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, status=rep(0, nr
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default color.
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
