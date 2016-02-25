@@ -109,8 +109,16 @@ makeListJson <- function(x) {
 		stopType("list", "x")
 	}
 
+	parse <- function(d) { 
+		if (is.numeric(x[[d]])) {
+			paste(quotify(d), x[[d]], sep=":")
+		} else {
+			paste(quotify(d), quotify(x[[d]]), sep=":")
+		}
+	}
+
 	keys <- names(x)
-	entries <- sapply(keys, function(d) { paste(quotify(d), quotify(x[[d]]), sep=":") })
+	entries <- sapply(keys, parse)
 	output <- paste("{", paste(entries, collapse=","), "}", sep="")
 
 	class(output) <- "json"
