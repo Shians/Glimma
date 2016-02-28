@@ -43,11 +43,11 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 
 #' Glimma MD Plot
 #' 
-#' Draw an interactive MD plot from a DGELRT object
+#' Draw an interactive MD plot from a data.frame
 #' 
 #' @author Shian Su
 #' 
-#' @param x the DGELRT object.
+#' @param x the data.frame object.
 #' @param xval the column to plot on x axis.
 #' @param yval the column to plot on y axis.
 #' @param counts the matrix containing all counts.

@@ -6,9 +6,9 @@ Date: 2016-01-19
 Author: Shian Su
 Maintainer: Shian Su <su.s@wehi.edu.au>
 Description: This package generates interactive plots in a HTML page using d3.js.
-Depends: edgeR
-Suggests: BiocStyle, limma, DESeq2
-License: GPL-3
+Depends: limma, edgeR
+Suggests: BiocStyle, DESeq2
+License: GPL-3 | file LICENSE
 URL: https://github.com/Shians/Glimma
 BugReports: https://github.com/Shians/Glimma/issues
 RoxygenNote: 5.0.1

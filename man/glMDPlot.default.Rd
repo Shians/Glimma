@@ -12,7 +12,7 @@
   folder = "glimma-plots", html = "MD-Plot", launch = TRUE, ...)
 }
 \arguments{
-\item{x}{the DGELRT object.}
+\item{x}{the data.frame object.}
 
 \item{xval}{the column to plot on x axis.}
 
@@ -60,7 +60,7 @@
 Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
 }
 \description{
-Draw an interactive MD plot from a DGELRT object
+Draw an interactive MD plot from a data.frame
 }
 \author{
 Shian Su
