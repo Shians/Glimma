@@ -23,4 +23,7 @@ Create an interactive bar plot object.
 \author{
 Shian Su
 }
+\seealso{
+\code{\link{glBar.default}}
+}
 

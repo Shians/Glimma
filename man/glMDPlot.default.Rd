@@ -6,10 +6,10 @@
 \usage{
 \method{glMDPlot}{default}(x, xval, yval, counts, anno, groups, samples,
   status = rep(0, nrow(x)), xlab = xval, ylab = yval,
-  search.by = "Symbols", jitter = 30, display.columns = c("GeneID"),
-  id.column = "GeneID", cols = c("#0000FF", "#858585", "#B32222"),
-  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
-  launch = TRUE, ...)
+  side.xlab = "Group", side.ylab = "logCPM", search.by = "Symbols",
+  jitter = 30, display.columns = c("GeneID"), id.column = "GeneID",
+  cols = c("#0000FF", "#858585", "#B32222"), path = getwd(),
+  folder = "glimma-plots", html = "MD-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DGELRT object.}
@@ -28,9 +28,13 @@
 
 \item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.}
 
-\item{xlab}{the label on the x axis.}
+\item{xlab}{the label on the x axis for the left plot.}
 
-\item{ylab}{the label on the y axis.}
+\item{ylab}{the label on the y axis for the left plot.}
+
+\item{side.xlab}{the label on the x axis for the right plot.}
+
+\item{side.ylab}{the label on the y axis for the right plot.}
 
 \item{search.by}{the name of the column which will be used to search for data points. (should contain unique values)}
 
