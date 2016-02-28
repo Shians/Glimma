@@ -26,7 +26,7 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 						   plotting.data[plotting.data$col != default.col, ])
 
 	plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC", xlab="Average log CPM", idval=id.column, ylab="log-fold-change",
-					   annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"), flag="mdplot", ndigits=4, ...)
+					   annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"), flag="mdplot", ndigits=4, info=list(search.by=search.by), ...)
 
 	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
@@ -35,7 +35,7 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 
 	link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
 	link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-	button1 <- glAutoinput(1, "highlightById", search.by)
+	button1 <- glAutoinput(1, "highlightBySearch", search.by)
 
 	glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
 			path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
@@ -55,8 +55,10 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param xlab the label on the x axis.
-#' @param ylab the label on the y axis.
+#' @param xlab the label on the x axis for the left plot.
+#' @param ylab the label on the y axis for the left plot.
+#' @param side.xlab the label on the x axis for the right plot.
+#' @param side.ylab the label on the y axis for the right plot.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
@@ -75,7 +77,7 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 #' @export
 
 glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples, status=rep(0, nrow(x)),
-							xlab=xval, ylab=yval,
+							xlab=xval, ylab=yval, side.xlab="Group", side.ylab="logCPM",
 							search.by="Symbols", jitter=30, display.columns=c("GeneID"), id.column="GeneID",
 							cols=c("#0000FF", "#858585", "#B32222"), path=getwd(), folder="glimma-plots", html="MD-Plot",
 							launch=TRUE, ...) {
@@ -114,25 +116,32 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples, statu
 
 	rownames(counts) <- make.names(plotting.data[[id.column]])
 
-	sample.exp <- data.frame(Sample = samples,
-							 Group = factor(groups),
+	if (is(groups, "numeric")) {
+		sample.exp <- data.frame(Sample = samples,
+							 Group = groups,
 							 t(cpm(as.matrix(counts), log=TRUE)))
+	} else {
+		sample.exp <- data.frame(Sample = samples,
+							 Group = factor(groups),
+							 t(cpm(as.matrix(counts), log=TRUE)))	
+	}
 
 	# Reordering so that significant points appear on top of insignificant points.
 	plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
 						   plotting.data[plotting.data$col != cols[2], ])
 
 	plot1 <- glScatter(plotting.data, xval=xval, yval=yval, xlab=xlab, idval=id.column, ylab=ylab,
-					   annot=c(display.columns, xval, yval), flag="mdplot", ndigits=4, ...)
+					   annot=c(display.columns, xval, yval), flag="mdplot", ndigits=4, info=list(search.by=search.by), ...)
 
-	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
+	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], xlab=side.xlab, ylab=side.ylab, 
+						main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
 						annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
 						ndigits=4, hide=TRUE)
 
 	link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
 	link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-	button1 <- glAutoinput(1, "highlightById", search.by)
+	button1 <- glAutoinput(1, "highlightBySearch", search.by)
 
 	glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
 			path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
@@ -417,7 +426,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 							 t(cpm(as.matrix(counts(x)), log=TRUE)))
 
 	plot1 <- glScatter(plotting.data, xval="logMean", yval="logFC", xlab="Mean Expression", idval="Symbols", ylab="log-fold-change",
-					   annot=c(display.columns, "logMean", "logFC", "PValue"), flag="mdplot", ndigits=4, ...)
+					   annot=c(display.columns, "logMean", "logFC", "PValue"), flag="mdplot", ndigits=4, info=list(search.by=search.by), ...)
 
 	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
@@ -426,7 +435,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples, status=rep(0, nrow(x
 
 	link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
 	link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-	button1 <- glAutoinput(1, "highlightById", search.by)
+	button1 <- glAutoinput(1, "highlightBySearch", search.by)
 
 	glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
 			path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)

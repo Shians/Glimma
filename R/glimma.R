@@ -21,7 +21,7 @@
 #' 
 #' @export
 
-glimma <- function(..., layout=c(1,1), path=getwd(), folder="glimma-plots", html="index", overwrite=FALSE, launch=TRUE) {
+glimma <- function(..., layout=c(1,1), path=getwd(), folder="glimma-plots", html="index", overwrite=TRUE, launch=TRUE) {
 	nplots <- 0
 
 	##

@@ -211,7 +211,14 @@ constructScatterPlot <- function(chart, index, write.out) {
 
 	if (!is.null(chart$col)) {
 		c.func <- paste0(".col(function(d) { return d[", quotify(chart$col), "]; })")
-		command <- paste0(command, c.func)	
+		command <- paste0(command, c.func)
+	}
+
+	if (!is.null(chart$info)) {
+		if (!is.null(chart$info$search.by)) {
+			search <- paste0(".searchValue(function(d) { return d[", quotify(chart$info$search.by), "]; })")
+			command <- paste0(command, search)
+		}
 	}
 
 	command <- paste0(command, ");\n")

@@ -9,8 +9,10 @@
 #' 
 #' @return A chart object containing the information to create an interactive bar plot.
 #' 
+#' @seealso \code{\link{glBar.default}}
+#' 
 #' @examples
-#'
+#' 
 #' @export
 
 glBar <- function(x, ...) {
@@ -40,6 +42,8 @@ glBar <- function(x, ...) {
 #' @param ... additional arguments.
 #' 
 #' @return A chart object containing the information to create an interactive bar plot.
+#' 
+#' @method glMDPlot default
 #' 
 #' @export
 
