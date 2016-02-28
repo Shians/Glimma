@@ -43,7 +43,7 @@ glBar <- function(x, ...) {
 #' 
 #' @return A chart object containing the information to create an interactive bar plot.
 #' 
-#' @method glMDPlot default
+#' @method glBar default
 #' 
 #' @export
 
