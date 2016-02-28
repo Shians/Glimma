@@ -39,6 +39,8 @@ glMDSPlot <- function(x, ...) {
 #' 
 #' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
 #' 
+#' @method glMDSPlot default
+#' 
 #' @export
 
 # Code taken from plotMDS of limma bioConductor package with alterations
@@ -141,6 +143,8 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x
 #' @param ... additional arguments.
 #' 
 #' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
+#' 
+#' @method glMDSPlot DGEList
 #' 
 #' @export
 glMDSPlot.DGEList <- function (x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x)),
