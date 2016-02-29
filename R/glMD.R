@@ -28,7 +28,7 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 	plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC", xlab="Average log CPM", idval=id.column, ylab="log-fold-change",
 					   annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"), flag="mdplot", ndigits=4, info=list(search.by=search.by), ...)
 
-	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
+	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], idval="Sample", ylab="logCPM", main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
 						annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
 						ndigits=4, hide=TRUE)
@@ -428,7 +428,7 @@ glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples, status=rep(0
 	plot1 <- glScatter(plotting.data, xval="logMean", yval="logFC", xlab="Mean Expression", idval="Symbols", ylab="log-fold-change",
 					   annot=c(display.columns, "logMean", "logFC", "PValue"), flag="mdplot", ndigits=4, info=list(search.by=search.by), ...)
 
-	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], ylab="logCPM", main=colnames(sample.exp)[3], 
+	plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], idval="Sample", ylab="logCPM", main=colnames(sample.exp)[3], 
 						annot=c("Sample", colnames(sample.exp)[3]), 
 						annot.lab=c("Sample", "logCPM"), x.jitter = 30,
 						ndigits=4, hide=TRUE)
