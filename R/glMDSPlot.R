@@ -150,7 +150,7 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x
 glMDSPlot.DGEList <- function (x, top=500, labels=1:ncol(x), groups=rep(1, ncol(x)),
 								gene.selection="pairwise", main="MDS Plot", 
 								path=getwd(), folder="glimma-plots", html="MDS-Plot", launch=TRUE, ...) {
-	x <- cpm(x, log=TRUE)
+	x <- edgeR::cpm(x, log=TRUE)
 	glMDSPlot.default(x, top=500, labels=labels, groups=groups, gene.selection="pairwise", main=main, 
 						path=path, folder=folder, html=html, launch=launch, ...)
 }

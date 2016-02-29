@@ -17,7 +17,7 @@ BiocStyle::latex()
 \title{Overview of the Glimma package}
 \author{Shian Su, Matthew E. Ritchie}
 \date{28 January 2016\\
-Revised 24 February 2016}
+Revised 27 February 2016}
 \maketitle
 
 \tableofcontents
@@ -61,6 +61,7 @@ The plots that \Biocpkg{Glimma} extends are shown in Figure~\ref{fig:static}.
 <<basicanalysis, eval=TRUE, echo=TRUE, fig=TRUE, width=10, height=5, include=FALSE>>=
 library(edgeR)
 library(limma)
+library(Glimma)
 load("LymphomaRNAseq.rda")
 class(x)
 
@@ -104,7 +105,7 @@ plotMD(vfit,col=2, status=results[,2], hl.col=c("red", "blue"),
   \label{fig:static}
 \end{figure}
 
-\section{Interactive multidimensional scaling plots}
+\section{Interactive Multidimensional Scaling Plots}
 
 The first extension display extends \Rfunction{plotMDS} from \Biocpkg{limma}.
 Multidimensional scaling is a dimension reduction technique that is
@@ -134,7 +135,7 @@ or a matrix of expression values and accepts labels and experimental
 group information so that samples of different types can be readily
 distinguished from one and other.
 
-<<interactiveMDS, eval=FALSE>>=
+<<interactiveMDS, eval=TRUE>>=
 glMDSPlot(x, labels=1:7, groups=genotype, folder="Smchd1-Lymphoma")
 @
 
@@ -145,7 +146,7 @@ glMDSPlot(x, labels=1:7, groups=genotype, folder="Smchd1-Lymphoma")
   \label{fig:mds}
 \end{figure}
 
-\section{Interactive Mean-Difference plots}
+\section{Interactive Mean-Difference Plots}
 
 A second extension extends \Rfunction{plotMD} from \Biocpkg{limma}.
 The \Rfunction{glMDPlot} function generates an html page with two panels 
@@ -172,8 +173,8 @@ By default, the data is saved in a directory named {\tt glimma-plots},
 with the file {\tt MD-Plot.html} opening the interactive display shown above.
 This function works with output from \Biocpkg{limma}, \Biocpkg{edgeR} and \Biocpkg{DESeq2}.
 
-<<interactiveMD, eval=FALSE>>=
-glMDPlot(vfit, x$counts, x$genes, genotype, 1:7, status=results[,2],  
+<<interactiveMD, eval=TRUE>>=
+glMDPlot(vfit, counts=x$counts, anno=x$genes, groups=genotype, samples=1:7, status=results[,2],  
          display.columns=c("Symbols", "GeneID", "GeneName"), folder="Smchd1-Lymphoma",
          main="MD plot: Wild-type vs Smchd1")
 @
@@ -186,6 +187,32 @@ glMDPlot(vfit, x$counts, x$genes, genotype, 1:7, status=results[,2],
     expression in sample 1 has been highlighted in the right panel.}
   \label{fig:md}
 \end{figure}
+
+A default version of \Rfunction{glMDPlot} accepts a \Robject{data.frame} of 
+results (e.g. an unsorted top table from \Rpackage{limma} - note that the genes
+must be in the same order as they appear in the {\tt counts} and {\tt anno} objects).
+This is intended to allow results from any arbitrary differential expresssion 
+analysis to be handled using this tool.
+The user can then specify the relevant columns to display in the summary plot. 
+For example the code below makes a volcano plot by choosing the 
+log-odds ({\tt B} versus the log-fold-change ({\tt logFC}) columns. 
+
+<<interactivevolcano, eval=TRUE>>=
+topt = topTable(vfit, coef=2, number=Inf, sort="none")
+glMDPlot(topt, xval="logFC", yval="B", counts=x$counts, anno=x$genes, groups=genotype, 
+         samples=1:7, status=results[,2], display.columns=c("Symbols", "GeneID", "GeneName"), 
+         folder="Smchd1-Lymphoma", html="volcano")
+@ 
+
+\begin{figure}
+  \centerline{\includegraphics[width=\linewidth]{glMDPlotCustom}}
+  \caption{Screen shot of interactive volcano plot created using 
+    the \Rfunction{glMDPlot} by providing an unsorted {\tt data.frame} of results from
+    a differential expression analysis ({\it limma-voom} in this case)
+    and selecting the columns to plot via the {\tt xval} and {\tt yval} arguments.}
+  \label{fig:volcano}
+\end{figure}
+
 
 \begin{thebibliography}{}
 \bibitem[1]{limma} Ritchie ME, Phipson B, Wu D, Hu Y, Law CW, Shi W, Smyth GK. (2015) limma powers differential
@@ -206,5 +233,9 @@ regulator Smchd1, {\it Genomics Data}, {\bf 7}:144--7.
 \bibitem[8]{treat} McCarthy DJ, Smyth GK (2009) Testing significance relative to a fold-change threshold is a TREAT, 
   {\it Bioinformatics}, {\bf 25}(6):765-71.
 \end{thebibliography}
+
+<<sessioninfo>>=
+sessionInfo()
+@ 
 
 \end{document}
