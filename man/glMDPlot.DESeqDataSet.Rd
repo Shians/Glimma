@@ -4,14 +4,16 @@
 \alias{glMDPlot.DESeqDataSet}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{DESeqDataSet}(x, anno, groups, samples, status = rep(0,
-  nrow(x)), search.by = "Symbols", jitter = 30,
+\method{glMDPlot}{DESeqDataSet}(x, counts, anno, groups, samples,
+  status = rep(0, nrow(x)), search.by = "Symbols", jitter = 30,
   display.columns = c("GeneID"), id.column = "GeneID", cols = c("#0000FF",
   "#858585", "#B32222"), path = getwd(), folder = "glimma-plots",
   html = "MD-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DESeqDataSet object.}
+
+\item{counts}{the matrix containing all counts.}
 
 \item{anno}{the data.frame containing gene annotations.}
 
