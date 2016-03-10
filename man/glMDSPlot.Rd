@@ -18,6 +18,11 @@ Draws a two-panel interactive MDS plot in an html page. The left panel contains 
 Draw an interactive MDS plot gene expression matrix with distances calculated from most variable genes.
 }
 \examples{
+data(lymphomaRNAseq)
+genotype <- relevel(lymphomaRNAseq$samples$group, "Smchd1-null")
+\donttest{
+glMDSPlot(lymphomaRNAseq, labels=1:7, groups=genotype)
+}
 
 }
 \author{
