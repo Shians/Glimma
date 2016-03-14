@@ -1,1 +1,6 @@
+.DS_Store
 .git
+_site
+glimma.sublime-project
+glimma.sublime-workspace
+inst/tests

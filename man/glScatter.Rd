@@ -19,11 +19,10 @@ Create an interactive scatter plot object
 }
 \examples{
 data(iris)
-plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
 \donttest{
+plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
 glimma(plot1, c(1,1))
 }
-
 }
 \author{
 Shian Su

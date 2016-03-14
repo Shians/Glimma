@@ -21,7 +21,4 @@ a input object containing the input field information.
 \description{
 Create an autocompleted input field.
 }
-\examples{
-
-}
 

@@ -1,0 +1,17 @@
+Glimma News
+
+CHANGES IN Glimma 0.99.4:
+
+  * Added sample colours for MD plot.
+
+CHANGES IN Glimma 0.99.3:
+  
+  * Imported p.adjust for relevant functions.
+
+CHANGES IN Glimma 0.99.2:
+
+  * Added don't test cases for non-exported functions to pass checks.
+
+CHANGES IN Glimma 0.99.1:
+
+  * Initial package creation.

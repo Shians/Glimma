@@ -46,6 +46,15 @@ A chart object containing the information to create an interactive bar plot.
 \description{
 Default method for interactive bar plot.
 }
+\examples{
+data(mtcars)
+counts <- table(mtcars$gear)
+data <- data.frame(nGears=as.numeric(names(counts)), Count=as.numeric(counts))
+\donttest{
+plot1 <- glBar(data, "Count", "nGears", ylab="Number of Gears")
+glimma(plot1, layout=c(1,1), launch=TRUE)
+}
+}
 \author{
 Shian Su
 }

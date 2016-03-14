@@ -6,16 +6,14 @@
 #' @param action the action to be performed at target plot using input information.
 #' @param idval the column from which the autocomplete list will be populated.
 #' @param flag indicates special flags for custom features.
-#' @export
-#' @return a input object containing the input field information.
-#' @examples 
 #' 
+#' @return a input object containing the input field information.
 
 glAutoinput <- function(target, action, idval="none", flag="none") {
-	out <- list()
-	out$input <- data.frame(target=target, action=action, idval=idval, flag=flag)
-	out$type <- "autocomplete"
-	class(out) <- "jsinput"
-	
-	return(out)
+    out <- list()
+    out$input <- data.frame(target=target, action=action, idval=idval, flag=flag)
+    out$type <- "autocomplete"
+    class(out) <- "jsinput"
+    
+    return(out)
 }
