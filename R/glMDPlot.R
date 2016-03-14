@@ -1,46 +1,46 @@
 #' Glimma MD Plot
-#' 
+#'
 #' Draw an interactive MD plot
-#' 
+#'
 #' @author Shian Su
-#' 
+#'
 #' @param x the data.frame containing data to plot.
 #' @param ... additional arguments affecting the plots produced. See specific methods for detailed arguments.
-#' 
+#'
 #' @seealso \code{\link{glMDPlot.default}}, \code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}
-#' 
+#'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
-#' 
+#'
 #' @examples
 #' library(limma)
 #' library(edgeR)
-#' 
+#'
 #' data(lymphomaRNAseq)
 #' x <- lymphomaRNAseq
-#' 
+#'
 #' sel <- rowSums(cpm(x$counts)>0.5)>=3
 #' x <- x[sel,]
-#' 
+#'
 #' genotype <- relevel(x$samples$group, "Smchd1-null")
 #' x <- calcNormFactors(x, method="TMM")
 #' des <- model.matrix(~genotype)
-#' 
+#'
 #' ## Apply voom with sample quality weights and fit linear model
 #' v <- voomWithQualityWeights(x, design=des, normalization="none", plot=FALSE)
 #' vfit <- lmFit(v,des)
-#' 
+#'
 #' ## Apply treat relative to a fold-change of 1.5
 #' vtfit <- treat(vfit,lfc=log2(1.5))
 #' vfit <- eBayes(vfit)
 #' results <- decideTests(vfit,p.value=0.01)
-#' 
+#'
 #' \donttest{
 #' glMDPlot(vfit, counts=x$counts, anno=x$genes, groups=genotype, samples=1:7,
 #'          status=results[,2], main="MD plot: Wild-type vs Smchd1",
 #'          display.columns=c("Symbols", "GeneID", "GeneName"),
 #'          folder="Smchd1-Lymphoma")
 #' }
-#' 
+#'
 #' @export
 
 glMDPlot <- function(x, ...) {
@@ -49,23 +49,23 @@ glMDPlot <- function(x, ...) {
 
 # Hidden internal functions for use by edgeR and limma based plotting
 glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
-                            default.col, id.column, path, folder, html, launch, 
+                            default.col, id.column, path, folder, html, launch,
                             jitter, ...) {
 
     # Reordering so that significant points appear on top of insignificant points.
-    plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ], 
+    plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ],
                            plotting.data[plotting.data$col != default.col, ])
 
-    plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC", 
-                    xlab="Average log CPM", idval=id.column, 
+    plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC",
+                    xlab="Average log CPM", idval=id.column,
                     ylab="log-fold-change",
-                    annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"), 
-                    flag="mdplot", ndigits=4, info=list(search.by=search.by), 
+                    annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"),
+                    flag="mdplot", ndigits=4, info=list(search.by=search.by),
                     ...)
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], 
-                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[3], 
-                    annot=c("Sample", colnames(sample.exp)[3]), 
+    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3],
+                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[3],
+                    annot=c("Sample", colnames(sample.exp)[3]),
                     annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
                     ndigits=4, hide=TRUE)
 
@@ -78,11 +78,11 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 }
 
 #' Glimma MD Plot
-#' 
+#'
 #' Draw an interactive MD plot from a data.frame
-#' 
+#'
 #' @author Shian Su
-#' 
+#'
 #' @param x the data.frame object.
 #' @param xval the column to plot on x axis.
 #' @param yval the column to plot on y axis.
@@ -105,29 +105,29 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot.
-#' 
+#'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
-#' 
+#'
 #' @method glMDPlot default
-#' 
+#'
 #' @importFrom stats p.adjust
 #' @importFrom methods is
 #' @importFrom edgeR cpm
-#' 
+#'
 #' @export
 
-glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples, 
-                        status=rep(0, nrow(x)), xlab=xval, ylab=yval, 
+glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
+                        status=rep(0, nrow(x)), xlab=xval, ylab=yval,
                         side.xlab="Group", side.ylab="logCPM",
-                        search.by="Symbols", jitter=30, 
+                        search.by="Symbols", jitter=30,
                         display.columns=c("GeneID"), id.column="GeneID",
-                        cols=c("#0000FF", "#858585", "#B32222"), 
+                        cols=c("#0000FF", "#858585", "#B32222"),
                         path=getwd(), folder="glimma-plots", html="MD-Plot",
                         launch=TRUE, ...) {
 
     ##
     # Input checking
-    
+
     if (length(status) != nrow(x)) {
         stop("The status vector should have same length as the number of columns as main input object.")
     }
@@ -166,22 +166,22 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
     } else {
         sample.exp <- data.frame(Sample = samples,
                              Group = factor(groups),
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))    
+                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
     }
 
     # Reordering so that significant points appear on top of insignificant points.
     plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
                            plotting.data[plotting.data$col != cols[2], ])
 
-    plot1 <- glScatter(plotting.data, xval=xval, yval=yval, 
+    plot1 <- glScatter(plotting.data, xval=xval, yval=yval,
                     xlab=xlab, idval=id.column, ylab=ylab,
-                    annot=c(display.columns, xval, yval), flag="mdplot", 
+                    annot=c(display.columns, xval, yval), flag="mdplot",
                     ndigits=4, info=list(search.by=search.by), ...)
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], 
-                        xlab=side.xlab, ylab=side.ylab, 
-                        main=colnames(sample.exp)[3], 
-                        annot=c("Sample", colnames(sample.exp)[3]), 
+    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3],
+                        xlab=side.xlab, ylab=side.ylab,
+                        main=colnames(sample.exp)[3],
+                        annot=c("Sample", colnames(sample.exp)[3]),
                         annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
                         ndigits=4, hide=TRUE)
 
@@ -195,11 +195,11 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 }
 
 #' Glimma MD Plot
-#' 
+#'
 #' Draw an interactive MD plot from a DGELRT object
-#' 
+#'
 #' @author Shian Su
-#' 
+#'
 #' @param x the DGELRT object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
@@ -218,19 +218,19 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot.
-#' 
+#'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
-#' 
+#'
 #' @method glMDPlot DGELRT
-#' 
+#'
 #' @importFrom stats p.adjust
 #' @importFrom methods is
-#' 
+#'
 #' @export
 
-glMDPlot.DGELRT <- function(x, counts, anno, groups, samples, 
+glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
                             status=rep(0, nrow(x)), coef=ncol(x$coefficients),
-                            p.adj.method="BH", search.by="Symbols", jitter=30, 
+                            p.adj.method="BH", search.by="Symbols", jitter=30,
                             display.columns=c("GeneID"), id.column="GeneID",
                             cols=c("#0000FF", "#858585", "#B32222"),
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -238,7 +238,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 
     ##
     # Input checking
-    
+
     if (length(status) != nrow(x)) {
         stop("The status vector should have same length as the number of columns as main input object.")
     }
@@ -266,8 +266,8 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 
     col <- sapply(status, colourise)
 
-    plotting.data <- data.frame(anno, x$table, col = col, 
-                                Adj.PValue = p.adjust(x$table$PValue, 
+    plotting.data <- data.frame(anno, x$table, col = col,
+                                Adj.PValue = p.adjust(x$table$PValue,
                                 method = p.adj.method))
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
@@ -283,11 +283,11 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 }
 
 #' Glimma MD Plot
-#' 
+#'
 #' Draw an interactive MD plot from a DGELRT objet
-#' 
+#'
 #' @author Shian Su
-#' 
+#'
 #' @param x the DGEExact object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
@@ -306,24 +306,24 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot.
-#' 
+#'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
-#' 
+#'
 #' @method glMDPlot DGEExact
-#' 
+#'
 #' @importFrom stats p.adjust
 #' @importFrom methods is
-#' 
+#'
 #' @export
 
 glMDPlot.DGEExact <- glMDPlot.DGELRT
 
 #' Glimma MD Plot
-#' 
+#'
 #' Draw an interactive MD plot from a MArrayLM object
-#' 
+#'
 #' @author Shian Su
-#' 
+#'
 #' @param x the MArrayLM object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
@@ -342,57 +342,57 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot.
-#' 
+#'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
-#' 
+#'
 #' @examples
 #' \donttest{
 #' library(limma)
 #' library(edgeR)
-#' 
+#'
 #' data(lymphomaRNAseq)
 #' x <- lymphomaRNAseq
-#' 
+#'
 #' sel <- rowSums(cpm(x$counts)>0.5)>=3
 #' x <- x[sel,]
-#' 
+#'
 #' genotype <- relevel(x$samples$group, "Smchd1-null")
 #' x <- calcNormFactors(x, method="TMM")
 #' des <- model.matrix(~genotype)
-#' 
+#'
 #' ## Apply voom with sample quality weights and fit linear model
 #' v <- voomWithQualityWeights(x, design=des, normalization="none", plot=FALSE)
 #' vfit <- lmFit(v,des)
-#' 
+#'
 #' ## Apply treat relative to a fold-change of 1.5
 #' vtfit <- treat(vfit,lfc=log2(1.5))
 #' vfit <- eBayes(vfit)
 #' results <- decideTests(vfit,p.value=0.01)
-#' 
+#'
 #' glMDPlot(vfit, counts=x$counts, anno=x$genes, groups=genotype, samples=1:7,
 #'          status=results[,2], main="MD plot: Wild-type vs Smchd1",
 #'          display.columns=c("Symbols", "GeneID", "GeneName"),
 #'          folder="Smchd1-Lymphoma")
 #' }
-#' 
+#'
 #' @method glMDPlot MArrayLM
-#' 
+#'
 #' @importFrom stats p.adjust
 #' @importFrom methods is
-#' 
+#'
 #' @export
 
-glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples, 
+glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                             status=rep(0, nrow(x)), coef=ncol(x$coefficients),
-                            p.adj.method="BH", search.by="Symbols", jitter=30, 
+                            p.adj.method="BH", search.by="Symbols", jitter=30,
                             display.columns=c("GeneID"), id.column="GeneID",
-                            cols=c("#0000FF", "#858585", "#B32222"), 
+                            cols=c("#0000FF", "#858585", "#B32222"),
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
                             launch=TRUE, ...) {
 
     ##
     # Input checking
-    
+
     if (length(status) != nrow(x)) {
         stop("The status vector should have same length as the number of columns as main input object.")
     }
@@ -416,7 +416,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 
     col <- sapply(status, colourise)
 
-    plotting.data <- data.frame(logFC = x$coefficients[,coef], 
+    plotting.data <- data.frame(logFC = x$coefficients[,coef],
                                  logCPM = x$Amean,
                                  col = col,
                                  PValue = x$p.value[,coef],
@@ -429,17 +429,17 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                              Group = factor(groups),
                              t(edgeR::cpm(as.matrix(counts), log=TRUE)))
 
-    glMDPlot.wehi(plotting.data, sample.exp, display.columns, search.by, 
+    glMDPlot.wehi(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch, ...)
 }
 
 #' Glimma MD Plot
-#' 
+#'
 #' Draw an interactive MD plot from a DESeqDataSet object
-#' 
+#'
 #' @author Shian Su
-#' 
+#'
 #' @param x the DESeqDataSet object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
@@ -456,28 +456,28 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot.
-#' 
+#'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
-#' 
+#'
 #' @method glMDPlot DESeqDataSet
-#' 
+#'
 #' @importFrom methods is
 #' @importFrom edgeR cpm
 #' @importFrom DESeq2 counts DESeqDataSet
-#' 
+#'
 #' @export
 
-glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples, 
-                                status=rep(0, nrow(x)), search.by="Symbols", 
-                                jitter=30, display.columns=c("GeneID"), 
-                                id.column="GeneID", 
-                                cols=c("#0000FF", "#858585", "#B32222"), 
-                                path=getwd(), folder="glimma-plots", 
+glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples,
+                                status=rep(0, nrow(x)), search.by="Symbols",
+                                jitter=30, display.columns=c("GeneID"),
+                                id.column="GeneID",
+                                cols=c("#0000FF", "#858585", "#B32222"),
+                                path=getwd(), folder="glimma-plots",
                                 html="MD-Plot", launch=TRUE, ...) {
 
     ##
     # Input checking
-    
+
     if (length(status) != nrow(x)) {
         stop("The status vector should have same length as the number of columns as main input object.")
     }
@@ -488,7 +488,7 @@ glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples,
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
-    
+
     res <- DESeq2::results(x)
     res.df <- as.data.frame(res)
 
@@ -504,7 +504,7 @@ glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples,
 
     col <- sapply(status, colourise)
 
-    plotting.data <- data.frame(logFC = res.df$log2FoldChange, 
+    plotting.data <- data.frame(logFC = res.df$log2FoldChange,
                                  logMean = log(res.df$baseMean + 0.5),
                                  col = col,
                                  PValue = res.df$pvalue,
@@ -521,16 +521,16 @@ glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples,
                              Group = factor(groups),
                              t(edgeR::cpm(counts, log=TRUE)))
 
-    plot1 <- glScatter(plotting.data, xval="logMean", yval="logFC", 
-                    xlab="Mean Expression", idval="Symbols", 
+    plot1 <- glScatter(plotting.data, xval="logMean", yval="logFC",
+                    xlab="Mean Expression", idval="Symbols",
                     ylab="log-fold-change",
-                    annot=c(display.columns, "logMean", "logFC", "PValue"), 
-                    flag="mdplot", ndigits=4, info=list(search.by=search.by), 
+                    annot=c(display.columns, "logMean", "logFC", "PValue"),
+                    flag="mdplot", ndigits=4, info=list(search.by=search.by),
                     ...)
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3], 
-                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[3], 
-                    annot=c("Sample", colnames(sample.exp)[3]), 
+    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3],
+                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[3],
+                    annot=c("Sample", colnames(sample.exp)[3]),
                     annot.lab=c("Sample", "logCPM"), x.jitter = 30,
                     ndigits=4, hide=TRUE)
 
