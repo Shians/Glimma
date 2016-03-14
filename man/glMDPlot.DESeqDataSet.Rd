@@ -7,8 +7,9 @@
 \method{glMDPlot}{DESeqDataSet}(x, counts, anno, groups, samples,
   status = rep(0, nrow(x)), search.by = "Symbols", jitter = 30,
   display.columns = c("GeneID"), id.column = "GeneID", cols = c("#0000FF",
-  "#858585", "#B32222"), path = getwd(), folder = "glimma-plots",
-  html = "MD-Plot", launch = TRUE, ...)
+  "#858585", "#B32222"), sample.cols = rep("1f77b4", ncol(counts)),
+  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
+  launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DESeqDataSet object.}
@@ -32,6 +33,8 @@
 \item{id.column}{the column containing unique identifiers for each gene.}
 
 \item{cols}{vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)}
+
+\item{sample.cols}{vector of strings denoting colours for each sample point on the expression plot.}
 
 \item{path}{the path in which the folder will be created.}
 
