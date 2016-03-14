@@ -8,7 +8,7 @@
   nrow(x)), coef = ncol(x$coefficients), p.adj.method = "BH",
   search.by = "Symbols", jitter = 30, display.columns = c("GeneID"),
   id.column = "GeneID", cols = c("#0000FF", "#858585", "#B32222"),
-  sample.cols = rep("1f77b4", ncol(counts)), path = getwd(),
+  sample.cols = rep("#1f77b4", ncol(counts)), path = getwd(),
   folder = "glimma-plots", html = "MD-Plot", launch = TRUE, ...)
 }
 \arguments{
