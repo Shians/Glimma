@@ -6,8 +6,8 @@
 \usage{
 \method{glMDPlot}{DGEExact}(x, counts, anno, groups, samples, status = rep(0,
   nrow(x)), coef = ncol(x$coefficients), p.adj.method = "BH",
-  search.by = "Symbols", jitter = 30, display.columns = c("GeneID"),
-  id.column = "GeneID", cols = c("#0000FF", "#858585", "#B32222"),
+  search.by = "Symbols", jitter = 30, id.column = "GeneID",
+  display.columns = id.column, cols = c("#0000FF", "#858585", "#B32222"),
   sample.cols = rep("#1f77b4", ncol(counts)), path = getwd(),
   folder = "glimma-plots", html = "MD-Plot", launch = TRUE, ...)
 }
@@ -32,9 +32,9 @@
 
 \item{jitter}{the amount of jitter to apply to the samples in the expressions plot.}
 
-\item{display.columns}{character vector containing names of columns to display in mouseover tooltips.}
-
 \item{id.column}{the column containing unique identifiers for each gene.}
+
+\item{display.columns}{character vector containing names of columns to display in mouseover tooltips.}
 
 \item{cols}{vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)}
 
