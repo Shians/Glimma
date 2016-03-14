@@ -195,7 +195,8 @@ pathMaker <- function(path) {
 #' @importFrom grDevices col2rgb
 
 CharToHexCol <- function(x) {
-    out <- apply(as.character(as.hexmode(col2rgb(x, alpha=FALSE))), 2, function(x) {paste0("#", paste0(x, collapse=""))})
+    temp <- as.character(as.hexmode(col2rgb(x, alpha=FALSE)))
+    out <- apply(temp, 2, function(x) {paste0("#", paste0(x, collapse=""))})
     sapply(out, function(x) { ifelse(x=="#000", "#000000", x) })
 }
 
@@ -211,11 +212,24 @@ CharToHexCol <- function(x) {
 
 NumToHexCol <- function(x) {
     col <- palette()[as.integer(col)]
-    out <- apply(as.character(as.hexmode(col2rgb(x, alpha=FALSE))), 2, function(x) {paste0("#", paste0(x, collapse=""))})
+    temp <- as.character(as.hexmode(col2rgb(x, alpha=FALSE)))
+    out <- apply(temp, 2, function(x) {paste0("#", paste0(x, collapse=""))})
     sapply(out, function(x) { ifelse(x=="#000", "#000000", x) })
 }
 
 # Function to check if values are valid hexadecimal expressions
 is.hex <- function(x) {
     (grepl("#[[:xdigit:]]{6}", x) | grepl("#[[:xdigit:]]{8}", x))
+}
+
+# 
+as.hexcol <- function(x) {
+    if (is.character(x)) {
+        return(CharToHexCol(x))
+    } else if (is.numeric(x)) {
+        return(NumToHexCol(x))
+    } else {
+        warning("input is not character or numeric, no hex conversion made.")
+        return(x)
+    }
 }
