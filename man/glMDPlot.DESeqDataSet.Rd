@@ -7,7 +7,7 @@
 \method{glMDPlot}{DESeqDataSet}(x, anno, groups, samples, status = rep(0,
   nrow(x)), search.by = "Symbols", jitter = 30,
   display.columns = c("GeneID"), id.column = "GeneID", cols = c("#0000FF",
-  "#858585", "#B32222"), sample.cols = rep("#1f77b4", ncol(dds)),
+  "#858585", "#B32222"), sample.cols = rep("#1f77b4", ncol(x)),
   path = getwd(), folder = "glimma-plots", html = "MD-Plot",
   launch = TRUE, ...)
 }

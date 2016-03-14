@@ -485,7 +485,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                 jitter=30, display.columns=c("GeneID"),
                                 id.column="GeneID",
                                 cols=c("#0000FF", "#858585", "#B32222"),
-                                sample.cols=rep("#1f77b4", ncol(dds)),
+                                sample.cols=rep("#1f77b4", ncol(x)),
                                 path=getwd(), folder="glimma-plots",
                                 html="MD-Plot", launch=TRUE, ...) {
 
