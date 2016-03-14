@@ -225,7 +225,13 @@ is.hex <- function(x) {
 # 
 as.hexcol <- function(x) {
     if (is.character(x)) {
-        return(CharToHexCol(x))
+        if (all(is.hex(x))) {
+            return(x)
+        } else {
+            temp <- x
+            temp[!is.hex(x)] <- CharToHexCol(temp[!is.hex(x)])
+            return(temp)    
+        }
     } else if (is.numeric(x)) {
         return(NumToHexCol(x))
     } else {
