@@ -63,9 +63,10 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
                     flag="mdplot", ndigits=4, info=list(search.by=search.by),
                     ...)
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3],
-                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[3],
-                    annot=c("Sample", colnames(sample.exp)[3]),
+    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[4],
+                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[4],
+                    annot=c("Sample", colnames(sample.exp)[4]),
+                    colval="col",
                     annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
                     ndigits=4, hide=TRUE)
 
@@ -100,6 +101,7 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -122,6 +124,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
                         search.by="Symbols", jitter=30,
                         display.columns=c("GeneID"), id.column="GeneID",
                         cols=c("#0000FF", "#858585", "#B32222"),
+                        sample.cols=rep("1f77b4", ncol(counts)),
                         path=getwd(), folder="glimma-plots", html="MD-Plot",
                         launch=TRUE, ...) {
 
@@ -161,10 +164,12 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 
     if (is(groups, "numeric")) {
         sample.exp <- data.frame(Sample = samples,
+                             col = as.hexcol(sample.cols),
                              Group = groups,
                              t(edgeR::cpm(as.matrix(counts), log=TRUE)))
     } else {
         sample.exp <- data.frame(Sample = samples,
+                             col = as.hexcol(sample.cols),
                              Group = factor(groups),
                              t(edgeR::cpm(as.matrix(counts), log=TRUE)))
     }
@@ -178,10 +183,11 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
                     annot=c(display.columns, xval, yval), flag="mdplot",
                     ndigits=4, info=list(search.by=search.by), ...)
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3],
+    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[4],
                         xlab=side.xlab, ylab=side.ylab,
-                        main=colnames(sample.exp)[3],
-                        annot=c("Sample", colnames(sample.exp)[3]),
+                        main=colnames(sample.exp)[4],
+                        colval="col",
+                        annot=c("Sample", colnames(sample.exp)[4]),
                         annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
                         ndigits=4, hide=TRUE)
 
@@ -213,6 +219,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -233,6 +240,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             display.columns=c("GeneID"), id.column="GeneID",
                             cols=c("#0000FF", "#858585", "#B32222"),
+                            sample.cols=rep("1f77b4", ncol(counts)),
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
                             launch=TRUE, ...) {
 
@@ -273,6 +281,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
     rownames(counts) <- make.names(plotting.data[[id.column]])
 
     sample.exp <- data.frame(Sample = samples,
+                             col = as.hexcol(sample.cols),
                              Group = factor(groups),
                              t(edgeR::cpm(as.matrix(counts), log=TRUE)))
 
@@ -301,6 +310,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -337,6 +347,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -387,6 +398,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             display.columns=c("GeneID"), id.column="GeneID",
                             cols=c("#0000FF", "#858585", "#B32222"),
+                            sample.cols=rep("1f77b4", ncol(counts)),
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
                             launch=TRUE, ...) {
 
@@ -426,6 +438,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
     rownames(counts) <- make.names(plotting.data[[id.column]])
 
     sample.exp <- data.frame(Sample = samples,
+                             col = as.hexcol(sample.cols),
                              Group = factor(groups),
                              t(edgeR::cpm(as.matrix(counts), log=TRUE)))
 
@@ -451,6 +464,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -472,6 +486,7 @@ glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples,
                                 jitter=30, display.columns=c("GeneID"),
                                 id.column="GeneID",
                                 cols=c("#0000FF", "#858585", "#B32222"),
+                                sample.cols=rep("1f77b4", ncol(counts)),
                                 path=getwd(), folder="glimma-plots",
                                 html="MD-Plot", launch=TRUE, ...) {
 
@@ -518,6 +533,7 @@ glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples,
     rownames(norm.counts) <- make.names(plotting.data[[id.column]])
 
     sample.exp <- data.frame(Sample = samples,
+                             col = as.hexcol(sample.cols),
                              Group = factor(groups),
                              t(edgeR::cpm(counts, log=TRUE)))
 
@@ -528,9 +544,10 @@ glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples,
                     flag="mdplot", ndigits=4, info=list(search.by=search.by),
                     ...)
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[3],
-                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[3],
-                    annot=c("Sample", colnames(sample.exp)[3]),
+    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[4],
+                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[4],
+                    annot=c("Sample", colnames(sample.exp)[4]),
+                    colval="col",
                     annot.lab=c("Sample", "logCPM"), x.jitter = 30,
                     ndigits=4, hide=TRUE)
 
