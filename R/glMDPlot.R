@@ -124,7 +124,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
                         search.by="Symbols", jitter=30,
                         display.columns=c("GeneID"), id.column="GeneID",
                         cols=c("#0000FF", "#858585", "#B32222"),
-                        sample.cols=rep("1f77b4", ncol(counts)),
+                        sample.cols=rep("#1f77b4", ncol(counts)),
                         path=getwd(), folder="glimma-plots", html="MD-Plot",
                         launch=TRUE, ...) {
 
@@ -166,12 +166,12 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
         sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = groups,
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+                             t(cpm(as.matrix(counts), log=TRUE)))
     } else {
         sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+                             t(cpm(as.matrix(counts), log=TRUE)))
     }
 
     # Reordering so that significant points appear on top of insignificant points.
@@ -240,7 +240,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             display.columns=c("GeneID"), id.column="GeneID",
                             cols=c("#0000FF", "#858585", "#B32222"),
-                            sample.cols=rep("1f77b4", ncol(counts)),
+                            sample.cols=rep("#1f77b4", ncol(counts)),
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
                             launch=TRUE, ...) {
 
@@ -283,7 +283,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+                             t(cpm(as.matrix(counts), log=TRUE)))
 
     glMDPlot.wehi(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -398,7 +398,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             display.columns=c("GeneID"), id.column="GeneID",
                             cols=c("#0000FF", "#858585", "#B32222"),
-                            sample.cols=rep("1f77b4", ncol(counts)),
+                            sample.cols=rep("#1f77b4", ncol(counts)),
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
                             launch=TRUE, ...) {
 
@@ -440,7 +440,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+                             t(cpm(as.matrix(counts), log=TRUE)))
 
     glMDPlot.wehi(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -454,7 +454,6 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @author Shian Su
 #'
 #' @param x the DESeqDataSet object.
-#' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
@@ -477,16 +476,16 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #'
 #' @importFrom methods is
 #' @importFrom edgeR cpm
-#' @importFrom DESeq2 counts DESeqDataSet
+#' @importFrom DESeq2 counts results DESeqDataSet
 #'
 #' @export
 
-glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples,
+glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                 status=rep(0, nrow(x)), search.by="Symbols",
                                 jitter=30, display.columns=c("GeneID"),
                                 id.column="GeneID",
                                 cols=c("#0000FF", "#858585", "#B32222"),
-                                sample.cols=rep("1f77b4", ncol(counts)),
+                                sample.cols=rep("#1f77b4", ncol(dds)),
                                 path=getwd(), folder="glimma-plots",
                                 html="MD-Plot", launch=TRUE, ...) {
 
@@ -504,8 +503,9 @@ glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples,
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
 
-    res <- DESeq2::results(x)
+    res <- results(x)
     res.df <- as.data.frame(res)
+    gene.counts <- counts(x)
 
     colourise <- function(x) {
         if (x == -1) {
@@ -530,12 +530,12 @@ glMDPlot.DESeqDataSet <- function(x, counts, anno, groups, samples,
     plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
                            plotting.data[plotting.data$col != cols[2], ])
 
-    rownames(norm.counts) <- make.names(plotting.data[[id.column]])
+    rownames(gene.counts) <- make.names(plotting.data[[id.column]])
 
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(edgeR::cpm(counts, log=TRUE)))
+                             t(cpm(gene.counts, log=TRUE)))
 
     plot1 <- glScatter(plotting.data, xval="logMean", yval="logFC",
                     xlab="Mean Expression", idval="Symbols",
