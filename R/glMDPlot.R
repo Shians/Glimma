@@ -98,8 +98,8 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 #' @param side.ylab the label on the y axis for the right plot.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
@@ -122,7 +122,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
                         status=rep(0, nrow(x)), xlab=xval, ylab=yval,
                         side.xlab="Group", side.ylab="logCPM",
                         search.by="Symbols", jitter=30,
-                        display.columns=c("GeneID"), id.column="GeneID",
+                        id.column="GeneID", display.columns=id.column,
                         cols=c("#0000FF", "#858585", "#B32222"),
                         sample.cols=rep("#1f77b4", ncol(counts)),
                         path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -216,8 +216,8 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
@@ -238,7 +238,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
                             status=rep(0, nrow(x)), coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
-                            display.columns=c("GeneID"), id.column="GeneID",
+                            id.column="GeneID", display.columns=id.column,
                             cols=c("#0000FF", "#858585", "#B32222"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -307,8 +307,8 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
@@ -344,8 +344,8 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
@@ -396,7 +396,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                             status=rep(0, nrow(x)), coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
-                            display.columns=c("GeneID"), id.column="GeneID",
+                            id.column="GeneID", display.columns=id.column,
                             cols=c("#0000FF", "#858585", "#B32222"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -460,8 +460,8 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
@@ -482,8 +482,8 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                 status=rep(0, nrow(x)), search.by="Symbols",
-                                jitter=30, display.columns=c("GeneID"),
-                                id.column="GeneID",
+                                jitter=30, id.column="GeneID",
+                                display.columns=id.column,
                                 cols=c("#0000FF", "#858585", "#B32222"),
                                 sample.cols=rep("#1f77b4", ncol(x)),
                                 path=getwd(), folder="glimma-plots",
@@ -538,7 +538,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                              t(cpm(gene.counts, log=TRUE)))
 
     plot1 <- glScatter(plotting.data, xval="logMean", yval="logFC",
-                    xlab="Mean Expression", idval="Symbols",
+                    xlab="Mean Expression", idval=id.column,
                     ylab="log-fold-change",
                     annot=c(display.columns, "logMean", "logFC", "PValue"),
                     flag="mdplot", ndigits=4, info=list(search.by=search.by),
