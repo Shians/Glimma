@@ -62,7 +62,8 @@ The plots that \Biocpkg{Glimma} extends are shown in Figure~\ref{fig:static}.
 library(edgeR)
 library(limma)
 library(Glimma)
-load("LymphomaRNAseq.rda")
+data(lymphomaRNAseq)
+x <- lymphomaRNAseq
 class(x)
 
 ## Filter out genes with low counts
@@ -136,7 +137,7 @@ group information so that samples of different types can be readily
 distinguished from one and other.
 
 <<interactiveMDS, eval=TRUE>>=
-glMDSPlot(x, labels=1:7, groups=genotype, folder="Smchd1-Lymphoma")
+glMDSPlot(x, labels=1:7, groups=genotype, folder="Smchd1-Lymphoma", launch=FALSE)
 @
 
 \begin{figure}
@@ -174,9 +175,9 @@ with the file {\tt MD-Plot.html} opening the interactive display shown above.
 This function works with output from \Biocpkg{limma}, \Biocpkg{edgeR} and \Biocpkg{DESeq2}.
 
 <<interactiveMD, eval=TRUE>>=
-glMDPlot(vfit, counts=x$counts, anno=x$genes, groups=genotype, samples=1:7, status=results[,2],  
+glMDPlot(vfit, counts=x$counts, anno=x$genes, groups=genotype, samples=1:7, status=results[,2],
          display.columns=c("Symbols", "GeneID", "GeneName"), folder="Smchd1-Lymphoma",
-         main="MD plot: Wild-type vs Smchd1")
+         main="MD plot: Wild-type vs Smchd1", launch=FALSE)
 @
 
 \begin{figure}
@@ -191,7 +192,7 @@ glMDPlot(vfit, counts=x$counts, anno=x$genes, groups=genotype, samples=1:7, stat
 A default version of \Rfunction{glMDPlot} accepts a \Robject{data.frame} of 
 results (e.g. an unsorted top table from \Rpackage{limma} - note that the genes
 must be in the same order as they appear in the {\tt counts} and {\tt anno} objects).
-This is intended to allow results from any arbitrary differential expresssion 
+This is intended to allow results from any arbitrary differential expression 
 analysis to be handled using this tool.
 The user can then specify the relevant columns to display in the summary plot. 
 For example the code below makes a volcano plot by choosing the 
@@ -199,9 +200,9 @@ log-odds ({\tt B} versus the log-fold-change ({\tt logFC}) columns.
 
 <<interactivevolcano, eval=TRUE>>=
 topt = topTable(vfit, coef=2, number=Inf, sort="none")
-glMDPlot(topt, xval="logFC", yval="B", counts=x$counts, anno=x$genes, groups=genotype, 
+glMDPlot(topt, xval="logFC", yval="B", counts=x$counts, anno=x$genes, groups=genotype,
          samples=1:7, status=results[,2], display.columns=c("Symbols", "GeneID", "GeneName"), 
-         folder="Smchd1-Lymphoma", html="volcano")
+         folder="Smchd1-Lymphoma", html="volcano", launch=FALSE)
 @ 
 
 \begin{figure}

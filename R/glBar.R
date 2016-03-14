@@ -12,11 +12,16 @@
 #' @seealso \code{\link{glBar.default}}
 #' 
 #' @examples
-#' 
-#' @export
+#' data(mtcars)
+#' counts <- table(mtcars$gear)
+#' data <- data.frame(nGears=as.numeric(names(counts)), Count=as.numeric(counts))
+#' \donttest{
+#' plot1 <- glBar(data, "Count", "nGears", ylab="Number of Gears")
+#' glimma(plot1, layout=c(1,1), launch=TRUE)
+#' }
 
 glBar <- function(x, ...) {
-	UseMethod("glBar")
+    UseMethod("glBar")
 }
 
 #' Glimma MD Plot
@@ -45,91 +50,98 @@ glBar <- function(x, ...) {
 #' 
 #' @method glBar default
 #' 
-#' @export
+#' @examples
+#' data(mtcars)
+#' counts <- table(mtcars$gear)
+#' data <- data.frame(nGears=as.numeric(names(counts)), Count=as.numeric(counts))
+#' \donttest{
+#' plot1 <- glBar(data, "Count", "nGears", ylab="Number of Gears")
+#' glimma(plot1, layout=c(1,1), launch=TRUE)
+#' }
 
 glBar.default <- function(x, yval, names.arg=rownames(x), 
-							ndigits=NULL, signif=6,
-							xlab=NULL, ylab=yval, main=NULL,
-							height=400, width=500,
-							colval=NULL, annot=yval,
-							flag=NULL, info=NULL, ...) {
-	##
-	# Input checking
-	if (is.na(match(yval, names(x)))) {
-		stop(paste(yval, "does not correspond to a column"))
-	}
+                            ndigits=NULL, signif=6,
+                            xlab=NULL, ylab=yval, main=NULL,
+                            height=400, width=500,
+                            colval=NULL, annot=yval,
+                            flag=NULL, info=NULL, ...) {
+    ##
+    # Input checking
+    if (is.na(match(yval, names(x)))) {
+        stop(paste(yval, "does not correspond to a column"))
+    }
 
-	if (is.na(match(names.arg, names(x)))) {
-		stop(paste(names.arg, "does not correspond to a column"))
-	}
+    if (is.na(match(names.arg, names(x)))) {
+        stop(paste(names.arg, "does not correspond to a column"))
+    }
 
-	if (!is.null(colval)) {
-		if (is.na(match(colval, names(x)))) {
-			stop(paste(colval, "does not correspond to a column"))
-		}
-	}
-	
-	# TODO: Consider using rjson package?
-	# Make json out of data
-	x <- data.frame(x)
-	json <- makeDFJson(x)
+    if (!is.null(colval)) {
+        if (is.na(match(colval, names(x)))) {
+            stop(paste(colval, "does not correspond to a column"))
+        }
+    }
+    
+    # TODO: Consider using rjson package?
+    # Make json out of data
+    x <- data.frame(x)
+    json <- makeDFJson(x)
 
-	out <- list(
-				names = names.arg,
-				y = yval,
-				ndigits = ndigits,
-				signif = signif,
-				xlab = xlab,
-				ylab = ylab,
-				col = colval,
-				anno = annot,
-				height = height,
-				width = width,
-				json = json,
-				type = "bar",
-				title = main,
-				flag = flag,
-				info = info
-			)
+    out <- list(
+                names = names.arg,
+                y = yval,
+                ndigits = ndigits,
+                signif = signif,
+                xlab = xlab,
+                ylab = ylab,
+                col = colval,
+                anno = annot,
+                height = height,
+                width = width,
+                json = json,
+                type = "bar",
+                title = main,
+                flag = flag,
+                info = info
+            )
 
-	class(out) <- "jschart"
+    class(out) <- "jschart"
 
-	out	
+    out 
 }
 
 # Helper for writing js commands to draw plot
 constructBarPlot <- function(chart, index, write.out) {
-	command <- "glimma.storage.charts.push(glimma.chart.barChart()"
+    command <- "glimma.storage.charts.push(glimma.chart.barChart()"
 
-	height <- paste0(".height(", chart$height, ")")
-	command <- paste0(command, height)
+    height <- paste0(".height(", chart$height, ")")
+    command <- paste0(command, height)
 
-	width <- paste0(".width(", chart$width, ")")
-	command <- paste0(command, width)
+    width <- paste0(".width(", chart$width, ")")
+    command <- paste0(command, width)
 
-	x.func <- paste0(".id(function (d) { return d[", quotify(chart$names), "]; })")
-	command <- paste0(command, x.func)
+    x.func <- paste0(".id(function (d) { return d[", quotify(chart$names), "]; })")
+    command <- paste0(command, x.func)
 
-	x.lab <- paste0(".xlab(", quotify(chart$xlab), ")")
-	command <- paste0(command, x.lab)
+    x.lab <- paste0(".xlab(", quotify(chart$xlab), ")")
+    command <- paste0(command, x.lab)
 
-	y.func <- paste0(".y(function (d) { return d[", quotify(chart$y), "]; })")
-	command <- paste0(command, y.func)
+    y.func <- paste0(".y(function (d) { return d[", quotify(chart$y), "]; })")
+    command <- paste0(command, y.func)
 
-	y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
-	command <- paste0(command, y.lab)
+    y.lab <- paste0(".ylab(", quotify(chart$ylab), ")")
+    command <- paste0(command, y.lab)
 
-	main <- paste0(".title(glimma.storage.chartInfo[", index - 1, "].title)")
-	command <- paste0(command, main)
+    main <- paste0(".title(glimma.storage.chartInfo[", index - 1, "].title)")
+    command <- paste0(command, main)
 
-	if (!is.null(chart$ndigits)) {
-		nformat <- paste0(".ndigits(", chart$ndigits, ")")
-	} else {
-		nformat <- paste0(".signif(", chart$signif, ")")
-	}
-	command <- paste0(command, nformat)
+    if (!is.null(chart$ndigits)) {
+        nformat <- paste0(".ndigits(", chart$ndigits, ")")
+    } else {
+        nformat <- paste0(".signif(", chart$signif, ")")
+    }
+    command <- paste0(command, nformat)
 
-	command <- paste0(command, ");\n")
+    command <- paste0(command, ");\n")
 
-	write.out(command)
+    write.out(command)
 }

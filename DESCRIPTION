@@ -1,15 +1,30 @@
 Package: Glimma
 Type: Package
 Title: Interactive HTML graphics
-Version: 0.99.0
+Version: 0.99.4
 Date: 2016-02-29
-Author: Shian Su
+Author: Shian Su, Matt Ritchie
 Maintainer: Shian Su <su.s@wehi.edu.au>
 Description: This package generates interactive plots in a HTML page using d3.js.
-Imports: edgeR, DESeq2
-Suggests: BiocStyle, limma
+biocViews:
+    DifferentialExpression,
+    ReportWriting,
+    RNASeq,
+    Visualization
+Depends: R (>= 3.2.0)
+Imports: 
+    DESeq2,
+    edgeR,
+    grDevices,
+    methods,
+    stats,
+    utils
+Suggests: 
+    BiocStyle,
+    limma
 License: GPL-3 | file LICENSE
 URL: https://github.com/Shians/Glimma
 BugReports: https://github.com/Shians/Glimma/issues
 RoxygenNote: 5.0.1
 NeedsCompilation: no
+LazyData: true
