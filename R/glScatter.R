@@ -110,6 +110,16 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
     x.log <- "x" %in% unlist(strsplit(log, NULL))
     y.log <- "y" %in% unlist(strsplit(log, NULL))
 
+    if (!is.null(colval)) {
+        if (all(is.hex(x[[colval]]))) {
+            cfixed <- TRUE
+        } else {
+            cfixed <- FALSE
+        }
+    } else {
+        cfixed <- NULL;
+    }
+
     out <- list(
                 x = xval,
                 y = yval,
@@ -125,6 +135,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
                 xlog = x.log,
                 ylog = y.log,
                 col = colval,
+                cfixed = cfixed,
                 anno = annot,
                 annoLabels = annot.lab,
                 height = height,
@@ -215,6 +226,10 @@ constructScatterPlot <- function(chart, index, write.out) {
     if (!is.null(chart$col)) {
         c.func <- paste0(".col(function(d) { return d[", quotify(chart$col), "]; })")
         command <- paste0(command, c.func)
+        if (chart$cfixed) {
+            cfix <- ".fixedCol(true)"
+            command <- paste0(command, cfix)
+        }
     }
 
     if (!is.null(chart$info)) {
