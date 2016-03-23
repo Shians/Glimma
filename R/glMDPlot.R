@@ -48,18 +48,19 @@ glMDPlot <- function(x, ...) {
 }
 
 # Hidden internal functions for use by edgeR and limma based plotting
-glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
-                            default.col, id.column, path, folder, html, launch,
-                            jitter, ...) {
+glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
+                            search.by, id.column, default.col, jitter,
+                            path, folder, html, launch,
+                            xval, yval, xlab, ylab, ...) {
 
     # Reordering so that significant points appear on top of insignificant points.
     plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ],
                            plotting.data[plotting.data$col != default.col, ])
 
-    plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC",
-                    xlab="Average log CPM", idval=id.column,
-                    ylab="log-fold-change",
-                    annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"),
+    plot1 <- glScatter(plotting.data, xval=xval, yval=yval,
+                    xlab=xlab, idval=id.column,
+                    ylab=ylab,
+                    annot=c(display.columns, xval, yval, "Adj.PValue"),
                     flag="mdplot", ndigits=4, info=list(search.by=search.by),
                     ...)
 
@@ -84,9 +85,9 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 #'
 #' @author Shian Su
 #'
-#' @param x the data.frame object.
-#' @param xval the column to plot on x axis.
-#' @param yval the column to plot on y axis.
+#' @param x the data.frame object containing expression and fold change values.
+#' @param xval the column to plot on x axis of left plot.
+#' @param yval the column to plot on y axis of left plot.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
@@ -98,8 +99,8 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
 #' @param side.ylab the label on the y axis for the right plot.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
@@ -122,7 +123,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
                         status=rep(0, nrow(x)), xlab=xval, ylab=yval,
                         side.xlab="Group", side.ylab="logCPM",
                         search.by="Symbols", jitter=30,
-                        display.columns=c("GeneID"), id.column="GeneID",
+                        id.column="GeneID", display.columns=id.column,
                         cols=c("#0000FF", "#858585", "#B32222"),
                         sample.cols=rep("#1f77b4", ncol(counts)),
                         path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -216,8 +217,8 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
@@ -238,7 +239,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
                             status=rep(0, nrow(x)), coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
-                            display.columns=c("GeneID"), id.column="GeneID",
+                            id.column="GeneID", display.columns=id.column,
                             cols=c("#0000FF", "#858585", "#B32222"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -285,10 +286,11 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
                              Group = factor(groups),
                              t(cpm(as.matrix(counts), log=TRUE)))
 
-    glMDPlot.wehi(plotting.data, sample.exp, display.columns, search.by,
+    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
-                ...)
+                xval="logCPM", yval="logFC",
+                xlab="Average log CPM", ylab="log-fold-change", ...)
 }
 
 #' Glimma MD Plot
@@ -307,8 +309,8 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
@@ -344,8 +346,8 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
@@ -396,7 +398,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                             status=rep(0, nrow(x)), coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
-                            display.columns=c("GeneID"), id.column="GeneID",
+                            id.column="GeneID", display.columns=id.column,
                             cols=c("#0000FF", "#858585", "#B32222"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -442,9 +444,11 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                              Group = factor(groups),
                              t(cpm(as.matrix(counts), log=TRUE)))
 
-    glMDPlot.wehi(plotting.data, sample.exp, display.columns, search.by,
+    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
-                path=path, folder=folder, html=html, launch=launch, ...)
+                path=path, folder=folder, html=html, launch=launch,
+                xval="logCPM", yval="logFC",
+                xlab="Average log CPM", ylab="log-fold-change", ...)
 }
 
 #' Glimma MD Plot
@@ -460,8 +464,8 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param path the path in which the folder will be created.
@@ -482,8 +486,8 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                 status=rep(0, nrow(x)), search.by="Symbols",
-                                jitter=30, display.columns=c("GeneID"),
-                                id.column="GeneID",
+                                jitter=30, id.column="GeneID",
+                                display.columns=id.column,
                                 cols=c("#0000FF", "#858585", "#B32222"),
                                 sample.cols=rep("#1f77b4", ncol(x)),
                                 path=getwd(), folder="glimma-plots",
@@ -537,24 +541,107 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                              Group = factor(groups),
                              t(cpm(gene.counts, log=TRUE)))
 
-    plot1 <- glScatter(plotting.data, xval="logMean", yval="logFC",
-                    xlab="Mean Expression", idval="Symbols",
-                    ylab="log-fold-change",
-                    annot=c(display.columns, "logMean", "logFC", "PValue"),
-                    flag="mdplot", ndigits=4, info=list(search.by=search.by),
-                    ...)
+    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
+                    id.column=id.column, default.col=cols[2], jitter=jitter,
+                    path=path, folder=folder, html=html, launch=launch,
+                    xval="logMean", yval="logFC",
+                    xlab="Mean Expression", ylab="log-fold-change", ...)
+}
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[4],
-                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[4],
-                    annot=c("Sample", colnames(sample.exp)[4]),
-                    colval="col",
-                    annot.lab=c("Sample", "logCPM"), x.jitter = 30,
-                    ndigits=4, hide=TRUE)
+#' Glimma MD Plot
+#'
+#' Draw an interactive MD plot from a DESeqResults object
+#'
+#' @author Shian Su
+#'
+#' @param x the DESeqResults object.
+#' @param counts the matrix containing all counts.
+#' @param anno the data.frame containing gene annotations.
+#' @param groups the factor containing experimental groups of the samples.
+#' @param samples the names of the samples.
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
+#' @param jitter the amount of jitter to apply to the samples in the expressions plot.
+#' @param id.column the column containing unique identifiers for each gene.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
+#' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
+#' @param path the path in which the folder will be created.
+#' @param folder the name of the fold to save html file to.
+#' @param html the name of the html file to save plots to.
+#' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments to be passed onto the MD plot.
+#'
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+#'
+#' @method glMDPlot DESeqResults
+#'
+#' @importFrom methods is
+#' @importFrom edgeR cpm
+#' @importFrom DESeq2 counts results DESeqResults
+#'
+#' @export
 
-    link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
-    link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-    button1 <- glAutoinput(1, "highlightBySearch", search.by)
+glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
+                                status=rep(0, nrow(x)), search.by="Symbols",
+                                jitter=30, id.column="GeneID",
+                                display.columns=id.column,
+                                cols=c("#0000FF", "#858585", "#B32222"),
+                                sample.cols=rep("#1f77b4", ncol(counts)),
+                                path=getwd(), folder="glimma-plots",
+                                html="MD-Plot", launch=TRUE, ...) {
 
-    glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
-            path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+    ##
+    # Input checking
+
+    if (length(status) != nrow(x)) {
+        stop("The status vector should have same length as the number of columns as main input object.")
+    }
+
+    #
+    ##
+
+    if (any(!is.hex(cols))) {
+        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
+    }
+
+    res <- x
+    res.df <- as.data.frame(res)
+    gene.counts <- counts
+
+    colourise <- function(x) {
+        if (x == -1) {
+            return(cols[1])
+        } else if (x == 0) {
+            return(cols[2])
+        } else if (x == 1) {
+            return(cols[3])
+        }
+    }
+
+    col <- sapply(status, colourise)
+
+    plotting.data <- data.frame(logFC = res.df$log2FoldChange,
+                                 logMean = log(res.df$baseMean + 0.5),
+                                 col = col,
+                                 PValue = res.df$pvalue,
+                                 Adj.PValue = res.df$padj,
+                                 anno)
+
+    # Reordering so that significant points appear on top of insignificant points.
+    plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
+                           plotting.data[plotting.data$col != cols[2], ])
+
+    rownames(gene.counts) <- make.names(plotting.data[[id.column]])
+
+    sample.exp <- data.frame(Sample = samples,
+                             col = as.hexcol(sample.cols),
+                             Group = factor(groups),
+                             t(cpm(gene.counts, log=TRUE)))
+
+    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
+                    id.column=id.column, default.col=cols[2], jitter=jitter,
+                    path=path, folder=folder, html=html, launch=launch,
+                    xval="logMean", yval="logFC",
+                    xlab="Mean Expression", ylab="log-fold-change", ...)
 }
