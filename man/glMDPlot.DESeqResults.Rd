@@ -14,6 +14,8 @@
 \arguments{
 \item{x}{the DESeqResults object.}
 
+\item{counts}{the matrix containing all counts.}
+
 \item{anno}{the data.frame containing gene annotations.}
 
 \item{groups}{the factor containing experimental groups of the samples.}

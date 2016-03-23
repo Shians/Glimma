@@ -48,18 +48,19 @@ glMDPlot <- function(x, ...) {
 }
 
 # Hidden internal functions for use by edgeR and limma based plotting
-glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
-                            default.col, id.column, path, folder, html, launch,
-                            jitter, ...) {
+glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
+                            search.by, id.column, default.col, jitter,
+                            path, folder, html, launch,
+                            xval, yval, xlab, ylab, ...) {
 
     # Reordering so that significant points appear on top of insignificant points.
     plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ],
                            plotting.data[plotting.data$col != default.col, ])
 
-    plot1 <- glScatter(plotting.data, xval="logCPM", yval="logFC",
-                    xlab="Average log CPM", idval=id.column,
-                    ylab="log-fold-change",
-                    annot=c(display.columns, "logCPM", "logFC", "Adj.PValue"),
+    plot1 <- glScatter(plotting.data, xval=xval, yval=yval,
+                    xlab=xlab, idval=id.column,
+                    ylab=ylab,
+                    annot=c(display.columns, xval, yval, "Adj.PValue"),
                     flag="mdplot", ndigits=4, info=list(search.by=search.by),
                     ...)
 
@@ -78,42 +79,15 @@ glMDPlot.wehi <- function(plotting.data, sample.exp, display.columns, search.by,
             path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
 }
 
-# Hidden internal functions for use by DESeq based plotting
-glMDPlot.deseq <- function(plotting.data, sample.exp, display.columns, search.by,
-                            default.col, id.column, path, folder, html, launch,
-                            jitter, ...) {
-
-    plot1 <- glScatter(plotting.data, xval="logMean", yval="logFC",
-                    xlab="Mean Expression", idval=id.column,
-                    ylab="log-fold-change",
-                    annot=c(display.columns, "logMean", "logFC", "PValue"),
-                    flag="mdplot", ndigits=4, info=list(search.by=search.by),
-                    ...)
-
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[4],
-                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[4],
-                    annot=c("Sample", colnames(sample.exp)[4]),
-                    colval="col",
-                    annot.lab=c("Sample", "logCPM"), x.jitter = 30,
-                    ndigits=4, hide=TRUE)
-
-    link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
-    link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-    button1 <- glAutoinput(1, "highlightBySearch", search.by)
-
-    glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
-            path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
-}
-
 #' Glimma MD Plot
 #'
 #' Draw an interactive MD plot from a data.frame
 #'
 #' @author Shian Su
 #'
-#' @param x the data.frame object.
-#' @param xval the column to plot on x axis.
-#' @param yval the column to plot on y axis.
+#' @param x the data.frame object containing expression and fold change values.
+#' @param xval the column to plot on x axis of left plot.
+#' @param yval the column to plot on y axis of left plot.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
@@ -312,10 +286,11 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
                              Group = factor(groups),
                              t(cpm(as.matrix(counts), log=TRUE)))
 
-    glMDPlot.wehi(plotting.data, sample.exp, display.columns, search.by,
+    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
-                ...)
+                xval="logCPM", yval="logFC",
+                xlab="Average log CPM", ylab="log-fold-change", ...)
 }
 
 #' Glimma MD Plot
@@ -469,9 +444,11 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                              Group = factor(groups),
                              t(cpm(as.matrix(counts), log=TRUE)))
 
-    glMDPlot.wehi(plotting.data, sample.exp, display.columns, search.by,
+    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
-                path=path, folder=folder, html=html, launch=launch, ...)
+                path=path, folder=folder, html=html, launch=launch,
+                xval="logCPM", yval="logFC",
+                xlab="Average log CPM", ylab="log-fold-change", ...)
 }
 
 #' Glimma MD Plot
@@ -564,9 +541,11 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                              Group = factor(groups),
                              t(cpm(gene.counts, log=TRUE)))
 
-    glMDPlot.deseq(plotting.data, sample.exp, display.columns, search.by,
-                    default.col, id.column, path, folder, html, launch, jitter,
-                    ...)
+    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
+                    id.column=id.column, default.col=cols[2], jitter=jitter,
+                    path=path, folder=folder, html=html, launch=launch,
+                    xval="logMean", yval="logFC",
+                    xlab="Mean Expression", ylab="log-fold-change", ...)
 }
 
 #' Glimma MD Plot
@@ -576,6 +555,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @author Shian Su
 #'
 #' @param x the DESeqResults object.
+#' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
@@ -659,7 +639,9 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                              Group = factor(groups),
                              t(cpm(gene.counts, log=TRUE)))
 
-    glMDPlot.deseq(plotting.data, sample.exp, display.columns, search.by,
-                    default.col, id.column, path, folder, html, launch, jitter,
-                    ...)
+    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
+                    id.column=id.column, default.col=cols[2], jitter=jitter,
+                    path=path, folder=folder, html=html, launch=launch,
+                    xval="logMean", yval="logFC",
+                    xlab="Mean Expression", ylab="log-fold-change", ...)
 }

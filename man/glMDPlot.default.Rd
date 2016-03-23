@@ -13,11 +13,11 @@
   html = "MD-Plot", launch = TRUE, ...)
 }
 \arguments{
-\item{x}{the data.frame object.}
+\item{x}{the data.frame object containing expression and fold change values.}
 
-\item{xval}{the column to plot on x axis.}
+\item{xval}{the column to plot on x axis of left plot.}
 
-\item{yval}{the column to plot on y axis.}
+\item{yval}{the column to plot on y axis of left plot.}
 
 \item{counts}{the matrix containing all counts.}
 
