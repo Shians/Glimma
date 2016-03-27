@@ -1,11 +1,11 @@
 Package: Glimma
 Type: Package
 Title: Interactive HTML graphics
-Version: 0.99.4
+Version: 0.99.5
 Date: 2016-02-29
 Author: Shian Su, Matt Ritchie
 Maintainer: Shian Su <su.s@wehi.edu.au>
-Description: This package generates interactive plots in a HTML page using d3.js.
+Description: This package generates interactive visualisations for analysis of RNA-sequencing data using output from limma, edgeR or DESeq2 packages in an HTML page.
 biocViews:
     DifferentialExpression,
     ReportWriting,
