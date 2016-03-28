@@ -3,6 +3,7 @@ Glimma News
 CHANGES IN Glimma 0.99.4:
 
   * Added sample colours for MD plot.
+  * Added DESeqResults method for glMDPlot
 
 CHANGES IN Glimma 0.99.3:
   
