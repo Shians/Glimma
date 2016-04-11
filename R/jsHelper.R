@@ -1,4 +1,4 @@
-## 
+##
 # Helper functions for writing javascript
 
 writeMaker <- function(filename) {
@@ -26,3 +26,67 @@ bsCol <- function(size, class="plot-device", type="md") {
     tag <- paste0("<div class=", col.type, "></div>")
     writeMaker(tag)
 }
+
+# Function to write javascript methods
+jsMethod <- function(...) {
+    args <- list(...)
+
+    lassertClass(args, "character")
+
+    length.fail <- !all(sapply(args, length) == 1)
+    if (length.fail) {
+        stop("all arguments must be singular strings")
+    }
+
+    # Output arg1.arg2.arg3...
+    out <- paste(unlist(args), collapse=".")
+    class(out) <- "jsMethod"
+
+    out
+}
+
+# Function to write javascript functions
+jsFunction <- function(func) {
+    if (length(func) != 1) {
+        stop("'func' must be a singular string")
+    }
+
+    jsMethod(func)
+}
+
+# Function to write javascript arguments
+jsArgs <- function(...) {
+    args <- unlist(list(...))
+    assertClass(args, "character")
+
+    paste(args, collapse=", ")
+}
+
+# Function to write a javascript method call
+jsCall <- function(func, arg) {
+    assertClass(func, "jsMethod")
+
+    if (is(arg, "jsCall")) {
+        arg <- gsub(";\n", "", arg)
+    }
+    # Output func(arg1, arg2, ...)
+    out <- paste0(func, paste0("(", arg, ");\n"))
+    class(out) <- "jsCall"
+
+    out
+} # Vectorise in the future?
+
+# Function to write chained javascript calls
+jsChain <- function(...) {
+    args <- list(...)
+
+    lassertClass(args, "jsCall")
+
+    trimmed <- gsub(";\n", "", as.character(unlist(args)))
+    chained <- paste(trimmed, collapse=".")
+
+    out <- paste0(chained, ";\n")
+    class(out) <- "jsCall"
+
+    out
+} # Vectorise in the future?

@@ -10,7 +10,7 @@ makeDFJson(df)
 \item{df}{the data.frame to be converted into JSON}
 }
 \value{
-a stringified JSON, the data.frame is encoded as a vector of objects, 
+a stringified JSON, the data.frame is encoded as a vector of objects,
 with each column being one object with keys corresponding to column names.
 }
 \description{

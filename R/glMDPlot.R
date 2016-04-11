@@ -50,10 +50,11 @@ glMDPlot <- function(x, ...) {
 # Hidden internal functions for use by edgeR and limma based plotting
 glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
                             search.by, id.column, default.col, jitter,
-                            path, folder, html, launch,
+                            table, path, folder, html, launch,
                             xval, yval, xlab, ylab, ...) {
 
-    # Reordering so that significant points appear on top of insignificant points.
+    # Reordering so that significant points appear on top of insignificant
+    # points.
     plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ],
                            plotting.data[plotting.data$col != default.col, ])
 
@@ -73,10 +74,18 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
 
     link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
     link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-    button1 <- glAutoinput(1, "highlightBySearch", search.by)
 
-    glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
+    if (table) {
+        # TODO: Have different columns to tooltip
+        table1 <- glTable(1, c(display.columns, xval, yval, "Adj.PValue"))
+        glimma(plot1, plot2, link1, link2, table1, layout=c(1, 2),
             path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+    } else {
+        button1 <- glAutoinput(1, "highlightBySearch", search.by)
+        glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
+            path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+    }
+
 }
 
 #' Glimma MD Plot
@@ -103,6 +112,7 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
+#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -126,6 +136,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
                         id.column="GeneID", display.columns=id.column,
                         cols=c("#0000FF", "#858585", "#B32222"),
                         sample.cols=rep("#1f77b4", ncol(counts)),
+                        table=TRUE,
                         path=getwd(), folder="glimma-plots", html="MD-Plot",
                         launch=TRUE, ...) {
 
@@ -175,7 +186,10 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
                              t(cpm(as.matrix(counts), log=TRUE)))
     }
 
-    # Reordering so that significant points appear on top of insignificant points.
+    # Reordering so that significant points appear on top of insignificant
+    # points.
+
+    # TODO: Refactor to use hidden method, or for hiddne method to use this.
     plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
                            plotting.data[plotting.data$col != cols[2], ])
 
@@ -194,9 +208,18 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 
     link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
     link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-    button1 <- glAutoinput(1, "highlightBySearch", search.by)
 
-    glimma(plot1, plot2, button1, link1, link2, layout=c(1,2),
+    if (table) {
+        # TODO: Have different columns to tooltip
+        table1 <- glTable(1, c(display.columns, xval, yval))
+        glimma(plot1, plot2, link1, link2, table1, layout=c(1, 2),
+           path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+    } else {
+        button1 <- glAutoinput(1, "highlightBySearch", search.by)
+        button1 <- glAutoinput(1, "highlightBySearch", search.by)
+    }
+
+    glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
             path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
 
 }
@@ -221,6 +244,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
+#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -242,6 +266,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
                             id.column="GeneID", display.columns=id.column,
                             cols=c("#0000FF", "#858585", "#B32222"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
+                            table=TRUE,
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
                             launch=TRUE, ...) {
 
@@ -289,7 +314,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
-                xval="logCPM", yval="logFC",
+                table=table, xval="logCPM", yval="logFC",
                 xlab="Average log CPM", ylab="log-fold-change", ...)
 }
 
@@ -313,6 +338,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
+#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -350,6 +376,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
+#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -401,6 +428,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                             id.column="GeneID", display.columns=id.column,
                             cols=c("#0000FF", "#858585", "#B32222"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
+                            table=TRUE,
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
                             launch=TRUE, ...) {
 
@@ -430,11 +458,12 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 
     col <- sapply(status, colourise)
 
-    plotting.data <- data.frame(logFC = x$coefficients[,coef],
+    Adj.PValue <- p.adjust(x$p.value[, coef], method=p.adj.method)
+    plotting.data <- data.frame(logFC = x$coefficients[, coef],
                                  logCPM = x$Amean,
                                  col = col,
-                                 PValue = x$p.value[,coef],
-                                 Adj.PValue = p.adjust(x$p.value[,coef], method=p.adj.method),
+                                 PValue = x$p.value[, coef],
+                                 Adj.PValue = Adj.PValue,
                                  anno)
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
@@ -447,7 +476,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
-                xval="logCPM", yval="logFC",
+                table=table, xval="logCPM", yval="logFC",
                 xlab="Average log CPM", ylab="log-fold-change", ...)
 }
 
@@ -468,6 +497,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
+#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -490,6 +520,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                 display.columns=id.column,
                                 cols=c("#0000FF", "#858585", "#B32222"),
                                 sample.cols=rep("#1f77b4", ncol(x)),
+                                table=TRUE,
                                 path=getwd(), folder="glimma-plots",
                                 html="MD-Plot", launch=TRUE, ...) {
 
@@ -530,7 +561,8 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                  Adj.PValue = res.df$padj,
                                  anno)
 
-    # Reordering so that significant points appear on top of insignificant points.
+    # Reordering so that significant points appear on top of insignificant
+    # points.
     plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
                            plotting.data[plotting.data$col != cols[2], ])
 
@@ -544,7 +576,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
-                    xval="logMean", yval="logFC",
+                    table=table, xval="logMean", yval="logFC",
                     xlab="Mean Expression", ylab="log-fold-change", ...)
 }
 
@@ -566,6 +598,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
+#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -588,6 +621,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                                 display.columns=id.column,
                                 cols=c("#0000FF", "#858585", "#B32222"),
                                 sample.cols=rep("#1f77b4", ncol(counts)),
+                                table=TRUE,
                                 path=getwd(), folder="glimma-plots",
                                 html="MD-Plot", launch=TRUE, ...) {
 
@@ -642,6 +676,6 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
-                    xval="logMean", yval="logFC",
+                    table=table, xval="logMean", yval="logFC",
                     xlab="Mean Expression", ylab="log-fold-change", ...)
 }
