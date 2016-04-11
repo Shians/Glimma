@@ -31,10 +31,7 @@ bsCol <- function(size, class="plot-device", type="md") {
 jsMethod <- function(...) {
     args <- list(...)
 
-    class.fail <- !all(sapply(args, class) == "character")
-    if (class.fail) {
-        stop("all arguments must be of character class")
-    }
+    lassertClass(args, "character")
 
     length.fail <- !all(sapply(args, length) == 1)
     if (length.fail) {
@@ -60,23 +57,20 @@ jsFunction <- function(func) {
 # Function to write javascript arguments
 jsArgs <- function(...) {
     args <- unlist(list(...))
-    class.fail.args <- !is(args, "character")
-    if (class.fail.args) {
-        stop("'args' must be of character class")
-    }
+    assertClass(args, "character")
 
     paste(args, collapse=", ")
 }
 
 # Function to write a javascript method call
-jsCall <- function(func, args) {
-    class.fail.func <- !is(func, "jsMethod")
-    if (class.fail.func) {
-        stop("'func' must be of jsMethod class")
-    }
+jsCall <- function(func, arg) {
+    assertClass(func, "jsMethod")
 
+    if (is(arg, "jsCall")) {
+        arg <- gsub(";\n", "", arg)
+    }
     # Output func(arg1, arg2, ...)
-    out <- paste0(func, paste0("(", args, ");\n"))
+    out <- paste0(func, paste0("(", arg, ");\n"))
     class(out) <- "jsCall"
 
     out
@@ -86,13 +80,13 @@ jsCall <- function(func, args) {
 jsChain <- function(...) {
     args <- list(...)
 
-    class.fail <- !all(sapply(args, class) == "jsCall")
-    if (class.fail) {
-        stop("all arguments must be of jsCall class")
-    }
+    lassertClass(args, "jsCall")
 
-    trimmed <- gsub(";\n", "", unlist(args))
+    trimmed <- gsub(";\n", "", as.character(unlist(args)))
     chained <- paste(trimmed, collapse=".")
 
-    paste0(chained, ";\n")
+    out <- paste0(chained, ";\n")
+    class(out) <- "jsCall"
+
+    out
 } # Vectorise in the future?
