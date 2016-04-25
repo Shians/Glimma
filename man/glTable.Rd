@@ -7,13 +7,9 @@
 glTable(target, columns)
 }
 \arguments{
-\item{target}{the index of the plot which receives the event and performs an action.}
+\item{target}{the index of the plot from which data is drawn.}
 
-\item{action}{the action to be performed at target plot using input information.}
-
-\item{idval}{the column from which the autocomplete list will be populated.}
-
-\item{flag}{indicates special flags for custom features.}
+\item{columns}{the columns of data to plot.}
 }
 \value{
 a input object containing the input field information.

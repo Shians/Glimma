@@ -37,7 +37,7 @@
 
 \item{side.ylab}{the label on the y axis for the right plot.}
 
-\item{search.by}{the name of the column which will be used to search for data points. (should contain unique values)}
+\item{search.by}{the name of the column which will be used to search for data points if table is not used. (should contain unique values)}
 
 \item{jitter}{the amount of jitter to apply to the samples in the expressions plot.}
 

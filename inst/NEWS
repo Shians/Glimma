@@ -1,5 +1,10 @@
 Glimma News
 
+CHANGES IN Glimma 1.0.0
+    
+  * Bioconductor release version.
+  * Added tables to MD Plot.
+
 CHANGES IN Glimma 0.99.4:
 
   * Added sample colours for MD plot.
