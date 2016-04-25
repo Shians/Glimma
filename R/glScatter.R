@@ -62,8 +62,9 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
                                 ndigits=NULL, signif=6, log="",
                                 xlab=xval, ylab=yval, main=NULL,
                                 height=400, width=500,
-                                colval=NULL, annot=c(xval, yval), annot.lab=NULL,
-                                flag=NULL, info=NULL, hide=FALSE, ...) {
+                                colval=NULL, annot=c(xval, yval), 
+                                annot.lab=NULL, flag=NULL, info=NULL, 
+                                hide=FALSE, ...) {
     ##
     # Input checking
     assertClass(xval, "character")
