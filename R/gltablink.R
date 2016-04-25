@@ -18,7 +18,7 @@ gltablink <- function(from, to, action="none", info="none") {
     assertClass(action, "character")
     assertClass(info, "character")
 
-    out <- gllink(from=from, to=to, 
+    out <- gllink(from=from, to=to,
                     src="click", dest=action, flag="tablink", info=info)
 
     out$type <- "tablink"

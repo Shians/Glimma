@@ -107,7 +107,7 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
 #' @param ylab the label on the y axis for the left plot.
 #' @param side.xlab the label on the x axis for the right plot.
 #' @param side.ylab the label on the y axis for the right plot.
-#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
+#' @param search.by the name of the column which will be used to search for data points if table is not used. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips.
@@ -212,17 +212,15 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 
     if (table) {
         # TODO: Have different columns to tooltip
+        link3 <- gltablink(1, 1, action="highlightById")
         table1 <- glTable(1, c(display.columns, xval, yval))
         glimma(plot1, plot2, link1, link2, table1, layout=c(1, 2),
            path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
     } else {
         button1 <- glAutoinput(1, "highlightBySearch", search.by)
-        button1 <- glAutoinput(1, "highlightBySearch", search.by)
-    }
-
-    glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
+        glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
             path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
-
+    }
 }
 
 #' Glimma MD Plot
