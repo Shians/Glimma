@@ -124,10 +124,13 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
                         flag="none") # Dummy row
     data.list <- list()
 
+    accepted.types <- c("jslink", "jschart", "jsinput", "jstable")
     # Process arguments
     for (i in 1:length(args)) {
-        if (any(class(args[[i]]) == c("jslink", "jschart", "jsinput", "jstable"))) {
+        if (any(class(args[[i]]) == accepted.types)) {
             if (args[[i]]$type == "link") {
+                actions <- rbind(actions, args[[i]]$link)
+            } else if (args[[i]]$type == "tablink") {
                 actions <- rbind(actions, args[[i]]$link)
             } else if (args[[i]]$type == "autocomplete") {
                 inputs <- rbind(inputs, args[[i]]$input)
@@ -146,7 +149,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     } else {
         write.data("glimma.storage.linkage = [];\n")
     }
-
+ 
     # Write input fields
     if (nrow(inputs) > 1) {
         inputs.js <- makeDFJson(inputs[-1, ])
