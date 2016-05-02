@@ -39,88 +39,6 @@ hasColumns <- function(df, columns) {
     }
 }
 
-# Function to add double quotes onto the start and end of the strings
-quotify <- function(x) {
-    paste("\"", x, "\"", sep="")
-}
-
-# Function to add square brackets around string
-arrayify <- function(x) {
-    paste("[", paste(x, collapse=","), "]", sep="")
-}
-
-# Function to add braces around string
-objectify <- function(x, y) {
-    paste("{", paste(x, y, sep=":", collapse=","), "}", sep="")
-}
-
-#' JSON converter for data frames
-#'
-#' Function to create a JSON from a data.frame
-#'
-#' @param df the data.frame to be converted into JSON
-#'
-#' @return a stringified JSON, the data.frame is encoded as a vector of objects,
-#' with each column being one object with keys corresponding to column names.
-#'
-#' @importFrom methods is
-
-makeDFJson <- function(df) {
-    df <- data.frame(df)
-
-    for (n in names(df)) {
-        if (!is(df[[n]], "numeric") && !is(df[[n]], "logical")) {
-            df[[n]] <- quotify(as.character(df[[n]]))
-        }
-    }
-
-    f1 <- function (x) { paste(coln, ifelse(is.na(x), "\"NA\"", x), sep="") }
-    f2 <- function (x) { paste("{", paste(x, collapse=","), "}", sep="") }
-    coln <- paste(quotify(colnames(df)), ":", sep="")
-    temp <- t(apply(df, 1, f1))
-    temp <- apply(temp, 1, f2)
-
-    output <- paste("[", paste(temp, collapse=","), "]", sep="")
-    class(output) <- "json"
-
-    # Outputs [{"col1": val1.1, "col2": val1.2,...},
-    #          {"col1": val2.1, "col2": val2.2,...},
-    #          ...]
-    output
-}
-
-#' JSON converter for chart objects
-#'
-#' Function to make json object from a chart, ignoring the json property
-#'
-#' @param chart the chart object to be converted into JSON
-#'
-#' @return a stringified JSON object containing the chart data.
-#'
-#' @importFrom methods is
-
-makeChartJson <- function(chart) {
-    if (!is(chart, "jschart")) {
-        stopType("jschart", "chart")
-    }
-
-    makeEntry <- function(d) {
-        if (is.null(chart[[d]])) {
-            return(paste(quotify(d), "null", sep=":"))
-        } else if (length(chart[[d]]) > 1) {
-            return(paste(quotify(d), arrayify(quotify(chart[[d]])), sep=":"))
-        } else if (is.list(chart[[d]])) {
-            return(paste(quotify(d), makeListJson(chart[[d]]), sep=":"))
-        } else {
-            return(paste(quotify(d), quotify(chart[[d]]), sep=":"))
-        }
-    }
-
-    chart$json <- NULL
-
-    paste0("{", paste(sapply(names(chart), makeEntry), collapse=","), "}")
-}
-
 # Function to print stored json as a javascript var declaration
 printJsonToFile <- function(json, filename, varname) {
     file.con <- file(description=filename, open="w")
@@ -135,37 +53,6 @@ printJsonToFile <- function(json, filename, varname) {
     }
 
     close(file.con)
-}
-
-# Function to make json object ouf of factor levels
-makeFactJson <- function(sample.groups) {
-    sample.groups <- as.factor(sample.groups)
-    l <- levels(sample.groups)
-    l <- paste("\"", l, "\"", sep="")
-    paste("[", paste(l, collapse=", "), "]", sep="")
-}
-
-# Function to make json object out of a list
-makeListJson <- function(x) {
-    if (!is.list(x)) {
-        stopType("list", "x")
-    }
-
-    parse <- function(d) {
-        if (is.numeric(x[[d]])) {
-            paste(quotify(d), x[[d]], sep=":")
-        } else {
-            paste(quotify(d), quotify(x[[d]]), sep=":")
-        }
-    }
-
-    keys <- names(x)
-    entries <- sapply(keys, parse)
-    output <- paste("{", paste(entries, collapse=","), "}", sep="")
-
-    class(output) <- "json"
-
-    output
 }
 
 # Function to get the nth character of a string
@@ -237,7 +124,7 @@ is.hex <- function(x) {
     (grepl("#[[:xdigit:]]{6}", x) | grepl("#[[:xdigit:]]{8}", x))
 }
 
-#
+# Function to convert colours or numbers to hex colour values
 as.hexcol <- function(x) {
     if (is.character(x)) {
         if (all(is.hex(x))) {
