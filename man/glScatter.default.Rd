@@ -8,7 +8,7 @@
   x.jitter = 0, y.jitter = 0, ndigits = NULL, signif = 6, log = "",
   xlab = xval, ylab = yval, main = NULL, height = 400, width = 500,
   colval = NULL, annot = c(xval, yval), annot.lab = NULL, flag = NULL,
-  info = NULL, hide = FALSE, ...)
+  info = NULL, hide = FALSE, disable = NULL, ...)
 }
 \arguments{
 \item{x}{the data.frame containing data to plot.}
