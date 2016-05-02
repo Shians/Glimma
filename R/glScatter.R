@@ -46,6 +46,7 @@ glScatter <- function(x, ...) {
 #' @param flag the special flag to indicate special plot.
 #' @param info additional information for plotting.
 #' @param hide TRUE to hide the plot when page starts.
+#' @param disable the events to disable, options are "click", "hover", "zoom".
 #' @param ... additional arguments.
 #' 
 #' @return A chart object containing the information to create an interactive scatter plot.

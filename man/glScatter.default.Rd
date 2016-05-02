@@ -51,6 +51,8 @@
 
 \item{hide}{TRUE to hide the plot when page starts.}
 
+\item{disable}{the events to disable, options are "click", "hover", "zoom".}
+
 \item{...}{additional arguments.}
 }
 \value{
