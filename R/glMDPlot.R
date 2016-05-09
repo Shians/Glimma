@@ -75,6 +75,14 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
     link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
     link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
 
+    draw.plots(table, display.columns, xval, yval, plot1, plot2,
+                        link1, link2, path, folder, html, overwrite=TRUE,
+                        launch)
+}
+
+draw.plots <- function(table, display.columns, xval, yval, plot1, plot2,
+                        link1, link2, path, folder, html, overwrite=TRUE,
+                        launch) {
     if (table) {
         # TODO: Have different columns to tooltip
         link3 <- gltablink(1, 1, action="highlightById")
@@ -86,7 +94,6 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
         glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
             path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
     }
-
 }
 
 #' Glimma MD Plot
@@ -210,17 +217,9 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
     link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
     link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
 
-    if (table) {
-        # TODO: Have different columns to tooltip
-        link3 <- gltablink(1, 1, action="highlightById")
-        table1 <- glTable(1, c(display.columns, xval, yval))
-        glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
-           path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
-    } else {
-        button1 <- glAutoinput(1, "highlightBySearch", search.by)
-        glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
-            path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
-    }
+    draw.plots(table, display.columns, xval, yval, plot1, plot2,
+                        link1, link2, path, folder, html, overwrite=TRUE,
+                        launch)
 }
 
 #' Glimma MD Plot
