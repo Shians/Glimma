@@ -106,7 +106,7 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
         if (nprobes > top) {
             s <- rowMeans((x-rowMeans(x))^2)
             o <- order(s, decreasing=TRUE)
-            x <- x[o[1L:top],,drop=FALSE]
+            x <- x[o[1L:top],, drop=FALSE]
         }
         for (i in 2L:(nsamples))
             dist <- sqrt(colMeans( (x[, i]-x[, 1:(i-1), drop=FALSE])^2 ))
@@ -117,20 +117,29 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
     # Multi-dimensional scaling
     a1 <- suppressWarnings(cmdscale(as.dist(dd), k=min(ndim, 8), eig=TRUE))
 
-    #   Method for MDS objects
+    # Method for MDS objects
     points <- a1$points
+
+    if (!is.data.frame(groups)) {
+    # Rename for the column name in dataframe
+        group <- groups
+        groups <- data.frame(group)
+    }
+
+    first.col.name <- colnames(groups)[1]
 
     points <- data.frame(points)
     names(points) <- paste0("dim", 1:ncol(points))
-    points <- data.frame(points, label=labels, group=groups)
+    points <- data.frame(points, label=labels, groups)
 
     eigen <- data.frame(name = 1:min(ndim, 8),
                         eigen = round(a1$eig[1:min(ndim, 8)]/sum(a1$eig), 2))
 
     plot1 <- glScatter(points, xval="dim1", yval="dim2",
                         xlab="Dimension 1", ylab="Dimension 2",
-                        annot=c("label", "group", "dim1", "dim2"),
-                        colval="group", main=main)
+                        annot=c("label", first.col.name, "dim1", "dim2"),
+                        colval=first.col.name, main=main,
+                        info=list(groupsNames=colnames(groups)))
 
     plot2 <- glBar(eigen, names.arg="name", yval="eigen",
                     main="Variance Explained",

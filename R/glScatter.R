@@ -46,6 +46,7 @@ glScatter <- function(x, ...) {
 #' @param flag the special flag to indicate special plot.
 #' @param info additional information for plotting.
 #' @param hide TRUE to hide the plot when page starts.
+#' @param disable the events to disable, options are "click", "hover", "zoom".
 #' @param ... additional arguments.
 #' 
 #' @return A chart object containing the information to create an interactive scatter plot.
@@ -62,9 +63,9 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
                                 ndigits=NULL, signif=6, log="",
                                 xlab=xval, ylab=yval, main=NULL,
                                 height=400, width=500,
-                                colval=NULL, annot=c(xval, yval), 
-                                annot.lab=NULL, flag=NULL, info=NULL, 
-                                hide=FALSE, ...) {
+                                colval=NULL, annot=c(xval, yval),
+                                annot.lab=NULL, flag=NULL, info=NULL,
+                                hide=FALSE, disable=NULL, ...) {
     ##
     # Input checking
     assertClass(xval, "character")
@@ -102,7 +103,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
     # Normalise input
     x <- data.frame(x)
 
-    # TODO: Consider using rjson package?
+    # TODO: Consider using rjson or jsonlite packages?
     # Make json out of data
     json <- makeDFJson(x)
 
@@ -146,7 +147,10 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
                 title = main,
                 flag = flag,
                 info = info,
-                hide = hide
+                hide = hide,
+                disableClick = "click" %in% disable,
+                disableHover = "hover" %in% disable,
+                disableZoom = "zoom" %in% disable
             )
 
     class(out) <- "jschart"
