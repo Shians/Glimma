@@ -75,13 +75,13 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
     link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
     link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
 
-    draw.plots(table, display.columns, xval, yval, plot1, plot2,
-                        link1, link2, path, folder, html, overwrite=TRUE,
-                        launch)
+    draw.plots(table, display.columns, search.by, xval, yval,
+                plot1, plot2, link1, link2, path, folder, html,
+                launch)
 }
 
-draw.plots <- function(table, display.columns, xval, yval, plot1, plot2,
-                        link1, link2, path, folder, html, overwrite=TRUE,
+draw.plots <- function(table, display.columns, search.by, xval, yval,
+                        plot1, plot2, link1, link2, path, folder, html,
                         launch) {
     if (table) {
         # TODO: Have different columns to tooltip
@@ -197,7 +197,6 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
     # Reordering so that significant points appear on top of insignificant
     # points.
 
-    # TODO: Refactor to use hidden method, or for hiddne method to use this.
     plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
                            plotting.data[plotting.data$col != cols[2], ])
 
@@ -217,9 +216,9 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
     link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
     link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
 
-    draw.plots(table, display.columns, xval, yval, plot1, plot2,
-                        link1, link2, path, folder, html, overwrite=TRUE,
-                        launch)
+    draw.plots(table, display.columns, search.by, xval, yval,
+                plot1, plot2, link1, link2, path, folder, html,
+                launch)
 }
 
 #' Glimma MD Plot
