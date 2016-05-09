@@ -78,9 +78,12 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     js.path <- system.file(package="Glimma", "js")
     css.path <- system.file(package="Glimma", "css")
 
-    file.copy(index.path,
-            file.path(path, folder, paste0(html, ".html")),
-            overwrite=overwrite)
+    # Renaming the data.js in html file
+    temp <- gsub("data.js", paste0(html, ".js"),
+            read.delim(index.path, header=FALSE, as.is=TRUE, sep="\n")[, 1])
+
+    write.table(temp, file=file.path(path, folder, paste0(html, ".html")),
+                quote=FALSE, sep="\n", row.names=FALSE, col.names=FALSE)
 
     file.copy(img.path,
             file.path(path, folder),
@@ -97,7 +100,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
             recursive=TRUE,
             overwrite=overwrite)
 
-    data.path <- file.path(path, folder, "js", "data.js")
+    data.path <- file.path(path, folder, "js", paste0(html, ".js"))
     cat("", file=data.path, sep="")
     write.data <- writeMaker(data.path)
 
@@ -149,7 +152,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     } else {
         write.data("glimma.storage.linkage = [];\n")
     }
- 
+
     # Write input fields
     if (nrow(inputs) > 1) {
         inputs.js <- makeDFJson(inputs[-1, ])
