@@ -86,7 +86,7 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
     if (table) {
         # TODO: Have different columns to tooltip
         link3 <- gltablink(1, 1, action="highlightById")
-        table1 <- glTable(1, c(display.columns, xval, yval, "Adj.PValue"))
+        table1 <- glTable(1, plot1$anno)
         glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
             path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
     } else {

@@ -5,10 +5,11 @@
 \title{Glimma Scatter Plot}
 \usage{
 \method{glScatter}{default}(x, xval = "x", yval = "y", idval = NULL,
-  x.jitter = 0, y.jitter = 0, ndigits = NULL, signif = 6, log = "",
-  xlab = xval, ylab = yval, main = NULL, height = 400, width = 500,
-  colval = NULL, annot = c(xval, yval), annot.lab = NULL, flag = NULL,
-  info = NULL, hide = FALSE, disable = NULL, ...)
+  point.size = 2, x.jitter = 0, y.jitter = 0, ndigits = NULL,
+  signif = 6, log = "", xlab = xval, ylab = yval, main = NULL,
+  height = 400, width = 500, colval = NULL, annot = c(xval, yval),
+  annot.lab = NULL, flag = NULL, info = NULL, hide = FALSE,
+  disable = NULL, ...)
 }
 \arguments{
 \item{x}{the data.frame containing data to plot.}
@@ -18,6 +19,8 @@
 \item{yval}{the column name for the y-axis values.}
 
 \item{idval}{the column name for unique identifiers.}
+
+\item{point.size}{the size of the data points.}
 
 \item{x.jitter}{the amount of jittering to add to values along the x axis.}
 
