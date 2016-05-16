@@ -135,7 +135,7 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
     eigen <- data.frame(name = 1:min(ndim, 8),
                         eigen = round(a1$eig[1:min(ndim, 8)]/sum(a1$eig), 2))
 
-    plot1 <- glScatter(points, xval="dim1", yval="dim2",
+    plot1 <- glScatter(points, xval="dim1", yval="dim2", point.size=4,
                         xlab="Dimension 1", ylab="Dimension 2",
                         annot=c("label", first.col.name, "dim1", "dim2"),
                         colval=first.col.name, main=main,
