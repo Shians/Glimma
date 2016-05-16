@@ -29,9 +29,10 @@ glScatter <- function(x, ...) {
 #' @param x the data.frame containing data to plot.
 #' @param xval the column name for the x-axis values.
 #' @param yval the column name for the y-axis values.
+#' @param idval the column name for unique identifiers.
+#' @param point.size the size of the data points.
 #' @param x.jitter the amount of jittering to add to values along the x axis.
 #' @param y.jitter the amount of jittering to add to values along the y axis.
-#' @param idval the column name for unique identifiers.
 #' @param ndigits the number of digits after the decimal to round to in the tooltip (overrides signif).
 #' @param signif the number of significant figures to display in the tooltip.
 #' @param log a character string which contains "x" if the x axis is to be logarithmic, "y" if the y axis is to be logarithmic and "xy" or "yx" if both axes are to be logarithmic.
@@ -58,7 +59,7 @@ glScatter <- function(x, ...) {
 #' glimma(plot1, c(1,1))
 #' }
 
-glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
+glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
                                 x.jitter = 0, y.jitter = 0,
                                 ndigits=NULL, signif=6, log="",
                                 xlab=xval, ylab=yval, main=NULL,
@@ -128,6 +129,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL,
                 id = idval,
                 ndigits = ndigits,
                 signif = signif,
+                pntsize = point.size,
                 xlab = xlab,
                 xjitter = x.jitter,
                 ylab = ylab,
@@ -166,6 +168,11 @@ constructScatterPlot <- function(chart, index, write.out) {
 
     width <- paste0(".width(", chart$width, ")")
     command <- paste0(command, width)
+
+    if (!is.null(chart$pntsize)) {
+        size <- paste0(".size(function (d) { return ", chart$pntsize,"; })")
+        command <- paste0(command, size)
+    }
 
     x.func <- paste0(".x(function (d) { return d[", quotify(chart$x), "]; })")
     command <- paste0(command, x.func)
