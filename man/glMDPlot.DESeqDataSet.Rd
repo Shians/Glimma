@@ -27,7 +27,7 @@
 
 \item{id.column}{the column containing unique identifiers for each gene.}
 
-\item{display.columns}{character vector containing names of columns to display in mouseover tooltips.}
+\item{display.columns}{character vector containing names of columns to display in mouseover tooltips and table.}
 
 \item{cols}{vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)}
 
@@ -43,10 +43,15 @@
 
 \item{launch}{TRUE to launch plot after call.}
 
-\item{...}{additional arguments to be passed onto the MD plot.}
+\item{...}{additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)}
 }
 \value{
-Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+Draws a two-panel interactive MD plot in an html page. The left plot
+shows the log-fold-change vs average expression. The right plot shows the 
+expression levels of a particular gene of each sample. Hovering over points 
+on left plot will plot expression level for corresponding gene, clicking 
+on points will fix the expression plot to gene. Clicking on rows on the table
+has the same effect as clicking on the corresponding gene in the plot.
 }
 \description{
 Draw an interactive MD plot from a DESeqDataSet object
