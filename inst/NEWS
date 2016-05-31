@@ -1,9 +1,7 @@
 Glimma News
 
-CHANGES IN Glimma 1.1.2
+CHANGES IN Glimma 1.2.0
   * Added enter to search on MD plot table search box.
-
-CHANGES IN Glimma 1.1.1
   * Added sample.cols argument to MD Plot.
   * Added data.frame handling for groups argument in MDS plot.
   * Fixed multiple plots in same directory overwriting each other's data.
