@@ -1,7 +1,7 @@
 Package: Glimma
 Type: Package
 Title: Interactive HTML graphics
-Version: 1.1.0
+Version: 1.1.2
 Date: 2016-02-29
 Author: Shian Su, Matt Ritchie
 Maintainer: Shian Su <su.s@wehi.edu.au>
@@ -11,7 +11,7 @@ biocViews:
     ReportWriting,
     RNASeq,
     Visualization
-Depends: R (>= 3.2.0)
+Depends: R (>= 3.3.0)
 Imports: 
     DESeq2,
     edgeR,

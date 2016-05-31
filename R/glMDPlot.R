@@ -9,7 +9,12 @@
 #'
 #' @seealso \code{\link{glMDPlot.default}}, \code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}
 #'
-#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot
+#' shows the log-fold-change vs average expression. The right plot shows the 
+#' expression levels of a particular gene of each sample. Hovering over points 
+#' on left plot will plot expression level for corresponding gene, clicking 
+#' on points will fix the expression plot to gene. Clicking on rows on the table
+#' has the same effect as clicking on the corresponding gene in the plot.
 #'
 #' @examples
 #' library(limma)
@@ -117,7 +122,7 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @param search.by the name of the column which will be used to search for data points if table is not used. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
@@ -125,9 +130,14 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments to be passed onto the MD plot.
+#' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
-#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot
+#' shows the log-fold-change vs average expression. The right plot shows the 
+#' expression levels of a particular gene of each sample. Hovering over points 
+#' on left plot will plot expression level for corresponding gene, clicking 
+#' on points will fix the expression plot to gene. Clicking on rows on the table
+#' has the same effect as clicking on the corresponding gene in the plot.
 #'
 #' @method glMDPlot default
 #'
@@ -186,12 +196,12 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
         sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = groups,
-                             t(cpm(as.matrix(counts), log=TRUE)))
+                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
     } else {
         sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(cpm(as.matrix(counts), log=TRUE)))
+                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
     }
 
     # Reordering so that significant points appear on top of insignificant
@@ -238,7 +248,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
@@ -246,9 +256,14 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments to be passed onto the MD plot.
+#' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
-#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot
+#' shows the log-fold-change vs average expression. The right plot shows the 
+#' expression levels of a particular gene of each sample. Hovering over points 
+#' on left plot will plot expression level for corresponding gene, clicking 
+#' on points will fix the expression plot to gene. Clicking on rows on the table
+#' has the same effect as clicking on the corresponding gene in the plot.
 #'
 #' @method glMDPlot DGELRT
 #'
@@ -298,7 +313,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
     col <- sapply(status, colourise)
 
     plotting.data <- data.frame(anno, x$table, col = col,
-                                Adj.PValue = p.adjust(x$table$PValue,
+                                Adj.PValue = stats::p.adjust(x$table$PValue,
                                 method = p.adj.method))
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
@@ -306,7 +321,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(cpm(as.matrix(counts), log=TRUE)))
+                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -332,7 +347,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
@@ -340,9 +355,14 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments to be passed onto the MD plot.
+#' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
-#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot
+#' shows the log-fold-change vs average expression. The right plot shows the 
+#' expression levels of a particular gene of each sample. Hovering over points 
+#' on left plot will plot expression level for corresponding gene, clicking 
+#' on points will fix the expression plot to gene. Clicking on rows on the table
+#' has the same effect as clicking on the corresponding gene in the plot.
 #'
 #' @method glMDPlot DGEExact
 #'
@@ -370,7 +390,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
@@ -378,9 +398,14 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments to be passed onto the MD plot.
+#' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
-#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot
+#' shows the log-fold-change vs average expression. The right plot shows the 
+#' expression levels of a particular gene of each sample. Hovering over points 
+#' on left plot will plot expression level for corresponding gene, clicking 
+#' on points will fix the expression plot to gene. Clicking on rows on the table
+#' has the same effect as clicking on the corresponding gene in the plot.
 #'
 #' @examples
 #' \donttest{
@@ -455,7 +480,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 
     col <- sapply(status, colourise)
 
-    Adj.PValue <- p.adjust(x$p.value[, coef], method=p.adj.method)
+    Adj.PValue <- stats::p.adjust(x$p.value[, coef], method=p.adj.method)
     plotting.data <- data.frame(logFC = x$coefficients[, coef],
                                  logCPM = x$Amean,
                                  col = col,
@@ -468,7 +493,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(cpm(as.matrix(counts), log=TRUE)))
+                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -491,7 +516,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
@@ -499,9 +524,14 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments to be passed onto the MD plot.
+#' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
-#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot
+#' shows the log-fold-change vs average expression. The right plot shows the 
+#' expression levels of a particular gene of each sample. Hovering over points 
+#' on left plot will plot expression level for corresponding gene, clicking 
+#' on points will fix the expression plot to gene. Clicking on rows on the table
+#' has the same effect as clicking on the corresponding gene in the plot.
 #'
 #' @method glMDPlot DESeqDataSet
 #'
@@ -535,9 +565,9 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
 
-    res <- results(x)
+    res <- DESeq2::results(x)
     res.df <- as.data.frame(res)
-    gene.counts <- counts(x)
+    gene.counts <- DESeq2::counts(x)
 
     colourise <- function(x) {
         if (x == -1) {
@@ -568,7 +598,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(cpm(gene.counts, log=TRUE)))
+                             t(edgeR::cpm(gene.counts, log=TRUE)))
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -592,7 +622,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips.
+#' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
 #' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
@@ -600,9 +630,14 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments to be passed onto the MD plot.
+#' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
-#' @return Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+#' @return Draws a two-panel interactive MD plot in an html page. The left plot
+#' shows the log-fold-change vs average expression. The right plot shows the 
+#' expression levels of a particular gene of each sample. Hovering over points 
+#' on left plot will plot expression level for corresponding gene, clicking 
+#' on points will fix the expression plot to gene. Clicking on rows on the table
+#' has the same effect as clicking on the corresponding gene in the plot.
 #'
 #' @method glMDPlot DESeqResults
 #'
@@ -668,7 +703,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(cpm(gene.counts, log=TRUE)))
+                             t(edgeR::cpm(gene.counts, log=TRUE)))
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
