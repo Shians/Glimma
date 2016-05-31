@@ -11,7 +11,7 @@ biocViews:
     ReportWriting,
     RNASeq,
     Visualization
-Depends: R (>= 3.2.0)
+Depends: R (>= 3.3.0)
 Imports: 
     DESeq2,
     edgeR,
