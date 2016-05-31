@@ -186,12 +186,12 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
         sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = groups,
-                             t(cpm(as.matrix(counts), log=TRUE)))
+                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
     } else {
         sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(cpm(as.matrix(counts), log=TRUE)))
+                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
     }
 
     # Reordering so that significant points appear on top of insignificant
@@ -298,7 +298,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
     col <- sapply(status, colourise)
 
     plotting.data <- data.frame(anno, x$table, col = col,
-                                Adj.PValue = p.adjust(x$table$PValue,
+                                Adj.PValue = stats::p.adjust(x$table$PValue,
                                 method = p.adj.method))
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
@@ -306,7 +306,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(cpm(as.matrix(counts), log=TRUE)))
+                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -455,7 +455,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 
     col <- sapply(status, colourise)
 
-    Adj.PValue <- p.adjust(x$p.value[, coef], method=p.adj.method)
+    Adj.PValue <- stats::p.adjust(x$p.value[, coef], method=p.adj.method)
     plotting.data <- data.frame(logFC = x$coefficients[, coef],
                                  logCPM = x$Amean,
                                  col = col,
@@ -468,7 +468,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(cpm(as.matrix(counts), log=TRUE)))
+                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -535,9 +535,9 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
 
-    res <- results(x)
+    res <- DESeq2::results(x)
     res.df <- as.data.frame(res)
-    gene.counts <- counts(x)
+    gene.counts <- DESeq2::counts(x)
 
     colourise <- function(x) {
         if (x == -1) {
@@ -568,7 +568,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(cpm(gene.counts, log=TRUE)))
+                             t(edgeR::cpm(gene.counts, log=TRUE)))
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -668,7 +668,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(cpm(gene.counts, log=TRUE)))
+                             t(edgeR::cpm(gene.counts, log=TRUE)))
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
