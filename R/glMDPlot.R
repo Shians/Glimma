@@ -56,7 +56,8 @@ glMDPlot <- function(x, ...) {
 glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
                             search.by, id.column, default.col, jitter,
                             table, path, folder, html, launch,
-                            xval, yval, xlab, ylab, ...) {
+                            xval, yval, xlab, ylab, side.xlab, side.ylab, 
+                            ...) {
 
     # Reordering so that significant points appear on top of insignificant
     # points.
@@ -71,7 +72,8 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
                     ...)
 
     plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[4],
-                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[4],
+                    idval="Sample", xlab=side.xlab, ylab=side.ylab,
+                    main=colnames(sample.exp)[4],
                     annot=c("Sample", colnames(sample.exp)[4]),
                     colval="col",
                     annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
@@ -114,8 +116,10 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
 #' @param xlab the label on the x axis for the left plot.
 #' @param ylab the label on the y axis for the left plot.
 #' @param side.xlab the label on the x axis for the right plot.
@@ -149,9 +153,9 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @export
 
 glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
-                        transform=TRUE,
-                        status=rep(0, nrow(x)), xlab=xval, ylab=yval,
+                        status=rep(0, nrow(x)), transform=TRUE, 
                         side.xlab="Group", side.ylab="logCPM",
+                        xlab=xval, ylab=yval,
                         search.by="Symbols", jitter=30,
                         id.column="GeneID", display.columns=id.column,
                         cols=c("#0000FF", "#858585", "#B32222"),
@@ -194,23 +198,22 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
 
-    counts <- as.matrix(counts)
     if (transform) {
-        counts <- t(edgeR::cpm(counts, log=TRUE))
+        tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
     } else {
-        counts <- t(counts)
+        tr.counts <- t(as.matrix(counts))
     }
 
     if (is(groups, "numeric")) {
         sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = groups,
-                             counts)
+                             tr.counts)
     } else {
         sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             counts)
+                             tr.counts)
     }
 
     # Reordering so that significant points appear on top of insignificant
@@ -251,8 +254,10 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
@@ -283,8 +288,9 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @export
 
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
-                            transform=TRUE,
-                            status=rep(0, nrow(x)), coef=ncol(x$coefficients),
+                            status=rep(0, nrow(x)), transform=TRUE,
+                            side.xlab="Group", side.ylab="logCPM",
+                            coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             id.column="GeneID", display.columns=id.column,
                             cols=c("#0000FF", "#858585", "#B32222"),
@@ -329,23 +335,24 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
 
-    counts <- as.matrix(counts)
     if (transform) {
-        counts <- t(edgeR::cpm(counts, log=TRUE))
+        tr.counts <- t(edgeR::cpm(as.matrix(counts), log=TRUE))
     } else {
-        counts <- t(counts)
+        tr.counts <- t(as.matrix(counts))
     }
 
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             counts)
+                             tr.counts)
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
                 table=table, xval="logCPM", yval="logFC",
-                xlab="Average log CPM", ylab="log-fold-change", ...)
+                xlab="Average log CPM", ylab="log-fold-change",
+                side.xlab=side.xlab, side.ylab=side.ylab,
+                ...)
 }
 
 #' Glimma MD Plot
@@ -359,8 +366,10 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
@@ -403,8 +412,10 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
@@ -465,8 +476,9 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @export
 
 glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
-                            transform=TRUE,
-                            status=rep(0, nrow(x)), coef=ncol(x$coefficients),
+                            status=rep(0, nrow(x)), transform=TRUE,
+                            side.xlab="Group", side.ylab="logCPM",
+                            coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             id.column="GeneID", display.columns=id.column,
                             cols=c("#0000FF", "#858585", "#B32222"),
@@ -511,11 +523,10 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
 
-    counts <- as.matrix(counts)
     if (transform) {
-        counts <- t(edgeR::cpm(counts, log=TRUE))
+        tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
     } else {
-        counts <- t(counts)
+        tr.counts <- t(as.matrix(counts))
     }
 
     dim(counts)
@@ -524,13 +535,15 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             counts)
+                             tr.counts)
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
                 table=table, xval="logCPM", yval="logFC",
-                xlab="Average log CPM", ylab="log-fold-change", ...)
+                xlab="Average log CPM", ylab="log-fold-change",
+                side.xlab=side.xlab, side.ylab=side.ylab,
+                ...)
 }
 
 #' Glimma MD Plot
@@ -544,6 +557,9 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
@@ -573,7 +589,9 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @export
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
-                                status=rep(0, nrow(x)), search.by="Symbols",
+                                status=rep(0, nrow(x)), transform=TRUE,
+                                side.xlab="Group", side.ylab="logMean",
+                                search.by="Symbols",
                                 jitter=30, id.column="GeneID",
                                 display.columns=id.column,
                                 cols=c("#0000FF", "#858585", "#B32222"),
@@ -626,23 +644,24 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 
     rownames(gene.counts) <- make.names(plotting.data[[id.column]])
 
-    gene.counts <- as.matrix(gene.counts)
     if (transform) {
-        gene.counts <- t(edgeR::cpm(gene.counts, log=TRUE))
+        tr.counts <- t(as.matrix(edgeR::cpm(gene.counts, log=TRUE)))
     } else {
-        gene.counts <- t(gene.counts)
+        tr.counts <- t(as.matrix(gene.counts))
     }
 
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             gene.counts)
+                             tr.counts)
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
                     table=table, xval="logMean", yval="logFC",
-                    xlab="Mean Expression", ylab="log-fold-change", ...)
+                    xlab="Mean Expression", ylab="log-fold-change",
+                    side.xlab=side.xlab, side.ylab=side.ylab,
+                    ...)
 }
 
 #' Glimma MD Plot
@@ -656,8 +675,10 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
@@ -687,8 +708,9 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @export
 
 glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
-                                transform=TRUE,
-                                status=rep(0, nrow(x)), search.by="Symbols",
+                                status=rep(0, nrow(x)), transform=TRUE,
+                                side.xlab="Group", side.ylab="logCPM",
+                                search.by="Symbols",
                                 jitter=30, id.column="GeneID",
                                 display.columns=id.column,
                                 cols=c("#0000FF", "#858585", "#B32222"),
@@ -740,21 +762,21 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     rownames(gene.counts) <- make.names(plotting.data[[id.column]])
 
-    gene.counts <- as.matrix(gene.counts)
     if (transform) {
-        gene.counts <- t(edgeR::cpm(gene.counts, log=TRUE))
+        tr.counts <- t(as.matrix(edgeR::cpm(gene.counts, log=TRUE)))
     } else {
-        gene.counts <- t(gene.counts)
+        tr.counts <- t(as.matrix(gene.counts))
     }
 
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             gene.counts)
+                             tr.counts)
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
                     table=table, xval="logMean", yval="logFC",
-                    xlab="Mean Expression", ylab="log-fold-change", ...)
+                    xlab="Mean Expression", ylab="log-fold-change",
+                    side.xlab=side.xlab, side.ylab=side.ylab...)
 }
