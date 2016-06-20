@@ -5,8 +5,8 @@
 \title{Glimma MD Plot}
 \usage{
 \method{glMDPlot}{default}(x, xval, yval, counts, anno, groups, samples,
-  transform = TRUE, status = rep(0, nrow(x)), xlab = xval, ylab = yval,
-  side.xlab = "Group", side.ylab = "logCPM", search.by = "Symbols",
+  status = rep(0, nrow(x)), transform = TRUE, side.xlab = "Group",
+  side.ylab = "logCPM", xlab = xval, ylab = yval, search.by = "Symbols",
   jitter = 30, id.column = "GeneID", display.columns = id.column,
   cols = c("#0000FF", "#858585", "#B32222"), sample.cols = rep("#1f77b4",
   ncol(counts)), table = TRUE, path = getwd(), folder = "glimma-plots",
@@ -27,17 +27,17 @@
 
 \item{samples}{the names of the samples.}
 
+\item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.}
+
 \item{transform}{TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.}
 
-\item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.}
+\item{side.xlab}{label for x axis on right side plot.}
+
+\item{side.ylab}{label for y axis on right side plot.}
 
 \item{xlab}{the label on the x axis for the left plot.}
 
 \item{ylab}{the label on the y axis for the left plot.}
-
-\item{side.xlab}{the label on the x axis for the right plot.}
-
-\item{side.ylab}{the label on the y axis for the right plot.}
 
 \item{search.by}{the name of the column which will be used to search for data points if table is not used. (should contain unique values)}
 
@@ -62,6 +62,10 @@
 \item{launch}{TRUE to launch plot after call.}
 
 \item{...}{additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)}
+
+\item{side.xlab}{the label on the x axis for the right plot.}
+
+\item{side.ylab}{the label on the y axis for the right plot.}
 }
 \value{
 Draws a two-panel interactive MD plot in an html page. The left plot
