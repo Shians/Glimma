@@ -10,9 +10,9 @@
 #' @seealso \code{\link{glMDPlot.default}}, \code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -114,6 +114,7 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param xlab the label on the x axis for the left plot.
 #' @param ylab the label on the y axis for the left plot.
@@ -133,9 +134,9 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -148,6 +149,7 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @export
 
 glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
+                        transform=TRUE,
                         status=rep(0, nrow(x)), xlab=xval, ylab=yval,
                         side.xlab="Group", side.ylab="logCPM",
                         search.by="Symbols", jitter=30,
@@ -192,16 +194,23 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
 
+    counts <- as.matrix(counts)
+    if (transform) {
+        counts <- t(edgeR::cpm(counts, log=TRUE))
+    } else {
+        counts <- t(counts)
+    }
+
     if (is(groups, "numeric")) {
         sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = groups,
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+                             counts)
     } else {
         sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+                             counts)
     }
 
     # Reordering so that significant points appear on top of insignificant
@@ -242,6 +251,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
@@ -259,9 +269,9 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -273,6 +283,7 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @export
 
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
+                            transform=TRUE,
                             status=rep(0, nrow(x)), coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             id.column="GeneID", display.columns=id.column,
@@ -318,10 +329,17 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
 
+    counts <- as.matrix(counts)
+    if (transform) {
+        counts <- t(edgeR::cpm(counts, log=TRUE))
+    } else {
+        counts <- t(counts)
+    }
+
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+                             counts)
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -341,6 +359,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
@@ -358,9 +377,9 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -384,6 +403,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
@@ -401,9 +421,9 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -445,6 +465,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @export
 
 glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
+                            transform=TRUE,
                             status=rep(0, nrow(x)), coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             id.column="GeneID", display.columns=id.column,
@@ -490,10 +511,20 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
 
+    counts <- as.matrix(counts)
+    if (transform) {
+        counts <- t(edgeR::cpm(counts, log=TRUE))
+    } else {
+        counts <- t(counts)
+    }
+
+    dim(counts)
+    head(counts)
+
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+                             counts)
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -527,9 +558,9 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -595,10 +626,17 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 
     rownames(gene.counts) <- make.names(plotting.data[[id.column]])
 
+    gene.counts <- as.matrix(gene.counts)
+    if (transform) {
+        gene.counts <- t(edgeR::cpm(gene.counts, log=TRUE))
+    } else {
+        gene.counts <- t(gene.counts)
+    }
+
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(edgeR::cpm(gene.counts, log=TRUE)))
+                             gene.counts)
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -618,6 +656,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
@@ -633,9 +672,9 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -648,6 +687,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @export
 
 glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
+                                transform=TRUE,
                                 status=rep(0, nrow(x)), search.by="Symbols",
                                 jitter=30, id.column="GeneID",
                                 display.columns=id.column,
@@ -700,10 +740,17 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     rownames(gene.counts) <- make.names(plotting.data[[id.column]])
 
+    gene.counts <- as.matrix(gene.counts)
+    if (transform) {
+        gene.counts <- t(edgeR::cpm(gene.counts, log=TRUE))
+    } else {
+        gene.counts <- t(gene.counts)
+    }
+
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(edgeR::cpm(gene.counts, log=TRUE)))
+                             gene.counts)
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
