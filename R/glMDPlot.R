@@ -56,7 +56,8 @@ glMDPlot <- function(x, ...) {
 glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
                             search.by, id.column, default.col, jitter,
                             table, path, folder, html, launch,
-                            xval, yval, xlab, ylab, side.xlab, side.ylab, 
+                            xval, yval, xlab, ylab, side.xlab, side.ylab,
+                            side.log, side.gridstep,
                             ...) {
 
     # Reordering so that significant points appear on top of insignificant
@@ -75,9 +76,10 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
                     idval="Sample", xlab=side.xlab, ylab=side.ylab,
                     main=colnames(sample.exp)[4],
                     annot=c("Sample", colnames(sample.exp)[4]),
-                    colval="col",
-                    annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
-                    ndigits=4, hide=TRUE)
+                    colval="col", log=ifelse(side.log, "y", ""),
+                    annot.lab=c("Sample", side.ylab), x.jitter = jitter,
+                    ndigits=4, hide=TRUE, ystep=side.gridstep,
+                    ygrid=TRUE)
 
     link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
     link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
@@ -120,10 +122,10 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param xlab the label on the x axis for the left plot.
 #' @param ylab the label on the y axis for the left plot.
-#' @param side.xlab the label on the x axis for the right plot.
-#' @param side.ylab the label on the y axis for the right plot.
 #' @param search.by the name of the column which will be used to search for data points if table is not used. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
@@ -153,8 +155,10 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @export
 
 glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
-                        status=rep(0, nrow(x)), transform=TRUE, 
+                        status=rep(0, nrow(x)), transform=TRUE,
                         side.xlab="Group", side.ylab="logCPM",
+                        side.log=FALSE,
+                        side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                         xlab=xval, ylab=yval,
                         search.by="Symbols", jitter=30,
                         id.column="GeneID", display.columns=id.column,
@@ -180,6 +184,10 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 
     if (ncol(counts) != length(samples)) {
         stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+    }
+
+    if (side.log && any(counts == 0)) {
+        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
     }
 
     colourise <- function(x) {
@@ -227,13 +235,17 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
                     annot=c(display.columns, xval, yval), flag="mdplot",
                     ndigits=4, info=list(search.by=search.by), ...)
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[4],
-                        xlab=side.xlab, ylab=side.ylab,
-                        main=colnames(sample.exp)[4],
-                        colval="col",
-                        annot=c("Sample", colnames(sample.exp)[4]),
-                        annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
-                        ndigits=4, hide=TRUE)
+    if (side.gridstep) {
+        plot2 <- glScatter(sample.exp, xval="Group",
+                            yval=colnames(sample.exp)[4],
+                            xlab=side.xlab, ylab=side.ylab,
+                            main=colnames(sample.exp)[4],
+                            colval="col",
+                            annot=c("Sample", colnames(sample.exp)[4]),
+                            annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
+                            ndigits=4, hide=TRUE, y.grid=TRUE, ystep=side.gridstep,
+                            ygrid=TRUE)
+    }
 
     link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
     link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
@@ -258,6 +270,8 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
@@ -290,6 +304,8 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
+                            side.log=FALSE,
+                            side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                             coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             id.column="GeneID", display.columns=id.column,
@@ -315,6 +331,10 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 
     if (ncol(counts) != length(samples)) {
         stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+    }
+
+    if (side.log && any(counts == 0)) {
+        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
     }
 
     colourise <- function(x) {
@@ -351,7 +371,8 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
                 path=path, folder=folder, html=html, launch=launch,
                 table=table, xval="logCPM", yval="logFC",
                 xlab="Average log CPM", ylab="log-fold-change",
-                side.xlab=side.xlab, side.ylab=side.ylab,
+                side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
+                side.gridstep=side.gridstep,
                 ...)
 }
 
@@ -370,6 +391,8 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
@@ -416,6 +439,8 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
@@ -478,6 +503,8 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
+                            side.log=FALSE,
+                            side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                             coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             id.column="GeneID", display.columns=id.column,
@@ -499,6 +526,10 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
+    }
+
+    if (side.log && any(counts == 0)) {
+        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
     }
 
     colourise <- function(x) {
@@ -529,9 +560,6 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
         tr.counts <- t(as.matrix(counts))
     }
 
-    dim(counts)
-    head(counts)
-
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
@@ -542,7 +570,8 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
                 path=path, folder=folder, html=html, launch=launch,
                 table=table, xval="logCPM", yval="logFC",
                 xlab="Average log CPM", ylab="log-fold-change",
-                side.xlab=side.xlab, side.ylab=side.ylab,
+                side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
+                side.gridstep=side.gridstep,
                 ...)
 }
 
@@ -560,6 +589,8 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
@@ -591,6 +622,8 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                 status=rep(0, nrow(x)), transform=TRUE,
                                 side.xlab="Group", side.ylab="logMean",
+                                side.log=FALSE,
+                                side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                                 search.by="Symbols",
                                 jitter=30, id.column="GeneID",
                                 display.columns=id.column,
@@ -612,6 +645,10 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
+    }
+
+    if (side.log && any(counts == 0)) {
+        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
     }
 
     res <- DESeq2::results(x)
@@ -660,7 +697,8 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                     path=path, folder=folder, html=html, launch=launch,
                     table=table, xval="logMean", yval="logFC",
                     xlab="Mean Expression", ylab="log-fold-change",
-                    side.xlab=side.xlab, side.ylab=side.ylab,
+                    side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
+                    side.gridstep=side.gridstep,
                     ...)
 }
 
@@ -679,6 +717,8 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
@@ -710,6 +750,8 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                                 status=rep(0, nrow(x)), transform=TRUE,
                                 side.xlab="Group", side.ylab="logCPM",
+                                side.log=FALSE,
+                                side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                                 search.by="Symbols",
                                 jitter=30, id.column="GeneID",
                                 display.columns=id.column,
@@ -731,6 +773,10 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
+    }
+
+    if (side.log && any(counts == 0)) {
+        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
     }
 
     res <- x
@@ -778,5 +824,8 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                     path=path, folder=folder, html=html, launch=launch,
                     table=table, xval="logMean", yval="logFC",
                     xlab="Mean Expression", ylab="log-fold-change",
-                    side.xlab=side.xlab, side.ylab=side.ylab...)
+                    side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
+                    side.gridstep=side.gridstep,
+                    ...)
+
 }
