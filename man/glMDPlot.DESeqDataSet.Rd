@@ -6,7 +6,8 @@
 \usage{
 \method{glMDPlot}{DESeqDataSet}(x, anno, groups, samples, status = rep(0,
   nrow(x)), transform = TRUE, side.xlab = "Group", side.ylab = "logMean",
-  search.by = "Symbols", jitter = 30, id.column = "GeneID",
+  side.log = FALSE, side.gridstep = ifelse(!transform || side.log, FALSE,
+  0.5), search.by = "Symbols", jitter = 30, id.column = "GeneID",
   display.columns = id.column, cols = c("#0000FF", "#858585", "#B32222"),
   sample.cols = rep("#1f77b4", ncol(x)), table = TRUE, path = getwd(),
   folder = "glimma-plots", html = "MD-Plot", launch = TRUE, ...)
@@ -27,6 +28,10 @@
 \item{side.xlab}{label for x axis on right side plot.}
 
 \item{side.ylab}{label for y axis on right side plot.}
+
+\item{side.log}{TRUE to plot expression on the side plot on log scale.}
+
+\item{side.gridstep}{intervals along which to place grid lines on y axis. Currently only available for linear scale.}
 
 \item{search.by}{the name of the column which will be used to search for data points. (should contain unique values)}
 

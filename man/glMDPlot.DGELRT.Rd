@@ -6,11 +6,13 @@
 \usage{
 \method{glMDPlot}{DGELRT}(x, counts, anno, groups, samples, status = rep(0,
   nrow(x)), transform = TRUE, side.xlab = "Group", side.ylab = "logCPM",
-  coef = ncol(x$coefficients), p.adj.method = "BH", search.by = "Symbols",
-  jitter = 30, id.column = "GeneID", display.columns = id.column,
-  cols = c("#0000FF", "#858585", "#B32222"), sample.cols = rep("#1f77b4",
-  ncol(counts)), table = TRUE, path = getwd(), folder = "glimma-plots",
-  html = "MD-Plot", launch = TRUE, ...)
+  side.log = FALSE, side.gridstep = ifelse(!transform || side.log, FALSE,
+  0.5), coef = ncol(x$coefficients), p.adj.method = "BH",
+  search.by = "Symbols", jitter = 30, id.column = "GeneID",
+  display.columns = id.column, cols = c("#0000FF", "#858585", "#B32222"),
+  sample.cols = rep("#1f77b4", ncol(counts)), table = TRUE,
+  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
+  launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DGELRT object.}
@@ -30,6 +32,10 @@
 \item{side.xlab}{label for x axis on right side plot.}
 
 \item{side.ylab}{label for y axis on right side plot.}
+
+\item{side.log}{TRUE to plot expression on the side plot on log scale.}
+
+\item{side.gridstep}{intervals along which to place grid lines on y axis. Currently only available for linear scale.}
 
 \item{coef}{integer or character index vector indicating which column of object to plot.}
 
