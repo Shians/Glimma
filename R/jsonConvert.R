@@ -64,11 +64,13 @@ makeJson.list <- function(x) {
 #'
 #' @importFrom methods is
 
-makeJson.data.frame <- function(df) {
+makeJson.data.frame <- function(df, convert.logical=TRUE) {
     df <- data.frame(df)
 
     for (n in names(df)) {
         if (!is(df[[n]], "numeric") && !is(df[[n]], "logical")) {
+            df[[n]] <- quotify(as.character(df[[n]]))
+        } else if (!convert.logical && is(df[[n]], "logical")) {
             df[[n]] <- quotify(as.character(df[[n]]))
         }
     }

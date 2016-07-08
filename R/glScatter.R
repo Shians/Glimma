@@ -112,7 +112,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
 
     # TODO: Consider using rjson or jsonlite packages?
     # Make json out of data
-    json <- makeDFJson(x)
+    json <- makeDFJson(x, convert.logical=FALSE)
 
     x.ord <- is.factor(x[[xval]])
     y.ord <- is.factor(x[[yval]])
