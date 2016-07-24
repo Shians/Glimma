@@ -4,9 +4,9 @@
 \alias{glMDPlot.default}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{default}(x, xval, yval, counts, anno, groups, samples,
-  status = rep(0, nrow(x)), transform = TRUE, side.xlab = "Group",
-  side.ylab = "logCPM", side.log = FALSE,
+\method{glMDPlot}{default}(x, xval, yval, counts, anno = NULL, groups,
+  samples, status = rep(0, nrow(x)), transform = TRUE,
+  side.xlab = "Group", side.ylab = "logCPM", side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5), xlab = xval,
   ylab = yval, search.by = "Symbols", jitter = 30, id.column = "GeneID",
   display.columns = id.column, cols = c("#0000FF", "#858585", "#B32222"),

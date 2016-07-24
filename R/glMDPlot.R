@@ -154,7 +154,8 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #'
 #' @export
 
-glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
+glMDPlot.default <- function(x, xval, yval, counts=FALSE, anno=NULL,
+                        groups, samples,
                         status=rep(0, nrow(x)), transform=TRUE,
                         side.xlab="Group", side.ylab="logCPM",
                         side.log=FALSE,
@@ -222,6 +223,12 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
                              tr.counts)
+    }
+
+    if (is.null(display.columns)) {
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
     }
 
     # Reordering so that significant points appear on top of insignificant
@@ -301,14 +308,14 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #'
 #' @export
 
-glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
+glMDPlot.DGELRT <- function(x, counts=FALSE, anno, groups, samples,
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
                             side.log=FALSE,
                             side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                             coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
-                            id.column="GeneID", display.columns=id.column,
+                            id.column="GeneID", display.columns=NULL,
                             cols=c("#0000FF", "#858585", "#B32222"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             table=TRUE,
@@ -322,13 +329,6 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
-    #
-    ##
-
-    if (any(!is.hex(cols))) {
-        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
-    }
-
     if (ncol(counts) != length(samples)) {
         stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
     }
@@ -336,6 +336,29 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
     if (side.log && any(counts == 0)) {
         stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
     }
+
+    #
+    ##
+
+    ##
+    # Value initialisation
+
+    xval <- "logCPM"
+    yval <- "logFC"
+
+    if (any(!is.hex(cols))) {
+        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
+    }
+
+    if (is.null(display.columns)) {
+        print("Weehoo")
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
+    }
+
+    #
+    ##
 
     colourise <- function(x) {
         if (x == -1) {
@@ -369,7 +392,7 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
-                table=table, xval="logCPM", yval="logFC",
+                table=table, xval=xval, yval=yval,
                 xlab="Average log CPM", ylab="log-fold-change",
                 side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                 side.gridstep=side.gridstep,
@@ -500,14 +523,14 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #'
 #' @export
 
-glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
+glMDPlot.MArrayLM <- function(x, counts=FALSE, anno, groups, samples,
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
                             side.log=FALSE,
                             side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                             coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
-                            id.column="GeneID", display.columns=id.column,
+                            id.column="GeneID", display.columns=NULL,
                             cols=c("#0000FF", "#858585", "#B32222"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             table=TRUE,
@@ -521,16 +544,31 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
+    if (side.log && any(counts == 0)) {
+        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+    }
+
     #
     ##
+
+    ##
+    # Value initialisation
+
+    xval <- "logCPM"
+    yval <- "logFC"
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
 
-    if (side.log && any(counts == 0)) {
-        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+    if (is.null(display.columns)) {
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
     }
+
+    #
+    ##
 
     colourise <- function(x) {
         if (x == -1) {
@@ -568,7 +606,7 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
-                table=table, xval="logCPM", yval="logFC",
+                table=table, xval=xval, yval=yval,
                 xlab="Average log CPM", ylab="log-fold-change",
                 side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                 side.gridstep=side.gridstep,
@@ -626,7 +664,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                 side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                                 search.by="Symbols",
                                 jitter=30, id.column="GeneID",
-                                display.columns=id.column,
+                                display.columns=NULL,
                                 cols=c("#0000FF", "#858585", "#B32222"),
                                 sample.cols=rep("#1f77b4", ncol(x)),
                                 table=TRUE,
@@ -640,16 +678,32 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
+    if (side.log && any(counts == 0)) {
+        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+    }
+
     #
     ##
+
+    ##
+    # Value initialisation
+
+    xval <- "logMean"
+    yval <- "logFC"
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
 
-    if (side.log && any(counts == 0)) {
-        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+
+    if (is.null(display.columns)) {
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
     }
+
+    #
+    ##
 
     res <- DESeq2::results(x)
     res.df <- as.data.frame(res)
@@ -695,7 +749,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
-                    table=table, xval="logMean", yval="logFC",
+                    table=table, xval=xval, yval=yval,
                     xlab="Mean Expression", ylab="log-fold-change",
                     side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                     side.gridstep=side.gridstep,
@@ -747,14 +801,14 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #'
 #' @export
 
-glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
+glMDPlot.DESeqResults <- function(x, counts=FALSE, anno, groups, samples,
                                 status=rep(0, nrow(x)), transform=TRUE,
                                 side.xlab="Group", side.ylab="logCPM",
                                 side.log=FALSE,
                                 side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                                 search.by="Symbols",
                                 jitter=30, id.column="GeneID",
-                                display.columns=id.column,
+                                display.columns=NULL,
                                 cols=c("#0000FF", "#858585", "#B32222"),
                                 sample.cols=rep("#1f77b4", ncol(counts)),
                                 table=TRUE,
@@ -768,16 +822,31 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
+    if (side.log && any(counts == 0)) {
+        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+    }
+
     #
     ##
+
+    ##
+    # Value initialisation
+
+    xval <- "logMean"
+    yval <- "logFC"
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
 
-    if (side.log && any(counts == 0)) {
-        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+    if (is.null(display.columns)) {
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
     }
+
+    #
+    ##
 
     res <- x
     res.df <- as.data.frame(res)
@@ -822,7 +891,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
-                    table=table, xval="logMean", yval="logFC",
+                    table=table, xval=xval, yval=yval,
                     xlab="Mean Expression", ylab="log-fold-change",
                     side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                     side.gridstep=side.gridstep,
