@@ -225,7 +225,11 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     col <- sapply(status, colourise)
 
-    plotting.data <- data.frame(anno, x, col = col)
+    if (is.null(anno)) {
+        plotting.data <- data.frame(x, col = col)
+    } else {
+        plotting.data <- data.frame(anno, x, col = col)
+    }
 
     if (!is.null(counts)) {
         rownames(counts) <- make.names(plotting.data[[id.column]])
@@ -351,7 +355,8 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #'
 #' @export
 
-glMDPlot.DGELRT <- function(x, counts=NULL, anno, groups, samples,
+glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
+                            groups=rep(0, ncol(x)), samples=1:ncol(x),
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
                             side.log=FALSE,
@@ -391,6 +396,14 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno, groups, samples,
     xval <- "logCPM"
     yval <- "logFC"
 
+    if (is.null(anno)) {
+        if (!is.null(x$genes)) {
+            anno <- x$genes
+        } else {
+            warning("No gene annotation provided.")
+        }
+    }
+
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
@@ -400,6 +413,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno, groups, samples,
         display.columns <- display.columns[display.columns != xval]
         display.columns <- display.columns[display.columns != yval]
     }
+
 
     #
     ##
@@ -416,13 +430,20 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno, groups, samples,
 
     col <- sapply(status, colourise)
 
-    plotting.data <- data.frame(anno, x$table, col = col,
-                                Adj.PValue = stats::p.adjust(x$table$PValue,
-                                method = p.adj.method))
+    if (is.null(anno)) {
+        plotting.data <- data.frame(x$table, col = col,
+                                    Adj.PValue = stats::p.adjust(x$table$PValue,
+                                    method = p.adj.method))
+    } else {
+        plotting.data <- data.frame(anno, x$table, col = col,
+                                    Adj.PValue = stats::p.adjust(x$table$PValue,
+                                    method = p.adj.method))
+    }
 
-    rownames(counts) <- make.names(plotting.data[[id.column]])
 
     if (!is.null(counts)) {
+        rownames(counts) <- make.names(plotting.data[[id.column]])
+
         if (transform) {
             tr.counts <- t(edgeR::cpm(as.matrix(counts), log=TRUE))
         } else {
@@ -571,7 +592,8 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #'
 #' @export
 
-glMDPlot.MArrayLM <- function(x, counts=NULL, anno, groups, samples,
+glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
+                            groups=rep(0, ncol(x)), samples,
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
                             side.log=FALSE,
@@ -611,6 +633,14 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno, groups, samples,
     xval <- "logCPM"
     yval <- "logFC"
 
+    if (is.null(anno)) {
+        if (!is.null(x$genes)) {
+            anno <- x$genes
+        } else {
+            warning("No gene annotation provided.")
+        }
+    }
+
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
@@ -637,12 +667,20 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno, groups, samples,
     col <- sapply(status, colourise)
 
     Adj.PValue <- stats::p.adjust(x$p.value[, coef], method=p.adj.method)
-    plotting.data <- data.frame(logFC = x$coefficients[, coef],
-                                 logCPM = x$Amean,
-                                 col = col,
-                                 PValue = x$p.value[, coef],
-                                 Adj.PValue = Adj.PValue,
-                                 anno)
+    if (is.null(anno)) {
+        plotting.data <- data.frame(logFC = x$coefficients[, coef],
+                                     logCPM = x$Amean,
+                                     col = col,
+                                     PValue = x$p.value[, coef],
+                                     Adj.PValue = Adj.PValue)
+    } else {
+        plotting.data <- data.frame(logFC = x$coefficients[, coef],
+                                     logCPM = x$Amean,
+                                     col = col,
+                                     PValue = x$p.value[, coef],
+                                     Adj.PValue = Adj.PValue,
+                                     anno)
+    }
 
     if (!is.null(counts)) {
         rownames(counts) <- make.names(plotting.data[[id.column]])
@@ -860,7 +898,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #'
 #' @export
 
-glMDPlot.DESeqResults <- function(x, counts=NULL, anno, groups, samples,
+glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                                 status=rep(0, nrow(x)), transform=TRUE,
                                 side.xlab="Group", side.ylab="logCPM",
                                 side.log=FALSE,
