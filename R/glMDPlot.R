@@ -72,18 +72,23 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
                     flag="mdplot", ndigits=4, info=list(search.by=search.by),
                     ...)
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[4],
-                    idval="Sample", xlab=side.xlab, ylab=side.ylab,
-                    main=colnames(sample.exp)[4],
-                    annot=c("Sample", colnames(sample.exp)[4]),
-                    colval="col", log=ifelse(side.log, "y", ""),
-                    annot.lab=c("Sample", side.ylab), x.jitter = jitter,
-                    ndigits=4, hide=TRUE, ystep=side.gridstep,
-                    ygrid=TRUE)
-
-    link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
-    link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-
+    if (!is.null(sample.exp)) {
+        link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
+        link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
+        plot2 <- glScatter(sample.exp, xval="Group",
+                        yval=colnames(sample.exp)[4],
+                        idval="Sample", xlab=side.xlab, ylab=side.ylab,
+                        main=colnames(sample.exp)[4],
+                        annot=c("Sample", colnames(sample.exp)[4]),
+                        colval="col", log=ifelse(side.log, "y", ""),
+                        annot.lab=c("Sample", side.ylab), x.jitter = jitter,
+                        ndigits=4, hide=TRUE, ystep=side.gridstep,
+                        ygrid=TRUE)
+    } else {
+        link1 <- NULL
+        link2 <- NULL
+        plot2 <- NULL
+    }
     draw.plots(table, display.columns, search.by, xval, yval,
                 plot1, plot2, link1, link2, path, folder, html,
                 launch)
@@ -92,16 +97,31 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
 draw.plots <- function(table, display.columns, search.by, xval, yval,
                         plot1, plot2, link1, link2, path, folder, html,
                         launch) {
-    if (table) {
-        # TODO: Have different columns to tooltip
-        link3 <- gltablink(1, 1, action="highlightById")
-        table1 <- glTable(1, plot1$anno)
-        glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
-            path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+    if (!is.null(plot2)) {
+        if (table) {
+            # TODO: Have different columns to tooltip
+            link3 <- gltablink(1, 1, action="highlightById")
+            table1 <- glTable(1, plot1$anno)
+            glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
+                path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+        } else {
+            button1 <- glAutoinput(1, "highlightBySearch", search.by)
+            glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
+                path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+        }
     } else {
-        button1 <- glAutoinput(1, "highlightBySearch", search.by)
-        glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
-            path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+        if (table) {
+            link3 <- gltablink(1, 1, action="highlightById")
+            table1 <- glTable(1, plot1$anno)
+            glimma(plot1, table1, link3, layout=c(1, 1),
+                path=path, folder=folder, html=html, overwrite=TRUE,
+                launch=launch)
+        } else {
+            button1 <- glAutoinput(1, "highlightBySearch", search.by)
+            glimma(plot1, button1, layout=c(1, 1),
+                path=path, folder=folder, html=html, overwrite=TRUE,
+                launch=launch)
+        }
     }
 }
 
@@ -154,7 +174,7 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #'
 #' @export
 
-glMDPlot.default <- function(x, xval, yval, counts=FALSE, anno=NULL,
+glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
                         groups, samples,
                         status=rep(0, nrow(x)), transform=TRUE,
                         side.xlab="Group", side.ylab="logCPM",
@@ -183,12 +203,14 @@ glMDPlot.default <- function(x, xval, yval, counts=FALSE, anno=NULL,
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
 
-    if (ncol(counts) != length(samples)) {
-        stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
-    }
+    if (!is.null(counts)) {
+        if (ncol(counts) != length(samples)) {
+            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        }
 
-    if (side.log && any(counts == 0)) {
-        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        if (side.log && any(counts == 0)) {
+            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        }
     }
 
     colourise <- function(x) {
@@ -205,24 +227,30 @@ glMDPlot.default <- function(x, xval, yval, counts=FALSE, anno=NULL,
 
     plotting.data <- data.frame(anno, x, col = col)
 
-    rownames(counts) <- make.names(plotting.data[[id.column]])
+    if (!is.null(counts)) {
+        rownames(counts) <- make.names(plotting.data[[id.column]])
 
-    if (transform) {
-        tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
-    } else {
-        tr.counts <- t(as.matrix(counts))
+        if (transform) {
+            tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
+        } else {
+            tr.counts <- t(as.matrix(counts))
+        }
     }
 
-    if (is(groups, "numeric")) {
-        sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
-                             Group = groups,
-                             tr.counts)
+    if (!is.null(counts)) {
+        if (is(groups, "numeric")) {
+            sample.exp <- data.frame(Sample = samples,
+                                 col = as.hexcol(sample.cols),
+                                 Group = groups,
+                                 tr.counts)
+        } else {
+            sample.exp <- data.frame(Sample = samples,
+                                 col = as.hexcol(sample.cols),
+                                 Group = factor(groups),
+                                 tr.counts)
+        }
     } else {
-        sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
-                             Group = factor(groups),
-                             tr.counts)
+        sample.exp <- NULL
     }
 
     if (is.null(display.columns)) {
@@ -242,21 +270,36 @@ glMDPlot.default <- function(x, xval, yval, counts=FALSE, anno=NULL,
                     annot=c(display.columns, xval, yval), flag="mdplot",
                     ndigits=4, info=list(search.by=search.by), ...)
 
-    if (side.gridstep) {
-        plot2 <- glScatter(sample.exp, xval="Group",
-                            yval=colnames(sample.exp)[4],
-                            xlab=side.xlab, ylab=side.ylab,
-                            main=colnames(sample.exp)[4],
-                            colval="col",
-                            annot=c("Sample", colnames(sample.exp)[4]),
-                            annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
-                            ndigits=4, hide=TRUE, y.grid=TRUE, ystep=side.gridstep,
-                            ygrid=TRUE)
+    if (!is.null(counts)) {
+        link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
+        link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
+        if (side.gridstep) {
+            plot2 <- glScatter(sample.exp, xval="Group",
+                                yval=colnames(sample.exp)[4],
+                                xlab=side.xlab, ylab=side.ylab,
+                                main=colnames(sample.exp)[4],
+                                colval="col",
+                                annot=c("Sample", colnames(sample.exp)[4]),
+                                annot.lab=c("Sample", "logCPM"),
+                                x.jitter = jitter,
+                                ndigits=4, hide=TRUE,
+                                ystep=side.gridstep, ygrid=TRUE)
+        } else {
+            plot2 <- glScatter(sample.exp, xval="Group",
+                                yval=colnames(sample.exp)[4],
+                                xlab=side.xlab, ylab=side.ylab,
+                                main=colnames(sample.exp)[4],
+                                colval="col",
+                                annot=c("Sample", colnames(sample.exp)[4]),
+                                annot.lab=c("Sample", "logCPM"),
+                                x.jitter = jitter,
+                                ndigits=4, hide=TRUE, ygrid=FALSE)
+        }
+    } else {
+        link1 <- NULL
+        link2 <- NULL
+        plot2 <- NULL
     }
-
-    link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
-    link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-
     draw.plots(table, display.columns, search.by, xval, yval,
                 plot1, plot2, link1, link2, path, folder, html,
                 launch)
@@ -308,7 +351,7 @@ glMDPlot.default <- function(x, xval, yval, counts=FALSE, anno=NULL,
 #'
 #' @export
 
-glMDPlot.DGELRT <- function(x, counts=FALSE, anno, groups, samples,
+glMDPlot.DGELRT <- function(x, counts=NULL, anno, groups, samples,
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
                             side.log=FALSE,
@@ -329,12 +372,14 @@ glMDPlot.DGELRT <- function(x, counts=FALSE, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
-    if (ncol(counts) != length(samples)) {
-        stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
-    }
+    if (!is.null(counts)) {
+        if (ncol(counts) != length(samples)) {
+            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        }
 
-    if (side.log && any(counts == 0)) {
-        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        if (side.log && any(counts == 0)) {
+            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        }
     }
 
     #
@@ -351,7 +396,6 @@ glMDPlot.DGELRT <- function(x, counts=FALSE, anno, groups, samples,
     }
 
     if (is.null(display.columns)) {
-        print("Weehoo")
         display.columns <- names(anno)
         display.columns <- display.columns[display.columns != xval]
         display.columns <- display.columns[display.columns != yval]
@@ -378,16 +422,20 @@ glMDPlot.DGELRT <- function(x, counts=FALSE, anno, groups, samples,
 
     rownames(counts) <- make.names(plotting.data[[id.column]])
 
-    if (transform) {
-        tr.counts <- t(edgeR::cpm(as.matrix(counts), log=TRUE))
-    } else {
-        tr.counts <- t(as.matrix(counts))
-    }
+    if (!is.null(counts)) {
+        if (transform) {
+            tr.counts <- t(edgeR::cpm(as.matrix(counts), log=TRUE))
+        } else {
+            tr.counts <- t(as.matrix(counts))
+        }
 
-    sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
-                             Group = factor(groups),
-                             tr.counts)
+        sample.exp <- data.frame(Sample = samples,
+                                 col = as.hexcol(sample.cols),
+                                 Group = factor(groups),
+                                 tr.counts)
+    } else {
+        sample.exp <- NULL
+    }
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -523,7 +571,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #'
 #' @export
 
-glMDPlot.MArrayLM <- function(x, counts=FALSE, anno, groups, samples,
+glMDPlot.MArrayLM <- function(x, counts=NULL, anno, groups, samples,
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
                             side.log=FALSE,
@@ -544,8 +592,14 @@ glMDPlot.MArrayLM <- function(x, counts=FALSE, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
-    if (side.log && any(counts == 0)) {
-        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+    if (!is.null(counts)) {
+        if (ncol(counts) != length(samples)) {
+            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        }
+
+        if (side.log && any(counts == 0)) {
+            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        }
     }
 
     #
@@ -590,18 +644,22 @@ glMDPlot.MArrayLM <- function(x, counts=FALSE, anno, groups, samples,
                                  Adj.PValue = Adj.PValue,
                                  anno)
 
-    rownames(counts) <- make.names(plotting.data[[id.column]])
+    if (!is.null(counts)) {
+        rownames(counts) <- make.names(plotting.data[[id.column]])
 
-    if (transform) {
-        tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
+        if (transform) {
+            tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
+        } else {
+            tr.counts <- t(as.matrix(counts))
+        }
+
+        sample.exp <- data.frame(Sample = samples,
+                                 col = as.hexcol(sample.cols),
+                                 Group = factor(groups),
+                                 tr.counts)
     } else {
-        tr.counts <- t(as.matrix(counts))
+        sample.exp <- NULL
     }
-
-    sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
-                             Group = factor(groups),
-                             tr.counts)
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
@@ -678,8 +736,10 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
-    if (side.log && any(counts == 0)) {
-        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+    if (!is.null(counts)) {
+        if (side.log && any(counts == 0)) {
+            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        }
     }
 
     #
@@ -694,7 +754,6 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
-
 
     if (is.null(display.columns)) {
         display.columns <- names(anno)
@@ -801,7 +860,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #'
 #' @export
 
-glMDPlot.DESeqResults <- function(x, counts=FALSE, anno, groups, samples,
+glMDPlot.DESeqResults <- function(x, counts=NULL, anno, groups, samples,
                                 status=rep(0, nrow(x)), transform=TRUE,
                                 side.xlab="Group", side.ylab="logCPM",
                                 side.log=FALSE,
@@ -822,8 +881,14 @@ glMDPlot.DESeqResults <- function(x, counts=FALSE, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
-    if (side.log && any(counts == 0)) {
-        stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+    if (!is.null(counts)) {
+        if (ncol(counts) != length(samples)) {
+            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        }
+
+        if (side.log && any(counts == 0)) {
+            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        }
     }
 
     #
@@ -877,16 +942,20 @@ glMDPlot.DESeqResults <- function(x, counts=FALSE, anno, groups, samples,
 
     rownames(gene.counts) <- make.names(plotting.data[[id.column]])
 
-    if (transform) {
-        tr.counts <- t(as.matrix(edgeR::cpm(gene.counts, log=TRUE)))
-    } else {
-        tr.counts <- t(as.matrix(gene.counts))
-    }
+    if (!is.null(counts)) {
+        if (transform) {
+            tr.counts <- t(as.matrix(edgeR::cpm(gene.counts, log=TRUE)))
+        } else {
+            tr.counts <- t(as.matrix(gene.counts))
+        }
 
-    sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
-                             Group = factor(groups),
-                             tr.counts)
+        sample.exp <- data.frame(Sample = samples,
+                                 col = as.hexcol(sample.cols),
+                                 Group = factor(groups),
+                                 tr.counts)
+    } else {
+        sample.exp <- NULL
+    }
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
