@@ -4,15 +4,16 @@
 \alias{glMDPlot.DGELRT}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{DGELRT}(x, counts = NULL, anno, groups, samples,
-  status = rep(0, nrow(x)), transform = TRUE, side.xlab = "Group",
-  side.ylab = "logCPM", side.log = FALSE,
-  side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
-  coef = ncol(x$coefficients), p.adj.method = "BH", search.by = "Symbols",
-  jitter = 30, id.column = "GeneID", display.columns = NULL,
-  cols = c("#0000FF", "#858585", "#B32222"), sample.cols = rep("#1f77b4",
-  ncol(counts)), table = TRUE, path = getwd(), folder = "glimma-plots",
-  html = "MD-Plot", launch = TRUE, ...)
+\method{glMDPlot}{DGELRT}(x, counts = NULL, anno = NULL, groups = rep(0,
+  ncol(x)), samples = 1:ncol(x), status = rep(0, nrow(x)),
+  transform = TRUE, side.xlab = "Group", side.ylab = "logCPM",
+  side.log = FALSE, side.gridstep = ifelse(!transform || side.log, FALSE,
+  0.5), coef = ncol(x$coefficients), p.adj.method = "BH",
+  search.by = "Symbols", jitter = 30, id.column = "GeneID",
+  display.columns = NULL, cols = c("#0000FF", "#858585", "#B32222"),
+  sample.cols = rep("#1f77b4", ncol(counts)), table = TRUE,
+  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
+  launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DGELRT object.}

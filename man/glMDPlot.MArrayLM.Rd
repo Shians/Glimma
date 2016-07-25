@@ -4,9 +4,9 @@
 \alias{glMDPlot.MArrayLM}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{MArrayLM}(x, counts = NULL, anno, groups, samples,
-  status = rep(0, nrow(x)), transform = TRUE, side.xlab = "Group",
-  side.ylab = "logCPM", side.log = FALSE,
+\method{glMDPlot}{MArrayLM}(x, counts = NULL, anno = NULL, groups = rep(0,
+  ncol(x)), samples, status = rep(0, nrow(x)), transform = TRUE,
+  side.xlab = "Group", side.ylab = "logCPM", side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
   coef = ncol(x$coefficients), p.adj.method = "BH", search.by = "Symbols",
   jitter = 30, id.column = "GeneID", display.columns = NULL,
