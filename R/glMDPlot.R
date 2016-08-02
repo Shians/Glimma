@@ -175,7 +175,7 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @export
 
 glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
-                        groups, samples,
+                        groups, samples=NULL,
                         status=rep(0, nrow(x)), transform=TRUE,
                         side.xlab="Group", side.ylab="logCPM",
                         side.log=FALSE,
@@ -347,7 +347,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
-#'
+#' 
 #' @method glMDPlot DGELRT
 #'
 #' @importFrom stats p.adjust
@@ -475,30 +475,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 #' @author Shian Su
 #'
 #' @param x the DGEExact object.
-#' @param counts the matrix containing all counts.
-#' @param anno the data.frame containing gene annotations.
-#' @param groups the factor containing experimental groups of the samples.
-#' @param samples the names of the samples.
-#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
-#' @param side.xlab label for x axis on right side plot.
-#' @param side.ylab label for y axis on right side plot.
-#' @param side.log TRUE to plot expression on the side plot on log scale.
-#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
-#' @param coef integer or character index vector indicating which column of object to plot.
-#' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
-#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
-#' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param id.column the column containing unique identifiers for each gene.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
-#' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
-#' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
-#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
-#' @param path the path in which the folder will be created.
-#' @param folder the name of the fold to save html file to.
-#' @param html the name of the html file to save plots to.
-#' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
+#' @inheritParams glMDPlot.DGELRT
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
 #' shows the log-fold-change vs average expression. The right plot shows the
@@ -593,7 +570,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @export
 
 glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
-                            groups=rep(0, ncol(x)), samples,
+                            groups=rep(0, ncol(x)), samples=NULL,
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
                             side.log=FALSE,
@@ -649,6 +626,18 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         display.columns <- names(anno)
         display.columns <- display.columns[display.columns != xval]
         display.columns <- display.columns[display.columns != yval]
+    }
+
+    if (!is.null(ncol(status))) {
+        if (ncol(status) > 1) {
+            status <- status[, coef]
+        }
+    }
+
+    if (is.null(samples)) {
+        if (!is.null(counts)) {
+            samples <- colnames(counts)
+        }
     }
 
     #

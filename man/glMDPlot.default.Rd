@@ -5,7 +5,7 @@
 \title{Glimma MD Plot}
 \usage{
 \method{glMDPlot}{default}(x, xval, yval, counts = NULL, anno = NULL,
-  groups, samples, status = rep(0, nrow(x)), transform = TRUE,
+  groups, samples = NULL, status = rep(0, nrow(x)), transform = TRUE,
   side.xlab = "Group", side.ylab = "logCPM", side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5), xlab = xval,
   ylab = yval, search.by = "Symbols", jitter = 30, id.column = "GeneID",
