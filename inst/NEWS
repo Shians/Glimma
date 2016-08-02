@@ -1,10 +1,16 @@
 Glimma News
 
 CHANGES IN Glimma 1.2.0
+  * Added option to turn off internal cpm transform (transform=FALSE) in MD Plot.
+  * Added gridlines to MD Plot.
   * Added enter to search on MD plot table search box.
   * Added sample.cols argument to MD Plot.
   * Added data.frame handling for groups argument in MDS plot.
+  * Added option to not use counts argument.
+  * Added option to not use anno argument.
+  * Added glXYPloy for more general plotting.
   * Fixed multiple plots in same directory overwriting each other's data.
+  * Fixed logical values in annotation breaking graphs.
 
 CHANGES IN Glimma 1.1.0
   * Added tables to MD Plot.  

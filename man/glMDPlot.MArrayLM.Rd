@@ -4,13 +4,15 @@
 \alias{glMDPlot.MArrayLM}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{MArrayLM}(x, counts, anno, groups, samples, status = rep(0,
-  nrow(x)), coef = ncol(x$coefficients), p.adj.method = "BH",
-  search.by = "Symbols", jitter = 30, id.column = "GeneID",
-  display.columns = id.column, cols = c("#0000FF", "#858585", "#B32222"),
-  sample.cols = rep("#1f77b4", ncol(counts)), table = TRUE,
-  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
-  launch = TRUE, ...)
+\method{glMDPlot}{MArrayLM}(x, counts = NULL, anno = NULL, groups = rep(0,
+  ncol(x)), samples = NULL, status = rep(0, nrow(x)), transform = TRUE,
+  side.xlab = "Group", side.ylab = "logCPM", side.log = FALSE,
+  side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
+  coef = ncol(x$coefficients), p.adj.method = "BH", search.by = "Symbols",
+  jitter = 30, id.column = "GeneID", display.columns = NULL,
+  cols = c("#0000FF", "#858585", "#B32222"), sample.cols = rep("#1f77b4",
+  ncol(counts)), table = TRUE, path = getwd(), folder = "glimma-plots",
+  html = "MD-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the MArrayLM object.}
@@ -24,6 +26,16 @@
 \item{samples}{the names of the samples.}
 
 \item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.}
+
+\item{transform}{TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.}
+
+\item{side.xlab}{label for x axis on right side plot.}
+
+\item{side.ylab}{label for y axis on right side plot.}
+
+\item{side.log}{TRUE to plot expression on the side plot on log scale.}
+
+\item{side.gridstep}{intervals along which to place grid lines on y axis. Currently only available for linear scale.}
 
 \item{coef}{integer or character index vector indicating which column of object to plot.}
 
@@ -55,9 +67,9 @@
 }
 \value{
 Draws a two-panel interactive MD plot in an html page. The left plot
-shows the log-fold-change vs average expression. The right plot shows the 
-expression levels of a particular gene of each sample. Hovering over points 
-on left plot will plot expression level for corresponding gene, clicking 
+shows the log-fold-change vs average expression. The right plot shows the
+expression levels of a particular gene of each sample. Hovering over points
+on left plot will plot expression level for corresponding gene, clicking
 on points will fix the expression plot to gene. Clicking on rows on the table
 has the same effect as clicking on the corresponding gene in the plot.
 }

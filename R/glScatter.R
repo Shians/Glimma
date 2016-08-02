@@ -36,6 +36,10 @@ glScatter <- function(x, ...) {
 #' @param ndigits the number of digits after the decimal to round to in the tooltip (overrides signif).
 #' @param signif the number of significant figures to display in the tooltip.
 #' @param log a character string which contains "x" if the x axis is to be logarithmic, "y" if the y axis is to be logarithmic and "xy" or "yx" if both axes are to be logarithmic.
+#' @param xgrid TRUE if grid lines should be placed along x axis.
+#' @param ygrid TRUE if grid lines should be placed y axis.
+#' @param xstep the interval at which to set grid lines along the x axis.
+#' @param ystep the interval at which to set grid lines along the y axis.
 #' @param xlab the label on the x-axis.
 #' @param ylab the label on the y-axis.
 #' @param main the title for the plot.
@@ -62,6 +66,8 @@ glScatter <- function(x, ...) {
 glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
                                 x.jitter = 0, y.jitter = 0,
                                 ndigits=NULL, signif=6, log="",
+                                xgrid=FALSE, ygrid=FALSE,
+                                xstep=FALSE, ystep=FALSE,
                                 xlab=xval, ylab=yval, main=NULL,
                                 height=400, width=500,
                                 colval=NULL, annot=c(xval, yval),
@@ -106,7 +112,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
 
     # TODO: Consider using rjson or jsonlite packages?
     # Make json out of data
-    json <- makeDFJson(x)
+    json <- makeDFJson(x, convert.logical=FALSE)
 
     x.ord <- is.factor(x[[xval]])
     y.ord <- is.factor(x[[yval]])
@@ -138,6 +144,10 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
                 yord = y.ord,
                 xlog = x.log,
                 ylog = y.log,
+                xgrid = xgrid,
+                ygrid = ygrid,
+                xstep = xstep,
+                ystep = ystep,
                 col = colval,
                 cfixed = cfixed,
                 anno = annot,
@@ -201,6 +211,16 @@ constructScatterPlot <- function(chart, index, write.out) {
 
     y.jitter <- paste0(".yJitter(", chart$yjitter, ")")
     command <- paste0(command, y.jitter)
+
+    if (chart$xgrid && chart$xstep) {
+        command <- paste0(command, ".xGridOn(true)")
+        command <- paste0(command, ".xGridStep(", chart$xstep, ")")
+    }
+
+    if (chart$ygrid && chart$ystep) {
+        command <- paste0(command, ".yGridOn(true)")
+        command <- paste0(command, ".yGridStep(", chart$ystep, ")")
+    }
 
     if (chart$yord) {
         y.is.ord <- paste0(".yIsOrdinal()")

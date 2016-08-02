@@ -10,9 +10,9 @@
 #' @seealso \code{\link{glMDPlot.default}}, \code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -56,7 +56,9 @@ glMDPlot <- function(x, ...) {
 glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
                             search.by, id.column, default.col, jitter,
                             table, path, folder, html, launch,
-                            xval, yval, xlab, ylab, ...) {
+                            xval, yval, xlab, ylab, side.xlab, side.ylab,
+                            side.log, side.gridstep,
+                            ...) {
 
     # Reordering so that significant points appear on top of insignificant
     # points.
@@ -70,16 +72,23 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
                     flag="mdplot", ndigits=4, info=list(search.by=search.by),
                     ...)
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[4],
-                    idval="Sample", ylab="logCPM", main=colnames(sample.exp)[4],
-                    annot=c("Sample", colnames(sample.exp)[4]),
-                    colval="col",
-                    annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
-                    ndigits=4, hide=TRUE)
-
-    link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
-    link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-
+    if (!is.null(sample.exp)) {
+        link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
+        link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
+        plot2 <- glScatter(sample.exp, xval="Group",
+                        yval=colnames(sample.exp)[4],
+                        idval="Sample", xlab=side.xlab, ylab=side.ylab,
+                        main=colnames(sample.exp)[4],
+                        annot=c("Sample", colnames(sample.exp)[4]),
+                        colval="col", log=ifelse(side.log, "y", ""),
+                        annot.lab=c("Sample", side.ylab), x.jitter = jitter,
+                        ndigits=4, hide=TRUE, ystep=side.gridstep,
+                        ygrid=TRUE)
+    } else {
+        link1 <- NULL
+        link2 <- NULL
+        plot2 <- NULL
+    }
     draw.plots(table, display.columns, search.by, xval, yval,
                 plot1, plot2, link1, link2, path, folder, html,
                 launch)
@@ -88,16 +97,31 @@ glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
 draw.plots <- function(table, display.columns, search.by, xval, yval,
                         plot1, plot2, link1, link2, path, folder, html,
                         launch) {
-    if (table) {
-        # TODO: Have different columns to tooltip
-        link3 <- gltablink(1, 1, action="highlightById")
-        table1 <- glTable(1, plot1$anno)
-        glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
-            path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+    if (!is.null(plot2)) {
+        if (table) {
+            # TODO: Have different columns to tooltip
+            link3 <- gltablink(1, 1, action="highlightById")
+            table1 <- glTable(1, plot1$anno)
+            glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
+                path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+        } else {
+            button1 <- glAutoinput(1, "highlightBySearch", search.by)
+            glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
+                path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+        }
     } else {
-        button1 <- glAutoinput(1, "highlightBySearch", search.by)
-        glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
-            path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+        if (table) {
+            link3 <- gltablink(1, 1, action="highlightById")
+            table1 <- glTable(1, plot1$anno)
+            glimma(plot1, table1, link3, layout=c(1, 1),
+                path=path, folder=folder, html=html, overwrite=TRUE,
+                launch=launch)
+        } else {
+            button1 <- glAutoinput(1, "highlightBySearch", search.by)
+            glimma(plot1, button1, layout=c(1, 1),
+                path=path, folder=folder, html=html, overwrite=TRUE,
+                launch=launch)
+        }
     }
 }
 
@@ -115,10 +139,13 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param xlab the label on the x axis for the left plot.
 #' @param ylab the label on the y axis for the left plot.
-#' @param side.xlab the label on the x axis for the right plot.
-#' @param side.ylab the label on the y axis for the right plot.
 #' @param search.by the name of the column which will be used to search for data points if table is not used. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
@@ -133,9 +160,9 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -147,9 +174,13 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
 #'
 #' @export
 
-glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
-                        status=rep(0, nrow(x)), xlab=xval, ylab=yval,
+glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
+                        groups, samples=NULL,
+                        status=rep(0, nrow(x)), transform=TRUE,
                         side.xlab="Group", side.ylab="logCPM",
+                        side.log=FALSE,
+                        side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
+                        xlab=xval, ylab=yval,
                         search.by="Symbols", jitter=30,
                         id.column="GeneID", display.columns=id.column,
                         cols=c("#0000FF", "#858585", "#B32222"),
@@ -172,8 +203,14 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
 
-    if (ncol(counts) != length(samples)) {
-        stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+    if (!is.null(counts)) {
+        if (ncol(counts) != length(samples)) {
+            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        }
+
+        if (side.log && any(counts == 0)) {
+            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        }
     }
 
     colourise <- function(x) {
@@ -188,20 +225,42 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 
     col <- sapply(status, colourise)
 
-    plotting.data <- data.frame(anno, x, col = col)
-
-    rownames(counts) <- make.names(plotting.data[[id.column]])
-
-    if (is(groups, "numeric")) {
-        sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
-                             Group = groups,
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+    if (is.null(anno)) {
+        plotting.data <- data.frame(x, col = col)
     } else {
-        sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
-                             Group = factor(groups),
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+        plotting.data <- data.frame(anno, x, col = col)
+    }
+
+    if (!is.null(counts)) {
+        rownames(counts) <- make.names(plotting.data[[id.column]])
+
+        if (transform) {
+            tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
+        } else {
+            tr.counts <- t(as.matrix(counts))
+        }
+    }
+
+    if (!is.null(counts)) {
+        if (is(groups, "numeric")) {
+            sample.exp <- data.frame(Sample = samples,
+                                 col = as.hexcol(sample.cols),
+                                 Group = groups,
+                                 tr.counts)
+        } else {
+            sample.exp <- data.frame(Sample = samples,
+                                 col = as.hexcol(sample.cols),
+                                 Group = factor(groups),
+                                 tr.counts)
+        }
+    } else {
+        sample.exp <- NULL
+    }
+
+    if (is.null(display.columns)) {
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
     }
 
     # Reordering so that significant points appear on top of insignificant
@@ -215,17 +274,36 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
                     annot=c(display.columns, xval, yval), flag="mdplot",
                     ndigits=4, info=list(search.by=search.by), ...)
 
-    plot2 <- glScatter(sample.exp, xval="Group", yval=colnames(sample.exp)[4],
-                        xlab=side.xlab, ylab=side.ylab,
-                        main=colnames(sample.exp)[4],
-                        colval="col",
-                        annot=c("Sample", colnames(sample.exp)[4]),
-                        annot.lab=c("Sample", "logCPM"), x.jitter = jitter,
-                        ndigits=4, hide=TRUE)
-
-    link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
-    link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-
+    if (!is.null(counts)) {
+        link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
+        link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
+        if (side.gridstep) {
+            plot2 <- glScatter(sample.exp, xval="Group",
+                                yval=colnames(sample.exp)[4],
+                                xlab=side.xlab, ylab=side.ylab,
+                                main=colnames(sample.exp)[4],
+                                colval="col",
+                                annot=c("Sample", colnames(sample.exp)[4]),
+                                annot.lab=c("Sample", "logCPM"),
+                                x.jitter = jitter,
+                                ndigits=4, hide=TRUE,
+                                ystep=side.gridstep, ygrid=TRUE)
+        } else {
+            plot2 <- glScatter(sample.exp, xval="Group",
+                                yval=colnames(sample.exp)[4],
+                                xlab=side.xlab, ylab=side.ylab,
+                                main=colnames(sample.exp)[4],
+                                colval="col",
+                                annot=c("Sample", colnames(sample.exp)[4]),
+                                annot.lab=c("Sample", "logCPM"),
+                                x.jitter = jitter,
+                                ndigits=4, hide=TRUE, ygrid=FALSE)
+        }
+    } else {
+        link1 <- NULL
+        link2 <- NULL
+        plot2 <- NULL
+    }
     draw.plots(table, display.columns, search.by, xval, yval,
                 plot1, plot2, link1, link2, path, folder, html,
                 launch)
@@ -243,6 +321,11 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
@@ -259,12 +342,12 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
-#'
+#' 
 #' @method glMDPlot DGELRT
 #'
 #' @importFrom stats p.adjust
@@ -272,10 +355,15 @@ glMDPlot.default <- function(x, xval, yval, counts, anno, groups, samples,
 #'
 #' @export
 
-glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
-                            status=rep(0, nrow(x)), coef=ncol(x$coefficients),
+glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
+                            groups=rep(0, ncol(x)), samples=1:ncol(x),
+                            status=rep(0, nrow(x)), transform=TRUE,
+                            side.xlab="Group", side.ylab="logCPM",
+                            side.log=FALSE,
+                            side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
+                            coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
-                            id.column="GeneID", display.columns=id.column,
+                            id.column="GeneID", display.columns=NULL,
                             cols=c("#0000FF", "#858585", "#B32222"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             table=TRUE,
@@ -289,16 +377,46 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
+    if (!is.null(counts)) {
+        if (ncol(counts) != length(samples)) {
+            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        }
+
+        if (side.log && any(counts == 0)) {
+            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        }
+    }
+
     #
     ##
+
+    ##
+    # Value initialisation
+
+    xval <- "logCPM"
+    yval <- "logFC"
+
+    if (is.null(anno)) {
+        if (!is.null(x$genes)) {
+            anno <- x$genes
+        } else {
+            warning("No gene annotation provided.")
+        }
+    }
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
 
-    if (ncol(counts) != length(samples)) {
-        stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+    if (is.null(display.columns)) {
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
     }
+
+
+    #
+    ##
 
     colourise <- function(x) {
         if (x == -1) {
@@ -312,22 +430,42 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 
     col <- sapply(status, colourise)
 
-    plotting.data <- data.frame(anno, x$table, col = col,
-                                Adj.PValue = stats::p.adjust(x$table$PValue,
-                                method = p.adj.method))
+    if (is.null(anno)) {
+        plotting.data <- data.frame(x$table, col = col,
+                                    Adj.PValue = stats::p.adjust(x$table$PValue,
+                                    method = p.adj.method))
+    } else {
+        plotting.data <- data.frame(anno, x$table, col = col,
+                                    Adj.PValue = stats::p.adjust(x$table$PValue,
+                                    method = p.adj.method))
+    }
 
-    rownames(counts) <- make.names(plotting.data[[id.column]])
 
-    sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
-                             Group = factor(groups),
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+    if (!is.null(counts)) {
+        rownames(counts) <- make.names(plotting.data[[id.column]])
+
+        if (transform) {
+            tr.counts <- t(edgeR::cpm(as.matrix(counts), log=TRUE))
+        } else {
+            tr.counts <- t(as.matrix(counts))
+        }
+
+        sample.exp <- data.frame(Sample = samples,
+                                 col = as.hexcol(sample.cols),
+                                 Group = factor(groups),
+                                 tr.counts)
+    } else {
+        sample.exp <- NULL
+    }
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
-                table=table, xval="logCPM", yval="logFC",
-                xlab="Average log CPM", ylab="log-fold-change", ...)
+                table=table, xval=xval, yval=yval,
+                xlab="Average log CPM", ylab="log-fold-change",
+                side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
+                side.gridstep=side.gridstep,
+                ...)
 }
 
 #' Glimma MD Plot
@@ -337,30 +475,12 @@ glMDPlot.DGELRT <- function(x, counts, anno, groups, samples,
 #' @author Shian Su
 #'
 #' @param x the DGEExact object.
-#' @param counts the matrix containing all counts.
-#' @param anno the data.frame containing gene annotations.
-#' @param groups the factor containing experimental groups of the samples.
-#' @param samples the names of the samples.
-#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param coef integer or character index vector indicating which column of object to plot.
-#' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
-#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
-#' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param id.column the column containing unique identifiers for each gene.
-#' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
-#' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
-#' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
-#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
-#' @param path the path in which the folder will be created.
-#' @param folder the name of the fold to save html file to.
-#' @param html the name of the html file to save plots to.
-#' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
+#' @inheritParams glMDPlot.DGELRT
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -385,6 +505,11 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. (defaults to "BH")
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
@@ -401,9 +526,9 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -444,10 +569,15 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #'
 #' @export
 
-glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
-                            status=rep(0, nrow(x)), coef=ncol(x$coefficients),
+glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
+                            groups=rep(0, ncol(x)), samples=NULL,
+                            status=rep(0, nrow(x)), transform=TRUE,
+                            side.xlab="Group", side.ylab="logCPM",
+                            side.log=FALSE,
+                            side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
+                            coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
-                            id.column="GeneID", display.columns=id.column,
+                            id.column="GeneID", display.columns=NULL,
                             cols=c("#0000FF", "#858585", "#B32222"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             table=TRUE,
@@ -461,12 +591,57 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
+    if (!is.null(counts)) {
+        if (ncol(counts) != length(samples)) {
+            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        }
+
+        if (side.log && any(counts == 0)) {
+            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        }
+    }
+
     #
     ##
+
+    ##
+    # Value initialisation
+
+    xval <- "logCPM"
+    yval <- "logFC"
+
+    if (is.null(anno)) {
+        if (!is.null(x$genes)) {
+            anno <- x$genes
+        } else {
+            warning("No gene annotation provided.")
+        }
+    }
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
+
+    if (is.null(display.columns)) {
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
+    }
+
+    if (!is.null(ncol(status))) {
+        if (ncol(status) > 1) {
+            status <- status[, coef]
+        }
+    }
+
+    if (is.null(samples)) {
+        if (!is.null(counts)) {
+            samples <- colnames(counts)
+        }
+    }
+
+    #
+    ##
 
     colourise <- function(x) {
         if (x == -1) {
@@ -481,25 +656,46 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
     col <- sapply(status, colourise)
 
     Adj.PValue <- stats::p.adjust(x$p.value[, coef], method=p.adj.method)
-    plotting.data <- data.frame(logFC = x$coefficients[, coef],
-                                 logCPM = x$Amean,
-                                 col = col,
-                                 PValue = x$p.value[, coef],
-                                 Adj.PValue = Adj.PValue,
-                                 anno)
+    if (is.null(anno)) {
+        plotting.data <- data.frame(logFC = x$coefficients[, coef],
+                                     logCPM = x$Amean,
+                                     col = col,
+                                     PValue = x$p.value[, coef],
+                                     Adj.PValue = Adj.PValue)
+    } else {
+        plotting.data <- data.frame(logFC = x$coefficients[, coef],
+                                     logCPM = x$Amean,
+                                     col = col,
+                                     PValue = x$p.value[, coef],
+                                     Adj.PValue = Adj.PValue,
+                                     anno)
+    }
 
-    rownames(counts) <- make.names(plotting.data[[id.column]])
+    if (!is.null(counts)) {
+        rownames(counts) <- make.names(plotting.data[[id.column]])
 
-    sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
-                             Group = factor(groups),
-                             t(edgeR::cpm(as.matrix(counts), log=TRUE)))
+        if (transform) {
+            tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
+        } else {
+            tr.counts <- t(as.matrix(counts))
+        }
+
+        sample.exp <- data.frame(Sample = samples,
+                                 col = as.hexcol(sample.cols),
+                                 Group = factor(groups),
+                                 tr.counts)
+    } else {
+        sample.exp <- NULL
+    }
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
-                table=table, xval="logCPM", yval="logFC",
-                xlab="Average log CPM", ylab="log-fold-change", ...)
+                table=table, xval=xval, yval=yval,
+                xlab="Average log CPM", ylab="log-fold-change",
+                side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
+                side.gridstep=side.gridstep,
+                ...)
 }
 
 #' Glimma MD Plot
@@ -513,6 +709,11 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
@@ -527,9 +728,9 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -542,9 +743,13 @@ glMDPlot.MArrayLM <- function(x, counts, anno, groups, samples,
 #' @export
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
-                                status=rep(0, nrow(x)), search.by="Symbols",
+                                status=rep(0, nrow(x)), transform=TRUE,
+                                side.xlab="Group", side.ylab="logMean",
+                                side.log=FALSE,
+                                side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
+                                search.by="Symbols",
                                 jitter=30, id.column="GeneID",
-                                display.columns=id.column,
+                                display.columns=NULL,
                                 cols=c("#0000FF", "#858585", "#B32222"),
                                 sample.cols=rep("#1f77b4", ncol(x)),
                                 table=TRUE,
@@ -558,12 +763,33 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
+    if (!is.null(counts)) {
+        if (side.log && any(counts == 0)) {
+            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        }
+    }
+
     #
     ##
+
+    ##
+    # Value initialisation
+
+    xval <- "logMean"
+    yval <- "logFC"
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
+
+    if (is.null(display.columns)) {
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
+    }
+
+    #
+    ##
 
     res <- DESeq2::results(x)
     res.df <- as.data.frame(res)
@@ -595,16 +821,25 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 
     rownames(gene.counts) <- make.names(plotting.data[[id.column]])
 
+    if (transform) {
+        tr.counts <- t(as.matrix(edgeR::cpm(gene.counts, log=TRUE)))
+    } else {
+        tr.counts <- t(as.matrix(gene.counts))
+    }
+
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
-                             t(edgeR::cpm(gene.counts, log=TRUE)))
+                             tr.counts)
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
-                    table=table, xval="logMean", yval="logFC",
-                    xlab="Mean Expression", ylab="log-fold-change", ...)
+                    table=table, xval=xval, yval=yval,
+                    xlab="Mean Expression", ylab="log-fold-change",
+                    side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
+                    side.gridstep=side.gridstep,
+                    ...)
 }
 
 #' Glimma MD Plot
@@ -619,6 +854,11 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
+#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param side.xlab label for x axis on right side plot.
+#' @param side.ylab label for y axis on right side plot.
+#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
 #' @param id.column the column containing unique identifiers for each gene.
@@ -633,9 +873,9 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
 #'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
-#' shows the log-fold-change vs average expression. The right plot shows the 
-#' expression levels of a particular gene of each sample. Hovering over points 
-#' on left plot will plot expression level for corresponding gene, clicking 
+#' shows the log-fold-change vs average expression. The right plot shows the
+#' expression levels of a particular gene of each sample. Hovering over points
+#' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
 #'
@@ -648,9 +888,13 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @export
 
 glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
-                                status=rep(0, nrow(x)), search.by="Symbols",
+                                status=rep(0, nrow(x)), transform=TRUE,
+                                side.xlab="Group", side.ylab="logCPM",
+                                side.log=FALSE,
+                                side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
+                                search.by="Symbols",
                                 jitter=30, id.column="GeneID",
-                                display.columns=id.column,
+                                display.columns=NULL,
                                 cols=c("#0000FF", "#858585", "#B32222"),
                                 sample.cols=rep("#1f77b4", ncol(counts)),
                                 table=TRUE,
@@ -664,12 +908,37 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
         stop("The status vector should have same length as the number of columns as main input object.")
     }
 
+    if (!is.null(counts)) {
+        if (ncol(counts) != length(samples)) {
+            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        }
+
+        if (side.log && any(counts == 0)) {
+            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+        }
+    }
+
     #
     ##
+
+    ##
+    # Value initialisation
+
+    xval <- "logMean"
+    yval <- "logFC"
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
     }
+
+    if (is.null(display.columns)) {
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
+    }
+
+    #
+    ##
 
     res <- x
     res.df <- as.data.frame(res)
@@ -700,14 +969,28 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     rownames(gene.counts) <- make.names(plotting.data[[id.column]])
 
-    sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
-                             Group = factor(groups),
-                             t(edgeR::cpm(gene.counts, log=TRUE)))
+    if (!is.null(counts)) {
+        if (transform) {
+            tr.counts <- t(as.matrix(edgeR::cpm(gene.counts, log=TRUE)))
+        } else {
+            tr.counts <- t(as.matrix(gene.counts))
+        }
+
+        sample.exp <- data.frame(Sample = samples,
+                                 col = as.hexcol(sample.cols),
+                                 Group = factor(groups),
+                                 tr.counts)
+    } else {
+        sample.exp <- NULL
+    }
 
     glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
-                    table=table, xval="logMean", yval="logFC",
-                    xlab="Mean Expression", ylab="log-fold-change", ...)
+                    table=table, xval=xval, yval=yval,
+                    xlab="Mean Expression", ylab="log-fold-change",
+                    side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
+                    side.gridstep=side.gridstep,
+                    ...)
+
 }

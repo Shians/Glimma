@@ -58,17 +58,20 @@ makeJson.list <- function(x) {
 #' Function to create a JSON from a data.frame
 #'
 #' @param df the data.frame to be converted into JSON
+#' @param convert.logical whether to convert logicals into strings "TRUE" and "FALSE"
 #'
 #' @return a stringified JSON, the data.frame is encoded as a vector of objects,
 #' with each column being one object with keys corresponding to column names.
 #'
 #' @importFrom methods is
 
-makeJson.data.frame <- function(df) {
+makeJson.data.frame <- function(df, convert.logical=TRUE) {
     df <- data.frame(df)
 
     for (n in names(df)) {
         if (!is(df[[n]], "numeric") && !is(df[[n]], "logical")) {
+            df[[n]] <- quotify(as.character(df[[n]]))
+        } else if (!convert.logical && is(df[[n]], "logical")) {
             df[[n]] <- quotify(as.character(df[[n]]))
         }
     }

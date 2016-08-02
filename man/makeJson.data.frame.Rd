@@ -4,10 +4,12 @@
 \alias{makeJson.data.frame}
 \title{JSON converter for data frames}
 \usage{
-\method{makeJson}{data.frame}(df)
+\method{makeJson}{data.frame}(df, convert.logical = TRUE)
 }
 \arguments{
 \item{df}{the data.frame to be converted into JSON}
+
+\item{convert.logical}{whether to convert logicals into strings "TRUE" and "FALSE"}
 }
 \value{
 a stringified JSON, the data.frame is encoded as a vector of objects,
