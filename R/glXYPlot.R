@@ -126,5 +126,5 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
                     side.xlab=side.xlab, side.ylab=side.ylab,
                     sample.cols=sample.cols, cols=cols,
                     jitter=jitter, table=TRUE,
-                    path=path, folder=folder, html=html, launch=TRUE, ...)
+                    path=path, folder=folder, html=html, launch=launch, ...)
 }
