@@ -193,7 +193,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     # Input checking
 
     if (length(status) != nrow(x)) {
-        stop("The status vector should have same length as the number of columns as main input object.")
+        stop("The status vector should have same length as the number of rows as main input object.")
     }
 
     #
@@ -374,7 +374,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     # Input checking
 
     if (length(status) != nrow(x)) {
-        stop("The status vector should have same length as the number of columns as main input object.")
+        stop("The status vector should have same length as the number of rows as main input object.")
     }
 
     if (!is.null(counts)) {
@@ -587,8 +587,14 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     ##
     # Input checking
 
-    if (length(status) != nrow(x)) {
-        stop("The status vector should have same length as the number of columns as main input object.")
+    if (is(status, "numeric")) {
+        if (length(status) != nrow(x)) {
+            stop("The status vector should have same length as the number of rows as main input object.")
+        }
+    } else if (is(status, "matrix")) {
+        if (row(status) != nrow(x)) {
+            stop("The status matrix should have same number of rows as the number of rows as main input object.")
+        }
     }
 
     if (!is.null(counts)) {
@@ -760,7 +766,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     # Input checking
 
     if (length(status) != nrow(x)) {
-        stop("The status vector should have same length as the number of columns as main input object.")
+        stop("The status vector should have same length as the number of rows as main input object.")
     }
 
     if (!is.null(counts)) {
@@ -905,7 +911,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     # Input checking
 
     if (length(status) != nrow(x)) {
-        stop("The status vector should have same length as the number of columns as main input object.")
+        stop("The status vector should have same length as the number of rows as main input object.")
     }
 
     if (!is.null(counts)) {
