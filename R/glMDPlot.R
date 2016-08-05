@@ -592,16 +592,18 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
             stop("The status vector should have same length as the number of rows as main input object.")
         }
     } else if (is(status, "matrix")) {
-        if (row(status) != nrow(x)) {
+        if (nrow(status) != nrow(x)) {
             stop("The status matrix should have same number of rows as the number of rows as main input object.")
         }
     }
 
     if (!is.null(counts)) {
-        if (ncol(counts) != length(samples)) {
-            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        if (!is.null(samples)) {
+            if (ncol(counts) != length(samples)) {
+                stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+            }    
         }
-
+        
         if (side.log && any(counts == 0)) {
             stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
         }
