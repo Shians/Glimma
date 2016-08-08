@@ -7,7 +7,7 @@
 glMDPlot(x, ...)
 }
 \arguments{
-\item{x}{the data.frame containing data to plot.}
+\item{x}{the DE object to plot.}
 
 \item{...}{additional arguments affecting the plots produced. See specific methods for detailed arguments.}
 }
