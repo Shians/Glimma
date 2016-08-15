@@ -86,35 +86,20 @@ pathMaker <- function(path) {
     }
 }
 
-#' String to hex colour converter
-#'
-#' Function to convert colour strings into hex codes
-#'
-#' @param x the string colour value(s) to be converted to hex values.
-#'
-#' @return hex codes for colours
-#'
-#' @importFrom grDevices col2rgb
+# String to hex colour converter
+
 
 CharToHexCol <- function(x) {
-    require("grDevices")
+    requireNamespace("grDevices")
     temp <- as.character(as.hexmode(col2rgb(x, alpha=FALSE)))
     out <- apply(temp, 2, function(x) {paste0("#", paste0(x, collapse=""))})
     sapply(out, function(x) { ifelse(x=="#000", "#000000", x) })
 }
 
-#' Numeric to hex colour converter
-#'
-#' Functions to convert numbers into corresponding hex codes for colours
-#'
-#' @param x the colour value(s) to be converted to hex values.
-#'
-#' @return hex codes for colours
-#'
-#' @importFrom grDevices palette col2rgb
+# Numeric to hex colour converter
 
 NumToHexCol <- function(x) {
-    require("grDevices")
+    requireNamespace("grDevices")
     x <- palette()[as.integer(x)]
     temp <- as.character(as.hexmode(col2rgb(x, alpha=FALSE)))
     out <- apply(temp, 2, function(x) {paste0("#", paste0(x, collapse=""))})
@@ -138,6 +123,8 @@ is.hex <- function(x) {
 #' as.hexcol(c(1, 2, 3))
 #' as.hexcol(c("red", "black", "green"))
 #'
+#' @importFrom grDevices palette col2rgb
+#' 
 #' @export
 
 as.hexcol <- function(x) {
