@@ -196,8 +196,15 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         stop("The status vector should have same length as the number of rows as main input object.")
     }
 
+    if(anyDuplicated(x[[id.column]])) {
+        stop("id.column in x contains duplicated values.")
+    }
+
     #
     ##
+
+    # Input checking
+
 
     if (any(!is.hex(cols))) {
         cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
@@ -212,6 +219,11 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
             stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
         }
     }
+    
+    #
+    ##
+
+    jitter <- ifelse(is.numeric(groups), 0, jitter)
 
     colourise <- function(x) {
         if (x == -1) {
@@ -385,6 +397,9 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
         }
     }
 
+    if(anyDuplicated(x[[id.column]])) {
+        stop("id.column in x contains duplicated values.")
+    }
 
     #
     ##
@@ -395,12 +410,12 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     xval <- "logCPM"
     yval <- "logFC"
 
-    if (is.null(anno)) {
-        if (!is.null(x$genes)) {
-            anno <- x$genes
-        } else {
-            warning("No gene annotation provided.")
-        }
+    if (is.null(anno) && is.null(x$genes)) {
+        warning("No gene annotation provided.")
+    } else if (!is.null(anno) && !is.null(x$genes)) {
+        anno <- merge(anno, x$genes)
+    } else if (!is.null(x$genes)) {
+        anno <- x$genes
     }
 
     if (any(!is.hex(cols))) {
@@ -418,6 +433,8 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
             samples <- colnames(counts)
         }
     }
+
+    jitter <- ifelse(is.numeric(groups), 0, jitter)
 
     #
     ##
@@ -454,10 +471,17 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
             tr.counts <- t(as.matrix(counts))
         }
 
-        sample.exp <- data.frame(Sample = samples,
-                                 col = as.hexcol(sample.cols),
-                                 Group = factor(groups),
-                                 tr.counts)
+        if (is(groups, "numeric")) {
+            sample.exp <- data.frame(Sample = samples,
+                                     col = as.hexcol(sample.cols),
+                                     Group = groups,
+                                     tr.counts)
+        } else {
+            sample.exp <- data.frame(Sample = samples,
+                                     col = as.hexcol(sample.cols),
+                                     Group = factor(groups),
+                                     tr.counts)
+        }
     } else {
         sample.exp <- NULL
     }
@@ -613,6 +637,10 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         }
     }
 
+    if(anyDuplicated(x[[id.column]])) {
+        stop("id.column in x contains duplicated values.")
+    }
+
     #
     ##
 
@@ -622,12 +650,12 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     xval <- "logCPM"
     yval <- "logFC"
 
-    if (is.null(anno)) {
-        if (!is.null(x$genes)) {
-            anno <- x$genes
-        } else {
-            warning("No gene annotation provided.")
-        }
+    if (is.null(anno) && is.null(x$genes)) {
+        warning("No gene annotation provided.")
+    } else if (!is.null(anno) && !is.null(x$genes)) {
+        anno <- merge(anno, x$genes)
+    } else if (!is.null(x$genes)) {
+        anno <- x$genes
     }
 
     if (any(!is.hex(cols))) {
@@ -651,6 +679,8 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
             samples <- colnames(counts)
         }
     }
+
+    jitter <- ifelse(is.numeric(groups), 0, jitter)
 
     #
     ##
@@ -692,10 +722,17 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
             tr.counts <- t(as.matrix(counts))
         }
 
-        sample.exp <- data.frame(Sample = samples,
-                                 col = as.hexcol(sample.cols),
-                                 Group = factor(groups),
-                                 tr.counts)
+        if (is(groups, "numeric")) {
+            sample.exp <- data.frame(Sample = samples,
+                                     col = as.hexcol(sample.cols),
+                                     Group = groups,
+                                     tr.counts)
+        } else {
+            sample.exp <- data.frame(Sample = samples,
+                                     col = as.hexcol(sample.cols),
+                                     Group = factor(groups),
+                                     tr.counts)
+        }
     } else {
         sample.exp <- NULL
     }
@@ -779,6 +816,10 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
         if (side.log && any(counts == 0)) {
             stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
         }
+    }
+
+    if(anyDuplicated(x[[id.column]])) {
+        stop("id.column in x contains duplicated values.")
     }
 
     #
@@ -908,6 +949,10 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
         if (side.log && any(counts == 0)) {
             stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
         }
+    }
+
+    if(anyDuplicated(x[[id.column]])) {
+        stop("id.column in x contains duplicated values.")
     }
 
     #
