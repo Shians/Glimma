@@ -9,8 +9,10 @@ CHANGES IN Glimma 1.2.0
   * Added option to not use counts argument.
   * Added option to not use anno argument.
   * Added glXYPloy for more general plotting.
+  * Added option to use numerical value for "groups" in MD Plot.
   * Fixed multiple plots in same directory overwriting each other's data.
   * Fixed logical values in annotation breaking graphs.
+  * Fixed numeric values not working for colours.
 
 CHANGES IN Glimma 1.1.0
   * Added tables to MD Plot.  
