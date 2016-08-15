@@ -197,7 +197,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     }
 
     if(anyDuplicated(x[[id.column]])) {
-        stop("id.column in x contains duplicated values.")
+        stop(paste("column", quotify(id.column), "in x contains duplicated values."))
     }
 
     #
@@ -219,7 +219,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
             stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
         }
     }
-    
+
     #
     ##
 
@@ -398,7 +398,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     }
 
     if(anyDuplicated(x[[id.column]])) {
-        stop("id.column in x contains duplicated values.")
+        stop(paste("column", quotify(id.column), "in x contains duplicated values."))
     }
 
     #
@@ -638,7 +638,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     }
 
     if(anyDuplicated(x[[id.column]])) {
-        stop("id.column in x contains duplicated values.")
+        stop(paste("column", quotify(id.column), "in x contains duplicated values."))
     }
 
     #
@@ -819,7 +819,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     }
 
     if(anyDuplicated(x[[id.column]])) {
-        stop("id.column in x contains duplicated values.")
+        stop(paste("column", quotify(id.column), "in x contains duplicated values."))
     }
 
     #
@@ -952,7 +952,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     }
 
     if(anyDuplicated(x[[id.column]])) {
-        stop("id.column in x contains duplicated values.")
+        stop(paste("column", quotify(id.column), "in x contains duplicated values."))
     }
 
     #
