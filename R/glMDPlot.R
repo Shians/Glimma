@@ -196,7 +196,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         stop("The status vector should have same length as the number of rows as main input object.")
     }
 
-    if(anyDuplicated(x[[id.column]])) {
+    if (anyDuplicated(x[[id.column]])) {
         stop(paste("column", quotify(id.column), "in x contains duplicated values."))
     }
 
@@ -397,7 +397,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
         }
     }
 
-    if(anyDuplicated(x[[id.column]])) {
+    if (anyDuplicated(x[[id.column]])) {
         stop(paste("column", quotify(id.column), "in x contains duplicated values."))
     }
 
@@ -430,7 +430,11 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     if (is.null(samples)) {
         if (!is.null(counts)) {
-            samples <- colnames(counts)
+            if (!is.null(colnames(counts))) {
+                samples <- colnames(counts)
+            } else {
+                samples <- 1:ncol(counts)
+            }
         }
     }
 
@@ -637,7 +641,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         }
     }
 
-    if(anyDuplicated(x[[id.column]])) {
+    if (anyDuplicated(x[[id.column]])) {
         stop(paste("column", quotify(id.column), "in x contains duplicated values."))
     }
 
@@ -676,7 +680,11 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 
     if (is.null(samples)) {
         if (!is.null(counts)) {
-            samples <- colnames(counts)
+            if (!is.null(colnames(counts))) {
+                samples <- colnames(counts)
+            } else {
+                samples <- 1:ncol(counts)
+            }
         }
     }
 
@@ -818,7 +826,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
         }
     }
 
-    if(anyDuplicated(x[[id.column]])) {
+    if (anyDuplicated(x[[id.column]])) {
         stop(paste("column", quotify(id.column), "in x contains duplicated values."))
     }
 
@@ -951,7 +959,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
         }
     }
 
-    if(anyDuplicated(x[[id.column]])) {
+    if (anyDuplicated(x[[id.column]])) {
         stop(paste("column", quotify(id.column), "in x contains duplicated values."))
     }
 
