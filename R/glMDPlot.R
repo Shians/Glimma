@@ -196,8 +196,16 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         stop("The status vector should have same length as the number of rows as main input object.")
     }
 
-    if (anyDuplicated(x[[id.column]])) {
-        stop(paste("column", quotify(id.column), "in x contains duplicated values."))
+    if (id.column %in% colnames(x)) {
+        if (anyDuplicated(x[[id.column]])) {
+            stop(paste("column", quotify(id.column), "in x contains duplicated values."))
+        }
+    } else if (id.column %in% colnames(anno)) {
+        if (anyDuplicated(anno[[id.column]])) {
+            stop(paste("column", quotify(id.column), "in anno contains duplicated values."))
+        }
+    } else {
+        stop(paste("column", quotify(id.column), "cannot be found in x or anno."))
     }
 
     #
