@@ -39,7 +39,7 @@
 
 \item{coef}{integer or character index vector indicating which column of object to plot.}
 
-\item{p.adj.method}{character vector indicating multiple testing correction method. (defaults to "BH")}
+\item{p.adj.method}{character vector indicating multiple testing correction method. See \code{\link{p.adjust}} for available methods. (defaults to "BH")}
 
 \item{search.by}{the name of the column which will be used to search for data points. (should contain unique values)}
 
