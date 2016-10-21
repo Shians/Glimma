@@ -219,8 +219,10 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        if (ncol(counts) != length(samples)) {
-            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        if (!is.null(samples)) {
+            if (ncol(counts) != length(samples)) {
+                stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+            }
         }
 
         if (side.log && any(counts == 0)) {
@@ -396,8 +398,10 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        if (ncol(counts) != length(samples)) {
-            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+        if (!is.null(samples)) {
+            if (ncol(counts) != length(samples)) {
+                stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+            }
         }
 
         if (side.log && any(counts == 0)) {
@@ -963,9 +967,12 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     }
 
     if (!is.null(counts)) {
-        if (ncol(counts) != length(samples)) {
-            stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
-        }
+        if (!is.null(samples)) {
+            if (ncol(counts) != length(samples)) {
+                stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
+            }
+        }    
+        
 
         if (side.log && any(counts == 0)) {
             stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
