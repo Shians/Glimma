@@ -63,19 +63,13 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
     # Created 4 July 2016. Last modified 6 July 2016.                           
 
     # Extract values to plot and their names
-    if (length(x) != length(y)) {
-        stop("length(x) not equal to length(y).")
-    }
+    checkThat(length(x), sameAs(length(y)))
     data <- cbind(x, y)
     colnames(data) <- c(xlab, ylab)
-    xval <- xlab
-    yval <- ylab
     
     # Check input data
     if (!is.null(counts)) {
-        if (nrow(counts) != nrow(data)) { 
-            stop("nrow(counts) not equal to length(x).")
-        }
+        checkThat(nrow(counts), sameAs(nrow(data)))
 
         if (is.null(groups)) {
             groups <- as.factor(rep("groups", ncol(counts)))
@@ -90,9 +84,7 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
         }
     }
 
-    if (length(status) != length(x)) {
-        stop("length(status) not equal to length(x).")
-    }
+    checkThat(length(status), sameAs(length(x)))
 
     # Check and create annotation
     if (is.null(anno)) {
@@ -119,7 +111,7 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
         anno <- anno[, colnames(anno) %in% display.columns]
     }
  
-    glMDPlot.default(data, xval=xval, yval=yval,
+    glMDPlot.default(data, xval=xlab, yval=ylab,
                     counts=counts, groups=groups, samples=samples, 
                     status=status, anno=anno, display.columns=display.columns,
                     id.column=id.column, xlab=xlab, ylab=ylab, 

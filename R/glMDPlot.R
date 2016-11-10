@@ -52,79 +52,6 @@ glMDPlot <- function(x, ...) {
     UseMethod("glMDPlot")
 }
 
-# Hidden internal functions for use by edgeR and limma based plotting
-glMDPlot.hidden <- function(plotting.data, sample.exp, display.columns,
-                            search.by, id.column, default.col, jitter,
-                            table, path, folder, html, launch,
-                            xval, yval, xlab, ylab, side.xlab, side.ylab,
-                            side.log, side.gridstep,
-                            ...) {
-
-    # Reordering so that significant points appear on top of insignificant
-    # points.
-    plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ],
-                           plotting.data[plotting.data$col != default.col, ])
-
-    plot1 <- glScatter(plotting.data, xval=xval, yval=yval,
-                    xlab=xlab, idval=id.column,
-                    ylab=ylab,
-                    annot=c(display.columns, xval, yval, "Adj.PValue"),
-                    flag="mdplot", ndigits=4, info=list(search.by=search.by),
-                    ...)
-
-    if (!is.null(sample.exp)) {
-        link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
-        link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
-        plot2 <- glScatter(sample.exp, xval="Group",
-                        yval=colnames(sample.exp)[4],
-                        idval="Sample", xlab=side.xlab, ylab=side.ylab,
-                        main=colnames(sample.exp)[4],
-                        annot=c("Sample", colnames(sample.exp)[4]),
-                        colval="col", log=ifelse(side.log, "y", ""),
-                        annot.lab=c("Sample", side.ylab), x.jitter = jitter,
-                        ndigits=4, hide=TRUE, ystep=side.gridstep,
-                        ygrid=TRUE)
-    } else {
-        link1 <- NULL
-        link2 <- NULL
-        plot2 <- NULL
-    }
-    draw.plots(table, display.columns, search.by, xval, yval,
-                plot1, plot2, link1, link2, path, folder, html,
-                launch)
-}
-
-draw.plots <- function(table, display.columns, search.by, xval, yval,
-                        plot1, plot2, link1, link2, path, folder, html,
-                        launch) {
-    if (!is.null(plot2)) {
-        if (table) {
-            # TODO: Have different columns to tooltip
-            link3 <- gltablink(1, 1, action="highlightById")
-            table1 <- glTable(1, plot1$anno)
-            glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
-                path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
-        } else {
-            button1 <- glAutoinput(1, "highlightBySearch", search.by)
-            glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
-                path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
-        }
-    } else {
-        if (table) {
-            link3 <- gltablink(1, 1, action="highlightById")
-            table1 <- glTable(1, plot1$anno)
-            glimma(plot1, table1, link3, layout=c(1, 1),
-                path=path, folder=folder, html=html, overwrite=TRUE,
-                launch=launch)
-        } else {
-            button1 <- glAutoinput(1, "highlightBySearch", search.by)
-            glimma(plot1, button1, layout=c(1, 1),
-                path=path, folder=folder, html=html, overwrite=TRUE,
-                launch=launch)
-        }
-    }
-}
-
 #' Glimma MD Plot
 #'
 #' Draw an interactive MD plot from a data.frame
@@ -192,18 +119,12 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     ##
     # Input checking
 
-    if (length(status) != nrow(x)) {
-        stop("The status vector should have same length as the number of rows as main input object.")
-    }
+    checkThat(length(status), sameAs(nrow(x)))
 
     if (id.column %in% colnames(x)) {
-        if (anyDuplicated(x[[id.column]])) {
-            stop(paste("column", quotify(id.column), "in x contains duplicated values."))
-        }
+        checkThat(x[[id.column]], isUnique)
     } else if (id.column %in% colnames(anno)) {
-        if (anyDuplicated(anno[[id.column]])) {
-            stop(paste("column", quotify(id.column), "in anno contains duplicated values."))
-        }
+        checkThat(anno[[id.column]], isUnique)
     } else {
         stop(paste("column", quotify(id.column), "cannot be found in x or anno."))
     }
@@ -214,15 +135,11 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     # Input checking
 
 
-    if (any(!is.hex(cols))) {
-        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
-    }
+    cols <- convertColsToHex(cols)
 
     if (!is.null(counts)) {
         if (!is.null(samples)) {
-            if (ncol(counts) != length(samples)) {
-                stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
-            }
+            checkThat(ncol(counts), sameAs(length(samples)))
         }
 
         if (side.log && any(counts == 0)) {
@@ -235,17 +152,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     jitter <- ifelse(is.numeric(groups), 0, jitter)
 
-    colourise <- function(x) {
-        if (x == -1) {
-            return(cols[1])
-        } else if (x == 0) {
-            return(cols[2])
-        } else if (x == 1) {
-            return(cols[3])
-        }
-    }
-
-    col <- sapply(status, colourise)
+    col <- convertStatusToCols(status, cols)
 
     if (is.null(anno)) {
         plotting.data <- data.frame(x, col = col)
@@ -279,11 +186,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         sample.exp <- NULL
     }
 
-    if (is.null(display.columns)) {
-        display.columns <- names(anno)
-        display.columns <- display.columns[display.columns != xval]
-        display.columns <- display.columns[display.columns != yval]
-    }
+    display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     # Reordering so that significant points appear on top of insignificant
     # points.
@@ -297,8 +200,10 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
                     ndigits=4, info=list(search.by=search.by), ...)
 
     if (!is.null(counts)) {
+
         link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
         link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
+
         if (side.gridstep) {
             plot2 <- glScatter(sample.exp, xval="Group",
                                 yval=colnames(sample.exp)[4],
@@ -326,6 +231,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         link2 <- NULL
         plot2 <- NULL
     }
+
     draw.plots(table, display.columns, search.by, xval, yval,
                 plot1, plot2, link1, link2, path, folder, html,
                 launch)
@@ -393,15 +299,11 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     ##
     # Input checking
 
-    if (length(status) != nrow(x)) {
-        stop("The status vector should have same length as the number of rows as main input object.")
-    }
+    checkThat(length(status), sameAs(nrow(x)))
 
     if (!is.null(counts)) {
         if (!is.null(samples)) {
-            if (ncol(counts) != length(samples)) {
-                stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
-            }
+            checkThat(ncol(counts), sameAs(length(samples)))
         }
 
         if (side.log && any(counts == 0)) {
@@ -422,25 +324,9 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     xval <- "logCPM"
     yval <- "logFC"
-
-    if (is.null(anno) && is.null(x$genes)) {
-        warning("No gene annotation provided.")
-    } else if (!is.null(anno) && !is.null(x$genes)) {
-        anno <- cbind(anno, x$genes)
-        anno <- anno[!duplicated(names(anno))]
-    } else if (!is.null(x$genes)) {
-        anno <- x$genes
-    }
-
-    if (any(!is.hex(cols))) {
-        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
-    }
-
-    if (is.null(display.columns)) {
-        display.columns <- names(anno)
-        display.columns <- display.columns[display.columns != xval]
-        display.columns <- display.columns[display.columns != yval]
-    }
+    anno <- makeAnno(x, anno)
+    cols <- convertColsToHex(cols)
+    display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     if (is.null(samples)) {
         if (!is.null(counts)) {
@@ -457,17 +343,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     #
     ##
 
-    colourise <- function(x) {
-        if (x == -1) {
-            return(cols[1])
-        } else if (x == 0) {
-            return(cols[2])
-        } else if (x == 1) {
-            return(cols[3])
-        }
-    }
-
-    col <- sapply(status, colourise)
+    col <- convertStatusToCols(status, cols)
 
     if (is.null(anno)) {
         plotting.data <- data.frame(x$table, col = col,
@@ -478,7 +354,6 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
                                     Adj.PValue = stats::p.adjust(x$table$PValue,
                                     method = p.adj.method))
     }
-
 
     if (!is.null(counts)) {
         rownames(counts) <- make.names(plotting.data[[id.column]])
@@ -504,7 +379,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
         sample.exp <- NULL
     }
 
-    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
+    plotWithTable(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
                 table=table, xval=xval, yval=yval,
@@ -634,13 +509,9 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     # Input checking
 
     if (is(status, "numeric")) {
-        if (length(status) != nrow(x)) {
-            stop("The status vector should have same length as the number of rows as main input object.")
-        }
+        checkThat(length(status), sameAs(nrow(x)))
     } else if (is(status, "matrix")) {
-        if (nrow(status) != nrow(x)) {
-            stop("The status matrix should have same number of rows as the number of rows as main input object.")
-        }
+        checkThat(nrow(status), sameAs(nrow(x)))
     }
 
     if (!is.null(counts)) {
@@ -668,25 +539,9 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 
     xval <- "logCPM"
     yval <- "logFC"
-
-    if (is.null(anno) && is.null(x$genes)) {
-        warning("No gene annotation provided.")
-    } else if (!is.null(anno) && !is.null(x$genes)) {
-        anno <- cbind(anno, x$genes)
-        anno <- anno[!duplicated(names(anno))]
-    } else if (!is.null(x$genes)) {
-        anno <- x$genes
-    }
-
-    if (any(!is.hex(cols))) {
-        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
-    }
-
-    if (is.null(display.columns)) {
-        display.columns <- names(anno)
-        display.columns <- display.columns[display.columns != xval]
-        display.columns <- display.columns[display.columns != yval]
-    }
+    anno <- makeAnno(x, anno)
+    cols <- convertColsToHex(cols)
+    display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     if (!is.null(ncol(status))) {
         if (ncol(status) > 1) {
@@ -709,17 +564,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     #
     ##
 
-    colourise <- function(x) {
-        if (x == -1) {
-            return(cols[1])
-        } else if (x == 0) {
-            return(cols[2])
-        } else if (x == 1) {
-            return(cols[3])
-        }
-    }
-
-    col <- sapply(status, colourise)
+    col <- convertStatusToCols(status, cols)
 
     Adj.PValue <- stats::p.adjust(x$p.value[, coef], method=p.adj.method)
     if (is.null(anno)) {
@@ -761,7 +606,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         sample.exp <- NULL
     }
 
-    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
+    plotWithTable(plotting.data, sample.exp, display.columns, search.by,
                 id.column=id.column, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
                 table=table, xval=xval, yval=yval,
@@ -832,9 +677,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     ##
     # Input checking
 
-    if (length(status) != nrow(x)) {
-        stop("The status vector should have same length as the number of rows as main input object.")
-    }
+    checkThat(length(status), sameAs(nrow(x)))
 
     if (!is.null(counts)) {
         if (side.log && any(counts == 0)) {
@@ -856,15 +699,8 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     xval <- "logMean"
     yval <- "logFC"
 
-    if (any(!is.hex(cols))) {
-        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
-    }
-
-    if (is.null(display.columns)) {
-        display.columns <- names(anno)
-        display.columns <- display.columns[display.columns != xval]
-        display.columns <- display.columns[display.columns != yval]
-    }
+    cols <- convertColsToHex(cols)
+    display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     #
     ##
@@ -873,17 +709,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     res.df <- as.data.frame(res)
     gene.counts <- DESeq2::counts(x)
 
-    colourise <- function(x) {
-        if (x == -1) {
-            return(cols[1])
-        } else if (x == 0) {
-            return(cols[2])
-        } else if (x == 1) {
-            return(cols[3])
-        }
-    }
-
-    col <- sapply(status, colourise)
+    col <- convertStatusToCols(status, cols)
 
     plotting.data <- data.frame(logFC = res.df$log2FoldChange,
                                  logMean = log(res.df$baseMean + 0.5),
@@ -910,7 +736,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                              Group = factor(groups),
                              tr.counts)
 
-    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
+    plotWithTable(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
                     table=table, xval=xval, yval=yval,
@@ -962,15 +788,11 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     ##
     # Input checking
 
-    if (length(status) != nrow(x)) {
-        stop("The status vector should have same length as the number of rows as main input object.")
-    }
+    checkThat(length(status), sameAs(nrow(x)))
 
     if (!is.null(counts)) {
         if (!is.null(samples)) {
-            if (ncol(counts) != length(samples)) {
-                stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
-            }
+            checkThat(ncol(counts), sameAs(length(samples)))
         }    
         
 
@@ -993,15 +815,8 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     xval <- "logMean"
     yval <- "logFC"
 
-    if (any(!is.hex(cols))) {
-        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
-    }
-
-    if (is.null(display.columns)) {
-        display.columns <- names(anno)
-        display.columns <- display.columns[display.columns != xval]
-        display.columns <- display.columns[display.columns != yval]
-    }
+    cols <- convertColsToHex(cols)
+    display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     #
     ##
@@ -1010,17 +825,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     res.df <- as.data.frame(res)
     gene.counts <- counts
 
-    colourise <- function(x) {
-        if (x == -1) {
-            return(cols[1])
-        } else if (x == 0) {
-            return(cols[2])
-        } else if (x == 1) {
-            return(cols[3])
-        }
-    }
-
-    col <- sapply(status, colourise)
+    col <- convertStatusToCols(status, cols)
 
     plotting.data <- data.frame(logFC = res.df$log2FoldChange,
                                  logMean = log(res.df$baseMean + 0.5),
@@ -1050,7 +855,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
         sample.exp <- NULL
     }
 
-    glMDPlot.hidden(plotting.data, sample.exp, display.columns, search.by,
+    plotWithTable(plotting.data, sample.exp, display.columns, search.by,
                     id.column=id.column, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
                     table=table, xval=xval, yval=yval,
@@ -1059,4 +864,52 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                     side.gridstep=side.gridstep,
                     ...)
 
+}
+
+convertStatusToCols <- function(x, cols) {
+    x <- factor(x, levels=sort(unique(x)))
+    output <- cols[x]
+    
+    output
+}
+
+convertColsToHex <- function(cols) {
+    if (any(!is.hex(cols))) {
+        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
+    }
+
+    cols
+}
+
+makeAnno <- function(x, anno) {
+    output <- NULL
+    if (is.null(anno) && is.null(x$genes)) {
+
+        warning("No gene annotation provided.")
+
+    } else if (!is.null(anno) && !is.null(x$genes)) {
+
+        anno <- cbind(anno, x$genes)
+        anno <- rmDuplicateCols(anno)
+
+    } else if (!is.null(x$genes)) {
+
+        anno <- x$genes
+
+    }
+
+    output <- anno
+
+    output
+}
+
+setDisplayColumns <- function(display.columns, anno, xval, yval) {
+    if (is.null(display.columns)) {
+        display.columns <- names(anno)
+        display.columns <- display.columns[display.columns != xval]
+        display.columns <- display.columns[display.columns != yval]
+    }
+    output <- display.columns
+
+    output
 }
