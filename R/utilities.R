@@ -143,3 +143,7 @@ as.hexcol <- function(x) {
         return(x)
     }
 }
+
+rmDuplicateCols <- function(x) {
+    x[, !duplicated(names(x))]
+}
