@@ -4,8 +4,8 @@
 \alias{glMDPlot.DGELRT}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{DGELRT}(x, counts = NULL, anno = NULL, groups = rep(0,
-  ncol(x)), samples = NULL, status = rep(0, nrow(x)), transform = TRUE,
+\method{glMDPlot}{DGELRT}(x, counts = NULL, anno = NULL, groups = NULL,
+  samples = NULL, status = rep(0, nrow(x)), transform = TRUE,
   side.xlab = "Group", side.ylab = "logCPM", side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
   p.adj.method = "BH", search.by = "Symbols", jitter = 30,

@@ -61,7 +61,7 @@ expression levels of a particular gene in each sample. Hovering over points
 on left plot will plot expression level for the corresponding gene, clicking
 on points will fix the expression plot to that gene. Clicking on rows on the table
 has the same effect as clicking on the corresponding gene in the plot. This function
-generates a display that is similar in style to glMDPlot, except that it provides more 
+generates a display that is similar in style to glMDPlot, except that it provides more
 flexibility in what the user can provide.
 }
 \description{

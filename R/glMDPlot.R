@@ -3,7 +3,7 @@
 #' Draw an interactive MD plot
 #'
 #' @author Shian Su
-#' 
+#'
 #' @param x the DE object to plot.
 #' @param ... additional arguments affecting the plots produced. See specific methods for detailed arguments.
 #'
@@ -59,7 +59,7 @@ glMDPlot <- function(x, ...) {
 #' @author Shian Su
 #'
 #' @param x the data.frame object containing expression and fold change values.
-#' @param xval the column to plot on x axis of left plot. 
+#' @param xval the column to plot on x axis of left plot.
 #' @param yval the column to plot on y axis of left plot.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
@@ -85,7 +85,7 @@ glMDPlot <- function(x, ...) {
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
-#' 
+#'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
 #' shows the log-fold-change vs average expression. The right plot shows the
 #' expression levels of a particular gene of each sample. Hovering over points
@@ -102,7 +102,7 @@ glMDPlot <- function(x, ...) {
 #' @export
 
 glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
-                        groups, samples=NULL,
+                        groups=NULL, samples=NULL,
                         status=rep(0, nrow(x)), transform=TRUE,
                         side.xlab="Group", side.ylab="logCPM",
                         side.log=FALSE,
@@ -132,8 +132,8 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     #
     ##
 
-    # Input checking
-
+    ##
+    # Value initialisation
 
     cols <- convertColsToHex(cols)
 
@@ -143,8 +143,12 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         }
 
         if (side.log && any(counts == 0)) {
-            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
+            stop("Zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
         }
+    }
+
+    if (is.null(groups)) {
+        groups <- initialiseGroups(ncol(counts))
     }
 
     #
@@ -162,15 +166,8 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     if (!is.null(counts)) {
         rownames(counts) <- make.names(plotting.data[[id.column]])
+        tr.counts <- transformCounts(counts, transform)
 
-        if (transform) {
-            tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
-        } else {
-            tr.counts <- t(as.matrix(counts))
-        }
-    }
-
-    if (!is.null(counts)) {
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
                                  col = as.hexcol(sample.cols),
@@ -187,12 +184,6 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     }
 
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
-
-    # Reordering so that significant points appear on top of insignificant
-    # points.
-
-    plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
-                           plotting.data[plotting.data$col != cols[2], ])
 
     plot1 <- glScatter(plotting.data, xval=xval, yval=yval,
                     xlab=xlab, idval=id.column, ylab=ylab,
@@ -242,7 +233,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #' Draw an interactive MD plot from a DGELRT object
 #'
 #' @author Shian Su
-#' 
+#'
 #' @param x the DGELRT object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
@@ -274,7 +265,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
-#' 
+#'
 #' @method glMDPlot DGELRT
 #'
 #' @importFrom stats p.adjust
@@ -283,7 +274,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #' @export
 
 glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
-                            groups=rep(0, ncol(x)), samples=NULL,
+                            groups=NULL, samples=NULL,
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
                             side.log=FALSE,
@@ -338,6 +329,10 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
         }
     }
 
+    if (is.null(groups)) {
+        groups <- initialiseGroups(ncol(counts))
+    }
+
     jitter <- ifelse(is.numeric(groups), 0, jitter)
 
     #
@@ -357,12 +352,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     if (!is.null(counts)) {
         rownames(counts) <- make.names(plotting.data[[id.column]])
-
-        if (transform) {
-            tr.counts <- t(edgeR::cpm(as.matrix(counts), log=TRUE))
-        } else {
-            tr.counts <- t(as.matrix(counts))
-        }
+        tr.counts <- transformCounts(counts, transform)
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
@@ -419,7 +409,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' Draw an interactive MD plot from a MArrayLM object
 #'
 #' @author Shian Su
-#' 
+#'
 #' @param x the MArrayLM object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
@@ -491,7 +481,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @export
 
 glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
-                            groups=rep(0, ncol(x)), samples=NULL,
+                            groups=NULL, samples=NULL,
                             status=rep(0, nrow(x)), transform=TRUE,
                             side.xlab="Group", side.ylab="logCPM",
                             side.log=FALSE,
@@ -516,11 +506,9 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 
     if (!is.null(counts)) {
         if (!is.null(samples)) {
-            if (ncol(counts) != length(samples)) {
-                stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
-            }    
+            checkThat(ncol(counts), sameAs(length(samples)))
         }
-        
+
         if (side.log && any(counts == 0)) {
             stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
         }
@@ -559,6 +547,10 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         }
     }
 
+    if (is.null(groups)) {
+        groups <- initialiseGroups(ncol(counts))
+    }
+
     jitter <- ifelse(is.numeric(groups), 0, jitter)
 
     #
@@ -585,11 +577,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     if (!is.null(counts)) {
         rownames(counts) <- make.names(plotting.data[[id.column]])
 
-        if (transform) {
-            tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
-        } else {
-            tr.counts <- t(as.matrix(counts))
-        }
+        tr.counts <- transformCounts(counts, transform)
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
@@ -718,18 +706,12 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                  Adj.PValue = res.df$padj,
                                  anno)
 
-    # Reordering so that significant points appear on top of insignificant
-    # points.
-    plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
-                           plotting.data[plotting.data$col != cols[2], ])
+    bg.col <- cols[2]
+    plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
     rownames(gene.counts) <- make.names(plotting.data[[id.column]])
 
-    if (transform) {
-        tr.counts <- t(as.matrix(edgeR::cpm(gene.counts, log=TRUE)))
-    } else {
-        tr.counts <- t(as.matrix(gene.counts))
-    }
+    tr.counts <- transformCounts(gene.counts, transform)
 
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
@@ -751,7 +733,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' Draw an interactive MD plot from a DESeqResults object
 #'
 #' @author Shian Su
-#' 
+#'
 #' @inheritParams glMDPlot.DESeqDataSet
 #' @param x the DESeqResults object.
 #' @param counts the matrix containing all counts.
@@ -793,8 +775,8 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     if (!is.null(counts)) {
         if (!is.null(samples)) {
             checkThat(ncol(counts), sameAs(length(samples)))
-        }    
-        
+        }
+
 
         if (side.log && any(counts == 0)) {
             stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
@@ -834,18 +816,13 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                                  Adj.PValue = res.df$padj,
                                  anno)
 
-    # Reordering so that significant points appear on top of insignificant points.
-    plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
-                           plotting.data[plotting.data$col != cols[2], ])
+    bg.col <- cols[2]
+    plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
     rownames(gene.counts) <- make.names(plotting.data[[id.column]])
 
     if (!is.null(counts)) {
-        if (transform) {
-            tr.counts <- t(as.matrix(edgeR::cpm(gene.counts, log=TRUE)))
-        } else {
-            tr.counts <- t(as.matrix(gene.counts))
-        }
+        tr.counts <- transformCounts(gene.counts, transform)
 
         sample.exp <- data.frame(Sample = samples,
                                  col = as.hexcol(sample.cols),
@@ -869,7 +846,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 convertStatusToCols <- function(x, cols) {
     x <- factor(x, levels=sort(unique(x)))
     output <- cols[x]
-    
+
     output
 }
 
@@ -910,6 +887,34 @@ setDisplayColumns <- function(display.columns, anno, xval, yval) {
         display.columns <- display.columns[display.columns != yval]
     }
     output <- display.columns
+
+    output
+}
+
+initialiseGroups <- function(n) {
+    output <- NULL
+    if (!is.null(n)) {
+        output <- 1:n
+    }
+
+    output
+}
+
+sortInsigPointsToTop <- function(plotting.data, bg.col) {
+    output <- rbind(plotting.data[plotting.data$col == bg.col, ],
+                    plotting.data[plotting.data$col != bg.col, ])
+
+    output
+}
+
+transformCounts <- function(gene.counts, transform) {
+    if (transform) {
+        output <- as.matrix(edgeR::cpm(gene.counts, log=TRUE))
+    } else {
+        output <- as.matrix(gene.counts)
+    }
+
+    output <- t(output)
 
     output
 }

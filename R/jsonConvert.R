@@ -13,9 +13,7 @@ makeJson <- function(x, ...) {
 #' @importFrom methods is
 
 makeJson.chart <- function(chart) {
-    if (!is(chart, "jschart")) {
-        stopType("jschart", "chart")
-    }
+    checkThat(chart, isClass("jschart"))
 
     makeEntry <- function(d) {
         return(paste(quotify(d), makeJson(chart[[d]]), sep=":"))
@@ -36,9 +34,7 @@ makeJson.factor <- function(sample.groups) {
 
 # Function to make json object out of a lists
 makeJson.list <- function(x) {
-    if (!is.list(x)) {
-        stopType("list", "x")
-    }
+    checkThat(x, isClass("list"))
 
     parse <- function(d) {
         paste(quotify(d), makeJson(x[[d]]), sep=":")
@@ -122,11 +118,6 @@ makeJson.NULL <- function(x, ...) {
     } else {
         "null"
     }
-}
-
-# Function to add double quotes onto the start and end of the strings
-quotify <- function(x) {
-    paste("\"", x, "\"", sep="")
 }
 
 # Function to add square brackets around string

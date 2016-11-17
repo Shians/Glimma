@@ -13,10 +13,10 @@
 gltablink <- function(from, to, action="none", info="none") {
     out <- list()
 
-    assertClass(from, "numeric")
-    assertClass(to, "numeric")
-    assertClass(action, "character")
-    assertClass(info, "character")
+    checkThat(from, isNumeric)
+    checkThat(to, isNumeric)
+    checkThat(action, isCharacter)
+    checkThat(info, isCharacter)
 
     out <- gllink(from=from, to=to,
                     src="click", dest=action, flag="tablink", info=info)

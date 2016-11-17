@@ -75,28 +75,19 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
                                 hide=FALSE, disable=NULL, ...) {
     ##
     # Input checking
-    assertClass(xval, "character")
-    assertClass(yval, "character")
-    assertClass(annot, "character")
+    checkThat(xval, isCharacter)
+    checkThat(yval, isCharacter)
+    checkThat(annot, isCharacter)
 
-    if (is.na(match(xval, names(x)))) {
-        stop(paste(xval, "does not correspond to a column"))
-    }
-
-    if (is.na(match(yval, names(x)))) {
-        stop(paste(yval, "does not correspond to a column"))
-    }
+    checkThat(xval, isIn(names(x)))
+    checkThat(yval, isIn(names(x)))
 
     if (!is.null(colval)) {
-        if (is.na(match(colval, names(x)))) {
-            stop(paste(colval, "does not correspond to a column"))
-        }
+        checkThat(colval, isIn(names(x)))
     }
 
     if (!is.null(idval)) {
-        if (is.na(match(idval, names(x)))) {
-            stop(paste(idval, "does not correspond to a column"))
-        }
+        checkThat(idval, isIn(names(x)))
     }
     # TODO: Ensure uniqueness of identifiers
     # TODO: Generate default identifiers if not present
@@ -180,7 +171,7 @@ constructScatterPlot <- function(chart, index, write.out) {
     command <- paste0(command, width)
 
     if (!is.null(chart$pntsize)) {
-        size <- paste0(".size(function (d) { return ", chart$pntsize,"; })")
+        size <- paste0(".size(function (d) { return ", chart$pntsize, "; })")
         command <- paste0(command, size)
     }
 
@@ -266,7 +257,8 @@ constructScatterPlot <- function(chart, index, write.out) {
 
     if (!is.null(chart$info)) {
         if (!is.null(chart$info$search.by)) {
-            search <- paste0(".searchValue(function(d) { return d[", quotify(chart$info$search.by), "]; })")
+            searchStr <- quotify(chart$info$search.by)
+            search <- paste0(".searchValue(function(d) { return d[", searchStr, "]; })")
             command <- paste0(command, search)
         }
     }

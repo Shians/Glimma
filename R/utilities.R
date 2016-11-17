@@ -1,44 +1,3 @@
-# Helper function for printing type errors
-stopType <- function(type, name="x") {
-    type <- quotify(type)
-    name <- quotify(name)
-    stop(paste("input", name, "not of class", type))
-}
-
-# Helper function for asserting object class
-assertClass <- function(x, type) {
-    if (!is(x, type)) {
-        arg.name <- deparse(substitute(x))
-        stopType(type, arg.name)
-    }
-}
-
-# Helper function for asserting list classes
-lassertClass <- function(x, type) {
-    check.fail <- !all(lapply(x, class) == type)
-    if (check.fail) {
-        name <- quotify(deparse(substitute(x)))
-        type <- quotify(type)
-        stop(paste("at least one member of list", name, "not of class", type))
-    }
-}
-
-#' Column checker
-#'
-#' Check if data.frame controls all the listed columns
-#'
-#' @param df the data frame to check.
-#' @param columns the columns that should exist in the data frame.
-#'
-#' @return stops program with an error if column cannot be found in df
-
-hasColumns <- function(df, columns) {
-    if (!all(columns %in% names(df))) {
-        violations <- paste(quotify(columns[columns %in% names(df)]), collaps=", ")
-        stop(paste(violations, "cannot be found in", deparse(substitute(df))))
-    }
-}
-
 # Function to print stored json as a javascript var declaration
 printJsonToFile <- function(json, filename, varname) {
     file.con <- file(description=filename, open="w")
@@ -57,9 +16,7 @@ printJsonToFile <- function(json, filename, varname) {
 
 # Function to get the nth character of a string
 char <- function(string, n) {
-    if (!is(string, "character")) {
-        stopType("string", "character")
-    }
+    checkThat(string, isString)
 
     if (any(abs(n) > nchar(string))) {
         stop(paste(quotify("n"), "is outside index range"))
