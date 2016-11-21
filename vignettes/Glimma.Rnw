@@ -3,6 +3,7 @@
 %\VignetteKeyword{differential expression}
 %\VignetteKeyword{interactive graphics}
 %\VignettePackage{Glimma}
+%\usepackage[utf8]{inputenc}
 \documentclass{article}
 
 <<style-Sweave, eval=TRUE, echo=FALSE, results=tex>>=
@@ -243,8 +244,9 @@ Explain this dataset. Data has already been packaged into an RData object with g
 @
 
 <<Rgetstarted.arrays>>==
-load("arraydata.RData")
-targets
+data(arraydata)
+arrays <- arraydata$arrays
+targets <- arraydata$targets
 arrays <- neqc(arrays)
 expressed <- rowSums(arrays$other$Detection>0.95)!=0
 quality <- !arrays$genes$Quality_score %in% c("Bad", "No match") | is.na(arrays$genes$Quality_score)
@@ -318,7 +320,7 @@ regulator Smchd1, {\it Genomics Data}, {\bf 7}:144--7.
 \bibitem[8]{treat} McCarthy DJ, Smyth GK (2009) Testing significance relative to a fold-change threshold is a TREAT, 
   {\it Bioinformatics}, {\bf 25}(6):765-71.
 \bibitem[9]{tmm} Robinson MD, Oshlack A (2010) A scaling normalization method for differential expression analysis of RNA-seq data, {\it Genome Biology}, \bf{11}:R25.  
-\bibitem[10]{bh} Benjamini Y, Hochberg Y (1995) Controlling the false discovery rate: a practical and powerful approach to multiple testing, {\it Journal of the Royal Statistical Society Series B} \bf{57}, 289–300.
+\bibitem[10]{bh} Benjamini Y, Hochberg Y (1995) Controlling the false discovery rate: a practical and powerful approach to multiple testing, {\it Journal of the Royal Statistical Society Series B} \bf{57}, 289-300.
 \end{thebibliography}
 
 

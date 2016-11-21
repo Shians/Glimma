@@ -12,16 +12,17 @@ biocViews:
     RNASeq,
     Visualization
 Depends: R (>= 3.3.0)
-Imports: 
+Imports:
     DESeq2,
     edgeR,
     grDevices,
     methods,
     stats,
     utils
-Suggests: 
+Suggests:
     BiocStyle,
-    limma
+    limma,
+    testthat
 License: GPL-3 | file LICENSE
 URL: https://github.com/Shians/Glimma
 BugReports: https://github.com/Shians/Glimma/issues

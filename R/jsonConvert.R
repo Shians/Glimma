@@ -12,9 +12,7 @@ makeJson <- function(x, ...) {
 #'
 #' @importFrom methods is
 
-makeJson.chart <- function(chart) {
-    checkThat(chart, isClass("jschart"))
-
+makeJson.jschart <- function(chart) {
     makeEntry <- function(d) {
         return(paste(quotify(d), makeJson(chart[[d]]), sep=":"))
     }
@@ -29,7 +27,9 @@ makeJson.factor <- function(sample.groups) {
     sample.groups <- as.factor(sample.groups)
     l <- levels(sample.groups)
     l <- paste("\"", l, "\"", sep="")
-    paste("[", paste(l, collapse=", "), "]", sep="")
+    paste("[", paste(l, collapse=","), "]", sep="")
+
+    class(output) <- "json"
 }
 
 # Function to make json object out of a lists
@@ -65,11 +65,7 @@ makeJson.data.frame <- function(df, convert.logical=TRUE) {
     df <- data.frame(df)
 
     for (n in names(df)) {
-        if (!is(df[[n]], "numeric") && !is(df[[n]], "logical")) {
-            df[[n]] <- quotify(as.character(df[[n]]))
-        } else if (!convert.logical && is(df[[n]], "logical")) {
-            df[[n]] <- quotify(as.character(df[[n]]))
-        }
+        df[[n]] <- convertLogical(df[[n]], convert.logical)
     }
 
     f1 <- function (x) { paste(coln, ifelse(is.na(x), "\"NA\"", x), sep="") }
@@ -87,37 +83,63 @@ makeJson.data.frame <- function(df, convert.logical=TRUE) {
     output
 }
 
+convertLogical <- function(x, convert.logical) {
+    output <- x
+
+    if (!is(x, "numeric") && !is(x, "logical")) {
+        output <- quotify(as.character(x))
+    } else if (is(x, "logical")) {
+        if (convert.logical) {
+            output <- quotify(as.character(x))
+        } else {
+            output <- makeJson(x)
+        }
+    }
+    class(output) <- "json"
+
+    output
+}
+
 makeJson.character <- function(x, ...) {
     if (length(x) > 1) {
-        arrayify(quotify(x))
+        output <- arrayify(quotify(x))
     } else {
-        quotify(x)
+        output <- quotify(x)
     }
+    class(output) <- "json"
+
+    output
 }
 
 makeJson.numeric <- function(x, ...) {
     if (length(x) > 1) {
-        arrayify(x)
+        output <- arrayify(x)
     } else {
-        x
+        output <- x
     }
+
+    output
 }
 
 makeJson.logical <- function(x, ...) {
     if (length(x) > 1) {
         # Convert from R logicals to Javascript logicals
-        arrayify(c("false", "true")[x+1])
+        output <- arrayify(c("false", "true")[x+1])
     } else {
-        c("false", "true")[x+1]
+        output <- c("false", "true")[x+1]
     }
+
+    output
 }
 
 makeJson.NULL <- function(x, ...) {
     if (length(x) > 1) {
-        arrayify(rep("null", length(x)))
+        output <- arrayify(rep("null", length(x)))
     } else {
-        "null"
+        output <- "null"
     }
+
+    output
 }
 
 # Function to add square brackets around string
@@ -129,9 +151,3 @@ arrayify <- function(x) {
 objectify <- function(x, y) {
     paste("{", paste(x, y, sep=":", collapse=","), "}", sep="")
 }
-
-# For legacy function compatibility
-makeChartJson <- makeJson.chart
-makeFactJson <- makeJson.factor
-makeListJson <- makeJson.list
-makeDFJson <- makeJson.data.frame

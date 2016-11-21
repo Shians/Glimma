@@ -137,15 +137,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     cols <- convertColsToHex(cols)
 
-    if (!is.null(counts)) {
-        if (!is.null(samples)) {
-            checkThat(ncol(counts), sameAs(length(samples)))
-        }
-
-        if (side.log && any(counts == 0)) {
-            stop("Zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
-        }
-    }
+    checkCountsAndSamples(counts, samples, side.log)
 
     if (is.null(groups)) {
         groups <- initialiseGroups(ncol(counts))
@@ -292,15 +284,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     checkThat(length(status), sameAs(nrow(x)))
 
-    if (!is.null(counts)) {
-        if (!is.null(samples)) {
-            checkThat(ncol(counts), sameAs(length(samples)))
-        }
-
-        if (side.log && any(counts == 0)) {
-            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
-        }
-    }
+    checkCountsAndSamples(counts, samples, side.log)
 
     ## Not the correct check, need to check in x and anno, commented out until fixed.
     # if (anyDuplicated(x[[id.column]])) {
@@ -504,15 +488,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         checkThat(nrow(status), sameAs(nrow(x)))
     }
 
-    if (!is.null(counts)) {
-        if (!is.null(samples)) {
-            checkThat(ncol(counts), sameAs(length(samples)))
-        }
-
-        if (side.log && any(counts == 0)) {
-            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
-        }
-    }
+    checkCountsAndSamples(counts, samples, side.log)
 
     ## Not the correct check, need to check in x and anno, commented out until fixed.
     # if (anyDuplicated(x[[id.column]])) {
@@ -662,16 +638,14 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                 path=getwd(), folder="glimma-plots",
                                 html="MD-Plot", launch=TRUE, ...) {
 
+    counts <- DESeq2::counts(x)
+
     ##
     # Input checking
 
     checkThat(length(status), sameAs(nrow(x)))
 
-    if (!is.null(counts)) {
-        if (side.log && any(counts == 0)) {
-            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
-        }
-    }
+    checkCountsAndSamples(counts, samples, side.log)
 
     ## Not the correct check, need to check in x and anno, commented out until fixed.
     # if (anyDuplicated(x[[id.column]])) {
@@ -695,7 +669,6 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 
     res <- DESeq2::results(x)
     res.df <- as.data.frame(res)
-    gene.counts <- DESeq2::counts(x)
 
     col <- convertStatusToCols(status, cols)
 
@@ -709,9 +682,9 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     bg.col <- cols[2]
     plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
-    rownames(gene.counts) <- make.names(plotting.data[[id.column]])
+    rownames(counts) <- make.names(plotting.data[[id.column]])
 
-    tr.counts <- transformCounts(gene.counts, transform)
+    tr.counts <- transformCounts(counts, transform)
 
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
@@ -772,16 +745,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     checkThat(length(status), sameAs(nrow(x)))
 
-    if (!is.null(counts)) {
-        if (!is.null(samples)) {
-            checkThat(ncol(counts), sameAs(length(samples)))
-        }
-
-
-        if (side.log && any(counts == 0)) {
-            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
-        }
-    }
+    checkCountsAndSamples(counts, samples, side.log)
 
     ## Not the correct check, need to check in x and anno, commented out until fixed.
     # if (anyDuplicated(x[[id.column]])) {
@@ -805,7 +769,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     res <- x
     res.df <- as.data.frame(res)
-    gene.counts <- counts
+    counts <- counts
 
     col <- convertStatusToCols(status, cols)
 
@@ -819,10 +783,10 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     bg.col <- cols[2]
     plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
-    rownames(gene.counts) <- make.names(plotting.data[[id.column]])
+    rownames(counts) <- make.names(plotting.data[[id.column]])
 
     if (!is.null(counts)) {
-        tr.counts <- transformCounts(gene.counts, transform)
+        tr.counts <- transformCounts(counts, transform)
 
         sample.exp <- data.frame(Sample = samples,
                                  col = as.hexcol(sample.cols),
@@ -907,14 +871,26 @@ sortInsigPointsToTop <- function(plotting.data, bg.col) {
     output
 }
 
-transformCounts <- function(gene.counts, transform) {
+transformCounts <- function(counts, transform) {
     if (transform) {
-        output <- as.matrix(edgeR::cpm(gene.counts, log=TRUE))
+        output <- as.matrix(edgeR::cpm(counts, log=TRUE))
     } else {
-        output <- as.matrix(gene.counts)
+        output <- as.matrix(counts)
     }
 
     output <- t(output)
 
     output
+}
+
+checkCountsAndSamples <- function(counts, samples, side.log=FALSE) {
+    if (!is.null(counts)) {
+        if (!is.null(samples)) {
+            checkThat(ncol(counts), sameAs(length(samples)))
+        }
+
+        if (side.log && any(counts == 0)) {
+            stop("Zeros in expression matrix cannot be plotted on log-scale, consider adding small offset.")
+        }
+    }
 }

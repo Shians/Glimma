@@ -1,14 +1,14 @@
 #' Glimma Scatter Plot
-#' 
+#'
 #' Create an interactive scatter plot object
-#' 
+#'
 #' @author Shian Su
-#' 
+#'
 #' @param x the data.frame containing data to plot.
 #' @param ... additional arguments depending on input object type.
-#' 
+#'
 #' @return A chart object containing the information to create an interactive scatter plot.
-#' 
+#'
 #' @examples
 #' data(iris)
 #' \donttest{
@@ -21,11 +21,11 @@ glScatter <- function(x, ...) {
 }
 
 #' Glimma Scatter Plot
-#' 
+#'
 #' Default method for creating an interactive scatter plot
 #'
 #' @author Shian Su
-#' 
+#'
 #' @param x the data.frame containing data to plot.
 #' @param xval the column name for the x-axis values.
 #' @param yval the column name for the y-axis values.
@@ -53,9 +53,9 @@ glScatter <- function(x, ...) {
 #' @param hide TRUE to hide the plot when page starts.
 #' @param disable the events to disable, options are "click", "hover", "zoom".
 #' @param ... additional arguments.
-#' 
+#'
 #' @return A chart object containing the information to create an interactive scatter plot.
-#' 
+#'
 #' @examples
 #' data(iris)
 #' \donttest{
@@ -103,7 +103,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
 
     # TODO: Consider using rjson or jsonlite packages?
     # Make json out of data
-    json <- makeDFJson(x, convert.logical=FALSE)
+    json <- makeJson(x, convert.logical=FALSE)
 
     x.ord <- is.factor(x[[xval]])
     y.ord <- is.factor(x[[yval]])
