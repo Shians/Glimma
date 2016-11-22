@@ -106,7 +106,7 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
         if (nprobes > top) {
             s <- rowMeans((x-rowMeans(x))^2)
             o <- order(s, decreasing=TRUE)
-            x <- x[o[1L:top],, drop=FALSE]
+            x <- x[o[1L:top], , drop=FALSE]
         }
         for (i in 2L:(nsamples))
             dist <- sqrt(colMeans( (x[, i]-x[, 1:(i-1), drop=FALSE])^2 ))

@@ -16,6 +16,7 @@ Imports:
     DESeq2,
     edgeR,
     grDevices,
+    jsonlite,
     methods,
     stats,
     utils
