@@ -1,3 +1,13 @@
+#' JSON converter for R objects
+#'
+#' Function to generate json strings from
+#'
+#' @param x the object to be converted into JSON
+#' @param ... additional arguments
+#'
+#' @return a stringified JSON object.
+#'
+#' @importFrom jsonlite toJSON
 makeJson <- function(x, ...) {
     UseMethod("makeJson")
 }
@@ -19,34 +29,24 @@ makeJson.jschart <- function(chart) {
 
     chart$json <- NULL
 
-    paste0("{", paste(sapply(names(chart), makeEntry), collapse=","), "}")
+    columnNames <- names(chart)
+    paste0("{", paste(sapply(columnNames, makeEntry), collapse=","), "}")
 }
 
 # Function to make json object out of factor levels
 makeJson.factor <- function(sample.groups) {
-    sample.groups <- as.factor(sample.groups)
     l <- levels(sample.groups)
     l <- paste("\"", l, "\"", sep="")
-    paste("[", paste(l, collapse=","), "]", sep="")
-
-    class(output) <- "json"
-}
-
-# Function to make json object out of a lists
-makeJson.list <- function(x) {
-    checkThat(x, isClass("list"))
-
-    parse <- function(d) {
-        paste(quotify(d), makeJson(x[[d]]), sep=":")
-    }
-
-    keys <- names(x)
-    entries <- sapply(keys, parse)
-    output <- paste("{", paste(entries, collapse=","), "}", sep="")
+    output <- paste("[", paste(l, collapse=","), "]", sep="")
 
     class(output) <- "json"
 
     output
+}
+
+# Function to make json object out of a lists
+makeJson.list <- function(x, ...) {
+    toJSON(x, auto_unbox=TRUE, na="string")
 }
 
 #' JSON converter for data frames
@@ -62,19 +62,15 @@ makeJson.list <- function(x) {
 #' @importFrom methods is
 
 makeJson.data.frame <- function(df, convert.logical=TRUE) {
-    df <- data.frame(df)
+    if (convert.logical) {
+        logicalCols <- getLogicalCols(df)
 
-    for (n in names(df)) {
-        df[[n]] <- convertLogical(df[[n]], convert.logical)
+        for (i in which(logicalCols)) {
+            df[, i] <- convertLogical(df[, i])
+        }
     }
 
-    f1 <- function (x) { paste(coln, ifelse(is.na(x), "\"NA\"", x), sep="") }
-    f2 <- function (x) { paste("{", paste(x, collapse=","), "}", sep="") }
-    coln <- paste(quotify(colnames(df)), ":", sep="")
-    temp <- t(apply(df, 1, f1))
-    temp <- apply(temp, 1, f2)
-
-    output <- paste("[", paste(temp, collapse=","), "]", sep="")
+    output <- toJSON(df, auto_unbox=TRUE, na="string")
     class(output) <- "json"
 
     # Outputs [{"col1": val1.1, "col2": val1.2,...},
@@ -83,63 +79,24 @@ makeJson.data.frame <- function(df, convert.logical=TRUE) {
     output
 }
 
-convertLogical <- function(x, convert.logical) {
-    output <- x
-
-    if (!is(x, "numeric") && !is(x, "logical")) {
-        output <- quotify(as.character(x))
-    } else if (is(x, "logical")) {
-        if (convert.logical) {
-            output <- quotify(as.character(x))
-        } else {
-            output <- makeJson(x)
-        }
-    }
-    class(output) <- "json"
-
-    output
+convertLogical <- function(x) {
+    as.character(x)
 }
 
 makeJson.character <- function(x, ...) {
-    if (length(x) > 1) {
-        output <- arrayify(quotify(x))
-    } else {
-        output <- quotify(x)
-    }
-    class(output) <- "json"
-
-    output
+    toJSON(x, auto_unbox=TRUE, na="string")
 }
 
 makeJson.numeric <- function(x, ...) {
-    if (length(x) > 1) {
-        output <- arrayify(x)
-    } else {
-        output <- x
-    }
-
-    output
+    toJSON(x, auto_unbox=TRUE, na="string")
 }
 
 makeJson.logical <- function(x, ...) {
-    if (length(x) > 1) {
-        # Convert from R logicals to Javascript logicals
-        output <- arrayify(c("false", "true")[x+1])
-    } else {
-        output <- c("false", "true")[x+1]
-    }
-
-    output
+    toJSON(x, auto_unbox=TRUE, na="string")
 }
 
 makeJson.NULL <- function(x, ...) {
-    if (length(x) > 1) {
-        output <- arrayify(rep("null", length(x)))
-    } else {
-        output <- "null"
-    }
-
-    output
+    toJSON(rep("null", length(x)))
 }
 
 # Function to add square brackets around string
@@ -150,4 +107,17 @@ arrayify <- function(x) {
 # Function to add braces around string
 objectify <- function(x, y) {
     paste("{", paste(x, y, sep=":", collapse=","), "}", sep="")
+}
+
+notNumericOrLogical <- function(x) {
+    !is(x, "numeric") && !is(x, "logical")
+}
+
+getLogicalCols <- function(df) {
+    logicalCols <- logical(ncol(df))
+    for (i in 1:ncol(df)) {
+        logicalCols[i] <- is.logical(df[, i])
+    }
+
+    logicalCols
 }
