@@ -110,7 +110,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
                         xlab=xval, ylab=yval,
                         search.by="Symbols", jitter=30,
                         id.column="GeneID", display.columns=id.column,
-                        cols=c("#0000FF", "#858585", "#B32222"),
+                        cols=c("#00bfff", "#858585", "#ff3030"),
                         sample.cols=rep("#1f77b4", ncol(counts)),
                         table=TRUE,
                         path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -157,8 +157,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        rownames(counts) <- make.names(plotting.data[[id.column]])
-        tr.counts <- transformCounts(counts, transform)
+        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
@@ -273,7 +272,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
                             side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             id.column="GeneID", display.columns=NULL,
-                            cols=c("#0000FF", "#858585", "#B32222"),
+                            cols=c("#00bfff", "#858585", "#ff3030"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             table=TRUE,
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -285,11 +284,6 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     checkThat(length(status), sameAs(nrow(x)))
 
     checkCountsAndSamples(counts, samples, side.log)
-
-    ## Not the correct check, need to check in x and anno, commented out until fixed.
-    # if (anyDuplicated(x[[id.column]])) {
-    #     stop(paste("column", quotify(id.column), "in x contains duplicated values."))
-    # }
 
     #
     ##
@@ -335,8 +329,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        rownames(counts) <- make.names(plotting.data[[id.column]])
-        tr.counts <- transformCounts(counts, transform)
+        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
@@ -473,7 +466,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
                             coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             id.column="GeneID", display.columns=NULL,
-                            cols=c("#0000FF", "#858585", "#B32222"),
+                            cols=c("#00bfff", "#858585", "#ff3030"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             table=TRUE,
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -489,11 +482,6 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     }
 
     checkCountsAndSamples(counts, samples, side.log)
-
-    ## Not the correct check, need to check in x and anno, commented out until fixed.
-    # if (anyDuplicated(x[[id.column]])) {
-    #     stop(paste("column", quotify(id.column), "in x contains duplicated values."))
-    # }
 
     #
     ##
@@ -551,9 +539,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        rownames(counts) <- make.names(plotting.data[[id.column]])
-
-        tr.counts <- transformCounts(counts, transform)
+        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
@@ -632,7 +618,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                 search.by="Symbols",
                                 jitter=30, id.column="GeneID",
                                 display.columns=NULL,
-                                cols=c("#0000FF", "#858585", "#B32222"),
+                                cols=c("#00bfff", "#858585", "#ff3030"),
                                 sample.cols=rep("#1f77b4", ncol(x)),
                                 table=TRUE,
                                 path=getwd(), folder="glimma-plots",
@@ -646,11 +632,6 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     checkThat(length(status), sameAs(nrow(x)))
 
     checkCountsAndSamples(counts, samples, side.log)
-
-    ## Not the correct check, need to check in x and anno, commented out until fixed.
-    # if (anyDuplicated(x[[id.column]])) {
-    #     stop(paste("column", quotify(id.column), "in x contains duplicated values."))
-    # }
 
     #
     ##
@@ -682,9 +663,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     bg.col <- cols[2]
     plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
-    rownames(counts) <- make.names(plotting.data[[id.column]])
-
-    tr.counts <- transformCounts(counts, transform)
+    tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
 
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
@@ -734,7 +713,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                                 search.by="Symbols",
                                 jitter=30, id.column="GeneID",
                                 display.columns=NULL,
-                                cols=c("#0000FF", "#858585", "#B32222"),
+                                cols=c("#00bfff", "#858585", "#ff3030"),
                                 sample.cols=rep("#1f77b4", ncol(counts)),
                                 table=TRUE,
                                 path=getwd(), folder="glimma-plots",
@@ -746,11 +725,6 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     checkThat(length(status), sameAs(nrow(x)))
 
     checkCountsAndSamples(counts, samples, side.log)
-
-    ## Not the correct check, need to check in x and anno, commented out until fixed.
-    # if (anyDuplicated(x[[id.column]])) {
-    #     stop(paste("column", quotify(id.column), "in x contains duplicated values."))
-    # }
 
     #
     ##
@@ -782,11 +756,8 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     bg.col <- cols[2]
     plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
-
-    rownames(counts) <- make.names(plotting.data[[id.column]])
-
     if (!is.null(counts)) {
-        tr.counts <- transformCounts(counts, transform)
+        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
 
         sample.exp <- data.frame(Sample = samples,
                                  col = as.hexcol(sample.cols),
@@ -871,7 +842,9 @@ sortInsigPointsToTop <- function(plotting.data, bg.col) {
     output
 }
 
-transformCounts <- function(counts, transform) {
+transformCounts <- function(counts, transform, colnames=colnames(counts)) {
+    rownames(counts) <- make.names(colnames)
+
     if (transform) {
         output <- as.matrix(edgeR::cpm(counts, log=TRUE))
     } else {
