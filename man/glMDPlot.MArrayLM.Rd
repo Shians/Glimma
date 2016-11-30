@@ -10,7 +10,7 @@
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
   coef = ncol(x$coefficients), p.adj.method = "BH", search.by = "Symbols",
   jitter = 30, id.column = "GeneID", display.columns = NULL,
-  cols = c("#0000FF", "#858585", "#B32222"), sample.cols = rep("#1f77b4",
+  cols = c("#00bfff", "#858585", "#ff3030"), sample.cols = rep("#1f77b4",
   ncol(counts)), table = TRUE, path = getwd(), folder = "glimma-plots",
   html = "MD-Plot", launch = TRUE, ...)
 }
