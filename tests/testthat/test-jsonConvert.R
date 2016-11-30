@@ -13,9 +13,11 @@ test_that("list conversion is correct", {
     x1 <- list(a=c(1, 2), b=c("a", "b"))
     x2 <- list(a=factor(c(1, 2)), b=c(TRUE, FALSE))
     x3 <- list(a="string", b=1, c=TRUE, d=factor(1))
+    x4 <- list(a=list(c="a", d=c(1, 2)), b=TRUE)
     expect_that(as.character(makeJson(x1)), equals("{\"a\":[1,2],\"b\":[\"a\",\"b\"]}"))
     expect_that(as.character(makeJson(x2)), equals("{\"a\":[\"1\",\"2\"],\"b\":[true,false]}"))
     expect_equal(as.character(makeJson(x3)), "{\"a\":\"string\",\"b\":1,\"c\":true,\"d\":\"1\"}")
+    expect_equal(as.character(makeJson(x4)), "{\"a\":{\"c\":\"a\",\"d\":[1,2]},\"b\":true}")
 })
 
 test_that("data.frame conversion is correct", {
