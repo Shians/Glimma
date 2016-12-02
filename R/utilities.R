@@ -38,67 +38,8 @@ pathMaker <- function(path) {
     if (char(path, -1) != "/") {
         stop("path must end with /")
     }
-    function (x) {
-        return(paste0(path, x))
-    }
-}
 
-# String to hex colour converter
-
-
-CharToHexCol <- function(x) {
-    requireNamespace("grDevices")
-    temp <- as.character(as.hexmode(col2rgb(x, alpha=FALSE)))
-    out <- apply(temp, 2, function(x) {paste0("#", paste0(x, collapse=""))})
-    sapply(out, function(x) { ifelse(x=="#000", "#000000", x) })
-}
-
-# Numeric to hex colour converter
-
-NumToHexCol <- function(x) {
-    requireNamespace("grDevices")
-    x <- palette()[as.integer(x)]
-    temp <- as.character(as.hexmode(col2rgb(x, alpha=FALSE)))
-    out <- apply(temp, 2, function(x) {paste0("#", paste0(x, collapse=""))})
-    sapply(out, function(x) { ifelse(x=="#000", "#000000", x) })
-}
-
-# Function to check if values are valid hexadecimal expressions
-is.hex <- function(x) {
-    (grepl("#[[:xdigit:]]{6}", x) | grepl("#[[:xdigit:]]{8}", x))
-}
-
-#' Numeric to hex colour converter
-#'
-#' Functions to convert numbers into corresponding hex codes for colours
-#'
-#' @param x the colour value(s) to be converted to hex values.
-#'
-#' @return hex codes for colours
-#' 
-#' @examples
-#' as.hexcol(c(1, 2, 3))
-#' as.hexcol(c("red", "black", "green"))
-#'
-#' @importFrom grDevices palette col2rgb
-#' 
-#' @export
-
-as.hexcol <- function(x) {
-    if (is.character(x)) {
-        if (all(is.hex(x))) {
-            return(x)
-        } else {
-            temp <- x
-            temp[!is.hex(x)] <- CharToHexCol(temp[!is.hex(x)])
-            return(temp)
-        }
-    } else if (is.numeric(x)) {
-        return(NumToHexCol(x))
-    } else {
-        warning("input is not character or numeric, no hex conversion made.")
-        return(x)
-    }
+    return ( function (x) { return(paste0(path, x)) } )
 }
 
 rmDuplicateCols <- function(x) {
