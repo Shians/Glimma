@@ -46,7 +46,11 @@ makeJson.factor <- function(sample.groups) {
 
 # Function to make json object out of a lists
 makeJson.list <- function(x, ...) {
-    toJSON(x, auto_unbox=TRUE, na="string")
+    list_names <- names(x)
+    vals <- sapply(x, function(d) { toJSON(d, auto_unbox=TRUE, na="string") })
+    output <- paste(paste(quotify(list_names), vals, sep=":"), collapse=",")
+
+    paste("{", output, "}", sep="")
 }
 
 #' JSON converter for data frames
