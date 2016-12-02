@@ -1,7 +1,7 @@
 context("Test MD Plot")
 
 test_that("MD Plot runs for voom", {
-    load(system.file(package="Glimma", "test_data_voom.rda"))
+    load("test_data_voom.rda")
 
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
@@ -18,7 +18,7 @@ test_that("MD Plot runs for voom", {
 })
 
 test_that("MD Plot runs for DGELRT", {
-    load(system.file(package="Glimma", "test_data_DGELRT.rda"))
+    load("test_data_DGELRT.rda")
 
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
@@ -36,7 +36,7 @@ test_that("MD Plot runs for DGELRT", {
 })
 
 test_that("MD Plot runs for DGEExact", {
-    load(system.file(package="Glimma", "test_data_DGEExact.rda"))
+    load("test_data_DGEExact.rda")
 
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")

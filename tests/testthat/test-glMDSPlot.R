@@ -1,7 +1,7 @@
 context("Test MDS Plot")
 
 test_that("MDS Plot runs", {
-    load(system.file(package="Glimma", "test_data_MDS.rda"))
+    load("test_data_MDS.rda")
 
     groups <- data.frame(Grouping1=c(rep(1, 40), rep(2, 30)),
                        Grouping2=c(rep(1, 20), rep(2, 30), rep(3, 20)),
