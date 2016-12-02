@@ -6,7 +6,7 @@
 \usage{
 \method{glMDPlot}{default}(x, xval, yval, counts = NULL, anno = NULL,
   groups = NULL, samples = NULL, status = rep(0, nrow(x)),
-  transform = TRUE, side.xlab = "Group", side.ylab = "logCPM",
+  transform = FALSE, side.xlab = "Group", side.ylab = "Expression",
   side.log = FALSE, side.gridstep = ifelse(!transform || side.log, FALSE,
   0.5), xlab = xval, ylab = yval, search.by = "Symbols", jitter = 30,
   id.column = "GeneID", display.columns = id.column, cols = c("#00bfff",
@@ -31,7 +31,7 @@
 
 \item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.}
 
-\item{transform}{TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.}
+\item{transform}{TRUE if counts cpm transformed.}
 
 \item{side.xlab}{label for x axis on right side plot.}
 
