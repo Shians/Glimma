@@ -66,7 +66,7 @@ glMDPlot <- function(x, ...) {
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param transform TRUE if counts cpm transformed.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
 #' @param side.log TRUE to plot expression on the side plot on log scale.
@@ -103,8 +103,8 @@ glMDPlot <- function(x, ...) {
 
 glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
                         groups=NULL, samples=NULL,
-                        status=rep(0, nrow(x)), transform=TRUE,
-                        side.xlab="Group", side.ylab="logCPM",
+                        status=rep(0, nrow(x)), transform=FALSE,
+                        side.xlab="Group", side.ylab="Expression",
                         side.log=FALSE,
                         side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                         xlab=xval, ylab=yval,
@@ -231,7 +231,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param transform TRUE if counts cpm transformed.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
 #' @param side.log TRUE to plot expression on the side plot on log scale.
@@ -266,8 +266,8 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
 glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
                             groups=NULL, samples=NULL,
-                            status=rep(0, nrow(x)), transform=TRUE,
-                            side.xlab="Group", side.ylab="logCPM",
+                            status=rep(0, nrow(x)), transform=FALSE,
+                            side.xlab="Group", side.ylab="Expression",
                             side.log=FALSE,
                             side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
@@ -393,7 +393,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param transform TRUE if counts cpm transformed.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
 #' @param side.log TRUE to plot expression on the side plot on log scale.
@@ -459,8 +459,8 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 
 glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
                             groups=NULL, samples=NULL,
-                            status=rep(0, nrow(x)), transform=TRUE,
-                            side.xlab="Group", side.ylab="logCPM",
+                            status=rep(0, nrow(x)), transform=FALSE,
+                            side.xlab="Group", side.ylab="Expression",
                             side.log=FALSE,
                             side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                             coef=ncol(x$coefficients),
@@ -577,7 +577,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param transform TRUE if counts cpm transformed.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
 #' @param side.log TRUE to plot expression on the side plot on log scale.
@@ -611,7 +611,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 #' @export
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
-                                status=rep(0, nrow(x)), transform=TRUE,
+                                status=rep(0, nrow(x)), transform=FALSE,
                                 side.xlab="Group", side.ylab="logMean",
                                 side.log=FALSE,
                                 side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
@@ -706,8 +706,8 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @export
 
 glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
-                                status=rep(0, nrow(x)), transform=TRUE,
-                                side.xlab="Group", side.ylab="logCPM",
+                                status=rep(0, nrow(x)), transform=FALSE,
+                                side.xlab="Group", side.ylab="Expression",
                                 side.log=FALSE,
                                 side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                                 search.by="Symbols",
@@ -786,11 +786,7 @@ convertStatusToCols <- function(x, cols) {
 }
 
 convertColsToHex <- function(cols) {
-    if (any(!is.hex(cols))) {
-        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
-    }
-
-    cols
+    as.hexcol(cols)
 }
 
 makeAnno <- function(x, anno) {

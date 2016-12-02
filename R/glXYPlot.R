@@ -54,7 +54,7 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
                         xlab="x", ylab="y",
                         side.xlab="Group", side.ylab="logCPM",
                         sample.cols=rep("#1f77b4", length(groups)),
-                        cols=c("#0000FF", "#858585", "#B32222"),
+                        cols=c("#00bfff", "#858585", "#ff3030"),
                         jitter=30,
                         path=getwd(), folder="glimma-plots", html="XY-Plot",
                         launch=TRUE, ...) {
