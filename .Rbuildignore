@@ -4,3 +4,5 @@ _site
 glimma.sublime-project
 glimma.sublime-workspace
 inst/tests
+^.*\.Rproj$
+^\.Rproj\.user$

@@ -7,12 +7,17 @@
 glMDPlot(x, ...)
 }
 \arguments{
-\item{x}{the data.frame containing data to plot.}
+\item{x}{the DE object to plot.}
 
 \item{...}{additional arguments affecting the plots produced. See specific methods for detailed arguments.}
 }
 \value{
-Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+Draws a two-panel interactive MD plot in an html page. The left plot
+shows the log-fold-change vs average expression. The right plot shows the
+expression levels of a particular gene of each sample. Hovering over points
+on left plot will plot expression level for corresponding gene, clicking
+on points will fix the expression plot to gene. Clicking on rows on the table
+has the same effect as clicking on the corresponding gene in the plot.
 }
 \description{
 Draw an interactive MD plot

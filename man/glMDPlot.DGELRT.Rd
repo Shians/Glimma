@@ -4,13 +4,15 @@
 \alias{glMDPlot.DGELRT}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{DGELRT}(x, counts, anno, groups, samples, status = rep(0,
-  nrow(x)), coef = ncol(x$coefficients), p.adj.method = "BH",
-  search.by = "Symbols", jitter = 30, id.column = "GeneID",
-  display.columns = id.column, cols = c("#0000FF", "#858585", "#B32222"),
-  sample.cols = rep("#1f77b4", ncol(counts)), table = TRUE,
-  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
-  launch = TRUE, ...)
+\method{glMDPlot}{DGELRT}(x, counts = NULL, anno = NULL, groups = NULL,
+  samples = NULL, status = rep(0, nrow(x)), transform = FALSE,
+  side.xlab = "Group", side.ylab = "Expression", side.log = FALSE,
+  side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
+  p.adj.method = "BH", search.by = "Symbols", jitter = 30,
+  id.column = "GeneID", display.columns = NULL, cols = c("#00bfff",
+  "#858585", "#ff3030"), sample.cols = rep("#1f77b4", ncol(counts)),
+  table = TRUE, path = getwd(), folder = "glimma-plots",
+  html = "MD-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DGELRT object.}
@@ -25,9 +27,17 @@
 
 \item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.}
 
-\item{coef}{integer or character index vector indicating which column of object to plot.}
+\item{transform}{TRUE if counts cpm transformed.}
 
-\item{p.adj.method}{character vector indicating multiple testing correction method. (defaults to "BH")}
+\item{side.xlab}{label for x axis on right side plot.}
+
+\item{side.ylab}{label for y axis on right side plot.}
+
+\item{side.log}{TRUE to plot expression on the side plot on log scale.}
+
+\item{side.gridstep}{intervals along which to place grid lines on y axis. Currently only available for linear scale.}
+
+\item{p.adj.method}{character vector indicating multiple testing correction method. See \code{\link{p.adjust}} for available methods. (defaults to "BH")}
 
 \item{search.by}{the name of the column which will be used to search for data points. (should contain unique values)}
 
@@ -35,7 +45,7 @@
 
 \item{id.column}{the column containing unique identifiers for each gene.}
 
-\item{display.columns}{character vector containing names of columns to display in mouseover tooltips.}
+\item{display.columns}{character vector containing names of columns to display in mouseover tooltips and table.}
 
 \item{cols}{vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)}
 
@@ -51,10 +61,15 @@
 
 \item{launch}{TRUE to launch plot after call.}
 
-\item{...}{additional arguments to be passed onto the MD plot.}
+\item{...}{additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)}
 }
 \value{
-Draws a two-panel interactive MD plot in an html page. The left plot shows the log-fold-change vs average expression. The right plot shows the expression levels of a particular gene of each sample.
+Draws a two-panel interactive MD plot in an html page. The left plot
+shows the log-fold-change vs average expression. The right plot shows the
+expression levels of a particular gene of each sample. Hovering over points
+on left plot will plot expression level for corresponding gene, clicking
+on points will fix the expression plot to gene. Clicking on rows on the table
+has the same effect as clicking on the corresponding gene in the plot.
 }
 \description{
 Draw an interactive MD plot from a DGELRT object

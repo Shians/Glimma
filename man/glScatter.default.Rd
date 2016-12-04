@@ -6,10 +6,10 @@
 \usage{
 \method{glScatter}{default}(x, xval = "x", yval = "y", idval = NULL,
   point.size = 2, x.jitter = 0, y.jitter = 0, ndigits = NULL,
-  signif = 6, log = "", xlab = xval, ylab = yval, main = NULL,
-  height = 400, width = 500, colval = NULL, annot = c(xval, yval),
-  annot.lab = NULL, flag = NULL, info = NULL, hide = FALSE,
-  disable = NULL, ...)
+  signif = 6, log = "", xgrid = FALSE, ygrid = FALSE, xstep = FALSE,
+  ystep = FALSE, xlab = xval, ylab = yval, main = NULL, height = 400,
+  width = 500, colval = NULL, annot = c(xval, yval), annot.lab = NULL,
+  flag = NULL, info = NULL, hide = FALSE, disable = NULL, ...)
 }
 \arguments{
 \item{x}{the data.frame containing data to plot.}
@@ -31,6 +31,14 @@
 \item{signif}{the number of significant figures to display in the tooltip.}
 
 \item{log}{a character string which contains "x" if the x axis is to be logarithmic, "y" if the y axis is to be logarithmic and "xy" or "yx" if both axes are to be logarithmic.}
+
+\item{xgrid}{TRUE if grid lines should be placed along x axis.}
+
+\item{ygrid}{TRUE if grid lines should be placed y axis.}
+
+\item{xstep}{the interval at which to set grid lines along the x axis.}
+
+\item{ystep}{the interval at which to set grid lines along the y axis.}
 
 \item{xlab}{the label on the x-axis.}
 
