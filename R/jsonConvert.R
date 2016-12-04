@@ -1,3 +1,13 @@
+#' JSON converter for R objects
+#'
+#' Function to generate json strings from
+#'
+#' @param x the object to be converted into JSON
+#' @param ... additional arguments
+#'
+#' @return a stringified JSON object.
+#'
+#' @importFrom jsonlite toJSON
 makeJson <- function(x, ...) {
     UseMethod("makeJson")
 }
@@ -12,45 +22,35 @@ makeJson <- function(x, ...) {
 #'
 #' @importFrom methods is
 
-makeJson.chart <- function(chart) {
-    if (!is(chart, "jschart")) {
-        stopType("jschart", "chart")
-    }
-
+makeJson.jschart <- function(chart) {
     makeEntry <- function(d) {
         return(paste(quotify(d), makeJson(chart[[d]]), sep=":"))
     }
 
     chart$json <- NULL
 
-    paste0("{", paste(sapply(names(chart), makeEntry), collapse=","), "}")
+    columnNames <- names(chart)
+    paste0("{", paste(sapply(columnNames, makeEntry), collapse=","), "}")
 }
 
 # Function to make json object out of factor levels
 makeJson.factor <- function(sample.groups) {
-    sample.groups <- as.factor(sample.groups)
     l <- levels(sample.groups)
     l <- paste("\"", l, "\"", sep="")
-    paste("[", paste(l, collapse=", "), "]", sep="")
-}
-
-# Function to make json object out of a lists
-makeJson.list <- function(x) {
-    if (!is.list(x)) {
-        stopType("list", "x")
-    }
-
-    parse <- function(d) {
-        paste(quotify(d), makeJson(x[[d]]), sep=":")
-    }
-
-    keys <- names(x)
-    entries <- sapply(keys, parse)
-    output <- paste("{", paste(entries, collapse=","), "}", sep="")
+    output <- paste("[", paste(l, collapse=","), "]", sep="")
 
     class(output) <- "json"
 
     output
+}
+
+# Function to make json object out of a lists
+makeJson.list <- function(x, ...) {
+    list_names <- names(x)
+    vals <- sapply(x, function(d) { toJSON(d, auto_unbox=TRUE, na="string") })
+    output <- paste(paste(quotify(list_names), vals, sep=":"), collapse=",")
+
+    paste("{", output, "}", sep="")
 }
 
 #' JSON converter for data frames
@@ -66,23 +66,15 @@ makeJson.list <- function(x) {
 #' @importFrom methods is
 
 makeJson.data.frame <- function(df, convert.logical=TRUE) {
-    df <- data.frame(df)
+    if (convert.logical) {
+        logicalCols <- getLogicalCols(df)
 
-    for (n in names(df)) {
-        if (!is(df[[n]], "numeric") && !is(df[[n]], "logical")) {
-            df[[n]] <- quotify(as.character(df[[n]]))
-        } else if (!convert.logical && is(df[[n]], "logical")) {
-            df[[n]] <- quotify(as.character(df[[n]]))
+        for (i in which(logicalCols)) {
+            df[, i] <- convertLogical(df[, i])
         }
     }
 
-    f1 <- function (x) { paste(coln, ifelse(is.na(x), "\"NA\"", x), sep="") }
-    f2 <- function (x) { paste("{", paste(x, collapse=","), "}", sep="") }
-    coln <- paste(quotify(colnames(df)), ":", sep="")
-    temp <- t(apply(df, 1, f1))
-    temp <- apply(temp, 1, f2)
-
-    output <- paste("[", paste(temp, collapse=","), "]", sep="")
+    output <- toJSON(df, auto_unbox=TRUE, na="string")
     class(output) <- "json"
 
     # Outputs [{"col1": val1.1, "col2": val1.2,...},
@@ -91,42 +83,24 @@ makeJson.data.frame <- function(df, convert.logical=TRUE) {
     output
 }
 
+convertLogical <- function(x) {
+    as.character(x)
+}
+
 makeJson.character <- function(x, ...) {
-    if (length(x) > 1) {
-        arrayify(quotify(x))
-    } else {
-        quotify(x)
-    }
+    toJSON(x, auto_unbox=TRUE, na="string")
 }
 
 makeJson.numeric <- function(x, ...) {
-    if (length(x) > 1) {
-        arrayify(x)
-    } else {
-        x
-    }
+    toJSON(x, auto_unbox=TRUE, na="string")
 }
 
 makeJson.logical <- function(x, ...) {
-    if (length(x) > 1) {
-        # Convert from R logicals to Javascript logicals
-        arrayify(c("false", "true")[x+1])
-    } else {
-        c("false", "true")[x+1]
-    }
+    toJSON(x, auto_unbox=TRUE, na="string")
 }
 
 makeJson.NULL <- function(x, ...) {
-    if (length(x) > 1) {
-        arrayify(rep("null", length(x)))
-    } else {
-        "null"
-    }
-}
-
-# Function to add double quotes onto the start and end of the strings
-quotify <- function(x) {
-    paste("\"", x, "\"", sep="")
+    toJSON(rep("null", length(x)))
 }
 
 # Function to add square brackets around string
@@ -139,8 +113,15 @@ objectify <- function(x, y) {
     paste("{", paste(x, y, sep=":", collapse=","), "}", sep="")
 }
 
-# For legacy function compatibility
-makeChartJson <- makeJson.chart
-makeFactJson <- makeJson.factor
-makeListJson <- makeJson.list
-makeDFJson <- makeJson.data.frame
+notNumericOrLogical <- function(x) {
+    !is(x, "numeric") && !is(x, "logical")
+}
+
+getLogicalCols <- function(df) {
+    logicalCols <- logical(ncol(df))
+    for (i in 1:ncol(df)) {
+        logicalCols[i] <- is.logical(df[, i])
+    }
+
+    logicalCols
+}

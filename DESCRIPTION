@@ -1,7 +1,7 @@
 Package: Glimma
 Type: Package
 Title: Interactive HTML graphics
-Version: 1.3.2
+Version: 1.3.4
 Date: 2016-02-29
 Author: Shian Su, Matt Ritchie, Charity Law
 Maintainer: Shian Su <su.s@wehi.edu.au>
@@ -12,16 +12,18 @@ biocViews:
     RNASeq,
     Visualization
 Depends: R (>= 3.3.0)
-Imports: 
+Imports:
     DESeq2,
     edgeR,
     grDevices,
+    jsonlite,
     methods,
     stats,
     utils
-Suggests: 
+Suggests:
     BiocStyle,
-    limma
+    limma,
+    testthat
 License: GPL-3 | file LICENSE
 URL: https://github.com/Shians/Glimma
 BugReports: https://github.com/Shians/Glimma/issues

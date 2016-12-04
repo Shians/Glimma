@@ -147,7 +147,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 
     # Write linkage
     if (nrow(actions) > 1) {
-        actions.js <- makeDFJson(actions[-1, ])
+        actions.js <- makeJson(actions[-1, ])
         write.data(paste0("glimma.storage.linkage = ", actions.js, ";\n"))
     } else {
         write.data("glimma.storage.linkage = [];\n")
@@ -155,7 +155,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 
     # Write input fields
     if (nrow(inputs) > 1) {
-        inputs.js <- makeDFJson(inputs[-1, ])
+        inputs.js <- makeJson(inputs[-1, ])
         write.data(paste0("glimma.storage.input = ", inputs.js, ";\n"))
     } else {
         write.data("glimma.storage.input = [];\n")
@@ -175,7 +175,7 @@ processPlot <- function(write.data, type, chart, index) {
 
     # Write plot information
     chart$json <- NULL
-    chartInfo <- makeChartJson(chart)
+    chartInfo <- makeJson(chart)
     write.data(paste0("glimma.storage.chartInfo.push(", chartInfo, ");\n"))
 
     # Write plot call

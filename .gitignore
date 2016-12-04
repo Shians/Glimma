@@ -1,3 +1,10 @@
 _site
 glimma.sublime-workspace
 glimma.sublime-project
+.Rproj.user
+
+*.Rproj
+
+*.tex
+
+*.Rproj

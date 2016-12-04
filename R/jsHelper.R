@@ -29,9 +29,9 @@ bsCol <- function(size, class="plot-device", type="md") {
 
 # Function to write javascript methods
 jsMethod <- function(...) {
-    args <- list(...)
+    args <- unlist(list(...))
 
-    lassertClass(args, "character")
+    checkThat(args, isCharacter)
 
     length.fail <- !all(sapply(args, length) == 1)
     if (length.fail) {
@@ -57,14 +57,14 @@ jsFunction <- function(func) {
 # Function to write javascript arguments
 jsArgs <- function(...) {
     args <- unlist(list(...))
-    assertClass(args, "character")
+    checkThat(args, isCharacter)
 
     paste(args, collapse=", ")
 }
 
 # Function to write a javascript method call
 jsCall <- function(func, arg) {
-    assertClass(func, "jsMethod")
+    checkThat(func, isClass("jsMethod"))
 
     if (is(arg, "jsCall")) {
         arg <- gsub(";\n", "", arg)
@@ -80,7 +80,7 @@ jsCall <- function(func, arg) {
 jsChain <- function(...) {
     args <- list(...)
 
-    lassertClass(args, "jsCall")
+    sapply(args, function(x) { checkThat(x, isClass("jsCall")) })
 
     trimmed <- gsub(";\n", "", as.character(unlist(args)))
     chained <- paste(trimmed, collapse=".")

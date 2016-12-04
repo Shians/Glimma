@@ -35,7 +35,7 @@ plotWithTable <- function(plotting.data, sample.exp, display.columns,
         link2 <- NULL
         plot2 <- NULL
     }
-    
+
     draw.plots(table, display.columns, search.by, xval, yval,
                 plot1, plot2, link1, link2, path, folder, html,
                 launch)
@@ -50,11 +50,13 @@ draw.plots <- function(table, display.columns, search.by, xval, yval,
             link3 <- gltablink(1, 1, action="highlightById")
             table1 <- glTable(1, plot1$anno)
             glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
-                path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+                path=path, folder=folder, html=html, overwrite=TRUE,
+                launch=launch)
         } else {
             button1 <- glAutoinput(1, "highlightBySearch", search.by)
             glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
-                path=path, folder=folder, html=html, overwrite=TRUE, launch=launch)
+                path=path, folder=folder, html=html, overwrite=TRUE,
+                launch=launch)
         }
     } else {
         if (table) {

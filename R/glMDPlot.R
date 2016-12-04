@@ -3,7 +3,7 @@
 #' Draw an interactive MD plot
 #'
 #' @author Shian Su
-#' 
+#'
 #' @param x the DE object to plot.
 #' @param ... additional arguments affecting the plots produced. See specific methods for detailed arguments.
 #'
@@ -59,14 +59,14 @@ glMDPlot <- function(x, ...) {
 #' @author Shian Su
 #'
 #' @param x the data.frame object containing expression and fold change values.
-#' @param xval the column to plot on x axis of left plot. 
+#' @param xval the column to plot on x axis of left plot.
 #' @param yval the column to plot on y axis of left plot.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param transform TRUE if counts cpm transformed.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
 #' @param side.log TRUE to plot expression on the side plot on log scale.
@@ -85,7 +85,7 @@ glMDPlot <- function(x, ...) {
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)
-#' 
+#'
 #' @return Draws a two-panel interactive MD plot in an html page. The left plot
 #' shows the log-fold-change vs average expression. The right plot shows the
 #' expression levels of a particular gene of each sample. Hovering over points
@@ -102,15 +102,15 @@ glMDPlot <- function(x, ...) {
 #' @export
 
 glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
-                        groups, samples=NULL,
-                        status=rep(0, nrow(x)), transform=TRUE,
-                        side.xlab="Group", side.ylab="logCPM",
+                        groups=NULL, samples=NULL,
+                        status=rep(0, nrow(x)), transform=FALSE,
+                        side.xlab="Group", side.ylab="Expression",
                         side.log=FALSE,
                         side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                         xlab=xval, ylab=yval,
                         search.by="Symbols", jitter=30,
                         id.column="GeneID", display.columns=id.column,
-                        cols=c("#0000FF", "#858585", "#B32222"),
+                        cols=c("#00bfff", "#858585", "#ff3030"),
                         sample.cols=rep("#1f77b4", ncol(counts)),
                         table=TRUE,
                         path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -132,19 +132,15 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     #
     ##
 
-    # Input checking
-
+    ##
+    # Value initialisation
 
     cols <- convertColsToHex(cols)
 
-    if (!is.null(counts)) {
-        if (!is.null(samples)) {
-            checkThat(ncol(counts), sameAs(length(samples)))
-        }
+    checkCountsAndSamples(counts, samples, side.log)
 
-        if (side.log && any(counts == 0)) {
-            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
-        }
+    if (is.null(groups)) {
+        groups <- initialiseGroups(ncol(counts))
     }
 
     #
@@ -161,16 +157,8 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        rownames(counts) <- make.names(plotting.data[[id.column]])
+        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
 
-        if (transform) {
-            tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
-        } else {
-            tr.counts <- t(as.matrix(counts))
-        }
-    }
-
-    if (!is.null(counts)) {
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
                                  col = as.hexcol(sample.cols),
@@ -187,12 +175,6 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     }
 
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
-
-    # Reordering so that significant points appear on top of insignificant
-    # points.
-
-    plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
-                           plotting.data[plotting.data$col != cols[2], ])
 
     plot1 <- glScatter(plotting.data, xval=xval, yval=yval,
                     xlab=xlab, idval=id.column, ylab=ylab,
@@ -242,14 +224,14 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #' Draw an interactive MD plot from a DGELRT object
 #'
 #' @author Shian Su
-#' 
+#'
 #' @param x the DGELRT object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param transform TRUE if counts cpm transformed.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
 #' @param side.log TRUE to plot expression on the side plot on log scale.
@@ -274,7 +256,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #' on left plot will plot expression level for corresponding gene, clicking
 #' on points will fix the expression plot to gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot.
-#' 
+#'
 #' @method glMDPlot DGELRT
 #'
 #' @importFrom stats p.adjust
@@ -283,14 +265,14 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #' @export
 
 glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
-                            groups=rep(0, ncol(x)), samples=NULL,
-                            status=rep(0, nrow(x)), transform=TRUE,
-                            side.xlab="Group", side.ylab="logCPM",
+                            groups=NULL, samples=NULL,
+                            status=rep(0, nrow(x)), transform=FALSE,
+                            side.xlab="Group", side.ylab="Expression",
                             side.log=FALSE,
                             side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             id.column="GeneID", display.columns=NULL,
-                            cols=c("#0000FF", "#858585", "#B32222"),
+                            cols=c("#00bfff", "#858585", "#ff3030"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             table=TRUE,
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -301,20 +283,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     checkThat(length(status), sameAs(nrow(x)))
 
-    if (!is.null(counts)) {
-        if (!is.null(samples)) {
-            checkThat(ncol(counts), sameAs(length(samples)))
-        }
-
-        if (side.log && any(counts == 0)) {
-            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
-        }
-    }
-
-    ## Not the correct check, need to check in x and anno, commented out until fixed.
-    # if (anyDuplicated(x[[id.column]])) {
-    #     stop(paste("column", quotify(id.column), "in x contains duplicated values."))
-    # }
+    checkCountsAndSamples(counts, samples, side.log)
 
     #
     ##
@@ -338,6 +307,10 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
         }
     }
 
+    if (is.null(groups)) {
+        groups <- initialiseGroups(ncol(counts))
+    }
+
     jitter <- ifelse(is.numeric(groups), 0, jitter)
 
     #
@@ -356,13 +329,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        rownames(counts) <- make.names(plotting.data[[id.column]])
-
-        if (transform) {
-            tr.counts <- t(edgeR::cpm(as.matrix(counts), log=TRUE))
-        } else {
-            tr.counts <- t(as.matrix(counts))
-        }
+        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
@@ -419,14 +386,14 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' Draw an interactive MD plot from a MArrayLM object
 #'
 #' @author Shian Su
-#' 
+#'
 #' @param x the MArrayLM object.
 #' @param counts the matrix containing all counts.
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param transform TRUE if counts cpm transformed.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
 #' @param side.log TRUE to plot expression on the side plot on log scale.
@@ -491,15 +458,15 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @export
 
 glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
-                            groups=rep(0, ncol(x)), samples=NULL,
-                            status=rep(0, nrow(x)), transform=TRUE,
-                            side.xlab="Group", side.ylab="logCPM",
+                            groups=NULL, samples=NULL,
+                            status=rep(0, nrow(x)), transform=FALSE,
+                            side.xlab="Group", side.ylab="Expression",
                             side.log=FALSE,
                             side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                             coef=ncol(x$coefficients),
                             p.adj.method="BH", search.by="Symbols", jitter=30,
                             id.column="GeneID", display.columns=NULL,
-                            cols=c("#0000FF", "#858585", "#B32222"),
+                            cols=c("#00bfff", "#858585", "#ff3030"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
                             table=TRUE,
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
@@ -514,22 +481,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         checkThat(nrow(status), sameAs(nrow(x)))
     }
 
-    if (!is.null(counts)) {
-        if (!is.null(samples)) {
-            if (ncol(counts) != length(samples)) {
-                stop(paste("columns in count differ from number of samples:", ncol(counts), "vs", length(samples)))
-            }    
-        }
-        
-        if (side.log && any(counts == 0)) {
-            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
-        }
-    }
-
-    ## Not the correct check, need to check in x and anno, commented out until fixed.
-    # if (anyDuplicated(x[[id.column]])) {
-    #     stop(paste("column", quotify(id.column), "in x contains duplicated values."))
-    # }
+    checkCountsAndSamples(counts, samples, side.log)
 
     #
     ##
@@ -559,6 +511,10 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         }
     }
 
+    if (is.null(groups)) {
+        groups <- initialiseGroups(ncol(counts))
+    }
+
     jitter <- ifelse(is.numeric(groups), 0, jitter)
 
     #
@@ -583,13 +539,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        rownames(counts) <- make.names(plotting.data[[id.column]])
-
-        if (transform) {
-            tr.counts <- t(as.matrix(edgeR::cpm(counts, log=TRUE)))
-        } else {
-            tr.counts <- t(as.matrix(counts))
-        }
+        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
@@ -627,7 +577,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
-#' @param transform TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.
+#' @param transform TRUE if counts cpm transformed.
 #' @param side.xlab label for x axis on right side plot.
 #' @param side.ylab label for y axis on right side plot.
 #' @param side.log TRUE to plot expression on the side plot on log scale.
@@ -661,34 +611,27 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 #' @export
 
 glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
-                                status=rep(0, nrow(x)), transform=TRUE,
+                                status=rep(0, nrow(x)), transform=FALSE,
                                 side.xlab="Group", side.ylab="logMean",
                                 side.log=FALSE,
                                 side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                                 search.by="Symbols",
                                 jitter=30, id.column="GeneID",
                                 display.columns=NULL,
-                                cols=c("#0000FF", "#858585", "#B32222"),
+                                cols=c("#00bfff", "#858585", "#ff3030"),
                                 sample.cols=rep("#1f77b4", ncol(x)),
                                 table=TRUE,
                                 path=getwd(), folder="glimma-plots",
                                 html="MD-Plot", launch=TRUE, ...) {
+
+    counts <- DESeq2::counts(x)
 
     ##
     # Input checking
 
     checkThat(length(status), sameAs(nrow(x)))
 
-    if (!is.null(counts)) {
-        if (side.log && any(counts == 0)) {
-            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
-        }
-    }
-
-    ## Not the correct check, need to check in x and anno, commented out until fixed.
-    # if (anyDuplicated(x[[id.column]])) {
-    #     stop(paste("column", quotify(id.column), "in x contains duplicated values."))
-    # }
+    checkCountsAndSamples(counts, samples, side.log)
 
     #
     ##
@@ -707,7 +650,6 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 
     res <- DESeq2::results(x)
     res.df <- as.data.frame(res)
-    gene.counts <- DESeq2::counts(x)
 
     col <- convertStatusToCols(status, cols)
 
@@ -718,18 +660,10 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                  Adj.PValue = res.df$padj,
                                  anno)
 
-    # Reordering so that significant points appear on top of insignificant
-    # points.
-    plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
-                           plotting.data[plotting.data$col != cols[2], ])
+    bg.col <- cols[2]
+    plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
-    rownames(gene.counts) <- make.names(plotting.data[[id.column]])
-
-    if (transform) {
-        tr.counts <- t(as.matrix(edgeR::cpm(gene.counts, log=TRUE)))
-    } else {
-        tr.counts <- t(as.matrix(gene.counts))
-    }
+    tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
 
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
@@ -751,7 +685,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' Draw an interactive MD plot from a DESeqResults object
 #'
 #' @author Shian Su
-#' 
+#'
 #' @inheritParams glMDPlot.DESeqDataSet
 #' @param x the DESeqResults object.
 #' @param counts the matrix containing all counts.
@@ -772,14 +706,14 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
 #' @export
 
 glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
-                                status=rep(0, nrow(x)), transform=TRUE,
-                                side.xlab="Group", side.ylab="logCPM",
+                                status=rep(0, nrow(x)), transform=FALSE,
+                                side.xlab="Group", side.ylab="Expression",
                                 side.log=FALSE,
                                 side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                                 search.by="Symbols",
                                 jitter=30, id.column="GeneID",
                                 display.columns=NULL,
-                                cols=c("#0000FF", "#858585", "#B32222"),
+                                cols=c("#00bfff", "#858585", "#ff3030"),
                                 sample.cols=rep("#1f77b4", ncol(counts)),
                                 table=TRUE,
                                 path=getwd(), folder="glimma-plots",
@@ -790,21 +724,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     checkThat(length(status), sameAs(nrow(x)))
 
-    if (!is.null(counts)) {
-        if (!is.null(samples)) {
-            checkThat(ncol(counts), sameAs(length(samples)))
-        }    
-        
-
-        if (side.log && any(counts == 0)) {
-            stop("There are zeroes in expression matrix which cannot be plotted on log-scale, consider adding small offset.")
-        }
-    }
-
-    ## Not the correct check, need to check in x and anno, commented out until fixed.
-    # if (anyDuplicated(x[[id.column]])) {
-    #     stop(paste("column", quotify(id.column), "in x contains duplicated values."))
-    # }
+    checkCountsAndSamples(counts, samples, side.log)
 
     #
     ##
@@ -823,7 +743,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     res <- x
     res.df <- as.data.frame(res)
-    gene.counts <- counts
+    counts <- counts
 
     col <- convertStatusToCols(status, cols)
 
@@ -834,18 +754,10 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                                  Adj.PValue = res.df$padj,
                                  anno)
 
-    # Reordering so that significant points appear on top of insignificant points.
-    plotting.data <- rbind(plotting.data[plotting.data$col == cols[2], ],
-                           plotting.data[plotting.data$col != cols[2], ])
-
-    rownames(gene.counts) <- make.names(plotting.data[[id.column]])
-
+    bg.col <- cols[2]
+    plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
     if (!is.null(counts)) {
-        if (transform) {
-            tr.counts <- t(as.matrix(edgeR::cpm(gene.counts, log=TRUE)))
-        } else {
-            tr.counts <- t(as.matrix(gene.counts))
-        }
+        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
 
         sample.exp <- data.frame(Sample = samples,
                                  col = as.hexcol(sample.cols),
@@ -869,16 +781,12 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 convertStatusToCols <- function(x, cols) {
     x <- factor(x, levels=sort(unique(x)))
     output <- cols[x]
-    
+
     output
 }
 
 convertColsToHex <- function(cols) {
-    if (any(!is.hex(cols))) {
-        cols[!is.hex(cols)] <- CharToHexCol(cols[!is.hex(cols)])
-    }
-
-    cols
+    as.hexcol(cols)
 }
 
 makeAnno <- function(x, anno) {
@@ -912,4 +820,46 @@ setDisplayColumns <- function(display.columns, anno, xval, yval) {
     output <- display.columns
 
     output
+}
+
+initialiseGroups <- function(n) {
+    output <- NULL
+    if (!is.null(n)) {
+        output <- 1:n
+    }
+
+    output
+}
+
+sortInsigPointsToTop <- function(plotting.data, bg.col) {
+    output <- rbind(plotting.data[plotting.data$col == bg.col, ],
+                    plotting.data[plotting.data$col != bg.col, ])
+
+    output
+}
+
+transformCounts <- function(counts, transform, colnames=colnames(counts)) {
+    rownames(counts) <- make.names(colnames)
+
+    if (transform) {
+        output <- as.matrix(edgeR::cpm(counts, log=TRUE))
+    } else {
+        output <- as.matrix(counts)
+    }
+
+    output <- t(output)
+
+    output
+}
+
+checkCountsAndSamples <- function(counts, samples, side.log=FALSE) {
+    if (!is.null(counts)) {
+        if (!is.null(samples)) {
+            checkThat(ncol(counts), sameAs(length(samples)))
+        }
+
+        if (side.log && any(counts == 0)) {
+            stop("Zeros in expression matrix cannot be plotted on log-scale, consider adding small offset.")
+        }
+    }
 }

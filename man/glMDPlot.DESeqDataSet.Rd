@@ -5,10 +5,10 @@
 \title{Glimma MD Plot}
 \usage{
 \method{glMDPlot}{DESeqDataSet}(x, anno, groups, samples, status = rep(0,
-  nrow(x)), transform = TRUE, side.xlab = "Group", side.ylab = "logMean",
+  nrow(x)), transform = FALSE, side.xlab = "Group", side.ylab = "logMean",
   side.log = FALSE, side.gridstep = ifelse(!transform || side.log, FALSE,
   0.5), search.by = "Symbols", jitter = 30, id.column = "GeneID",
-  display.columns = NULL, cols = c("#0000FF", "#858585", "#B32222"),
+  display.columns = NULL, cols = c("#00bfff", "#858585", "#ff3030"),
   sample.cols = rep("#1f77b4", ncol(x)), table = TRUE, path = getwd(),
   folder = "glimma-plots", html = "MD-Plot", launch = TRUE, ...)
 }
@@ -23,7 +23,7 @@
 
 \item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.}
 
-\item{transform}{TRUE if counts are raw and should be cpm transformed, FALSE if counts are already transformed to expression scale.}
+\item{transform}{TRUE if counts cpm transformed.}
 
 \item{side.xlab}{label for x axis on right side plot.}
 

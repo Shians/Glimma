@@ -1,16 +1,16 @@
 #' Glimma MD Plot
-#' 
+#'
 #' Create an interactive bar plot object.
-#' 
+#'
 #' @author Shian Su
-#' 
+#'
 #' @param x the data.frame containing data to plot.
 #' @param ... additional arguments depending on input object type.
-#' 
+#'
 #' @return A chart object containing the information to create an interactive bar plot.
-#' 
+#'
 #' @seealso \code{\link{glBar.default}}
-#' 
+#'
 #' @examples
 #' data(mtcars)
 #' counts <- table(mtcars$gear)
@@ -25,11 +25,11 @@ glBar <- function(x, ...) {
 }
 
 #' Glimma MD Plot
-#' 
+#'
 #' Default method for interactive bar plot.
-#' 
+#'
 #' @author Shian Su
-#' 
+#'
 #' @param x the data.frame containing data to plot.
 #' @param yval the column name for the x-axis values.
 #' @param names.arg the column name for the label on each bar.
@@ -45,11 +45,11 @@ glBar <- function(x, ...) {
 #' @param flag the special flag to indicate special plot.
 #' @param info additional information for plotting.
 #' @param ... additional arguments.
-#' 
+#'
 #' @return A chart object containing the information to create an interactive bar plot.
-#' 
+#'
 #' @method glBar default
-#' 
+#'
 #' @examples
 #' data(mtcars)
 #' counts <- table(mtcars$gear)
@@ -59,7 +59,7 @@ glBar <- function(x, ...) {
 #' glimma(plot1, layout=c(1,1), launch=TRUE)
 #' }
 
-glBar.default <- function(x, yval, names.arg=rownames(x), 
+glBar.default <- function(x, yval, names.arg=rownames(x),
                             ndigits=NULL, signif=6,
                             xlab=NULL, ylab=yval, main=NULL,
                             height=400, width=500,
@@ -80,11 +80,11 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
             stop(paste(colval, "does not correspond to a column"))
         }
     }
-    
+
     # TODO: Consider using rjson package?
     # Make json out of data
     x <- data.frame(x)
-    json <- makeDFJson(x)
+    json <- makeJson(x)
 
     out <- list(
                 names = names.arg,
@@ -106,7 +106,7 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
 
     class(out) <- "jschart"
 
-    out 
+    out
 }
 
 # Helper for writing js commands to draw plot

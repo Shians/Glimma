@@ -26,14 +26,14 @@
 #' @param launch TRUE to launch plot after call.
 #' @param ... additional arguments to be passed onto the MD plot. (main, etc. can be set for the left plot)
 #'
-#' 
+#'
 #' @return Draws a two-panel interactive XY scatter plot in an html page. The left plot
 #' shows the x and y values specified. The right plot shows the
 #' expression levels of a particular gene in each sample. Hovering over points
 #' on left plot will plot expression level for the corresponding gene, clicking
 #' on points will fix the expression plot to that gene. Clicking on rows on the table
 #' has the same effect as clicking on the corresponding gene in the plot. This function
-#' generates a display that is similar in style to glMDPlot, except that it provides more 
+#' generates a display that is similar in style to glMDPlot, except that it provides more
 #' flexibility in what the user can provide.
 #'
 #' @examples
@@ -48,25 +48,25 @@
 #'
 #' @export
 
-glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL, 
+glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
                         status=rep(0, nrow(data)),
                         anno=NULL, display.columns=NULL, id.column="GeneID",
                         xlab="x", ylab="y",
                         side.xlab="Group", side.ylab="logCPM",
                         sample.cols=rep("#1f77b4", length(groups)),
-                        cols=c("#0000FF", "#858585", "#B32222"),
+                        cols=c("#00bfff", "#858585", "#ff3030"),
                         jitter=30,
                         path=getwd(), folder="glimma-plots", html="XY-Plot",
                         launch=TRUE, ...) {
     # Plot any x and y
     # Shian Su and Charity Law
-    # Created 4 July 2016. Last modified 6 July 2016.                           
+    # Created 4 July 2016. Last modified 6 July 2016.
 
     # Extract values to plot and their names
     checkThat(length(x), sameAs(length(y)))
     data <- cbind(x, y)
     colnames(data) <- c(xlab, ylab)
-    
+
     # Check input data
     if (!is.null(counts)) {
         checkThat(nrow(counts), sameAs(nrow(data)))
@@ -100,21 +100,23 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
             display.columns <- colnames(anno)
         }
         display.columns <- intersect(display.columns, colnames(anno))
-        if (!id.column %in% display.columns) stop(cat(id.column, "not in colnames(anno)."))
+
+        checkThat(id.column, isIn(display.columns))
+
         anno <- anno[, colnames(anno) %in% display.columns]
     }
     display.columns <- colnames(anno)
-    
+
     # Remove any colnames in anno that clash with xlab and ylab
     if (any(colnames(x) %in% display.columns)) {
         display.columns <- setdiff(display.columns, colnames(x))
         anno <- anno[, colnames(anno) %in% display.columns]
     }
- 
+
     glMDPlot.default(data, xval=xlab, yval=ylab,
-                    counts=counts, groups=groups, samples=samples, 
+                    counts=counts, groups=groups, samples=samples,
                     status=status, anno=anno, display.columns=display.columns,
-                    id.column=id.column, xlab=xlab, ylab=ylab, 
+                    id.column=id.column, xlab=xlab, ylab=ylab,
                     side.xlab=side.xlab, side.ylab=side.ylab,
                     sample.cols=sample.cols, cols=cols,
                     jitter=jitter, table=TRUE,

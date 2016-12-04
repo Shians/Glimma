@@ -1,4 +1,4 @@
-checkThat <- function(x, fun, type=c("error", "warning"), msg=NULL) {
+checkThat <- function(x, fun=NULL, type=c("error", "warning"), msg=NULL) {
     type <- match.arg(type)
 
     errMsg <- fun(x)
@@ -6,7 +6,7 @@ checkThat <- function(x, fun, type=c("error", "warning"), msg=NULL) {
 
     if (errMsg != "") {
         if (!is.null(msg)) {
-            errMsg = msg
+            errMsg <- msg
         }
         if (type == "error") {
             stop(errMsg)
@@ -38,7 +38,7 @@ hasCols <- function(...) {
 
         output
     }
-    
+
     outputFun
 }
 
@@ -53,7 +53,7 @@ hasRows <- function(...) {
 
         if (any(!cond)) {
             missingRows <- names(cond)[which(!cond)]
-            errMsg <- paste("Rows:", 
+            errMsg <- paste("Rows:",
                                 paste(quotify(missingRows), collapse=", "),
                                 "not found")
             output <- errMsg
@@ -61,11 +61,19 @@ hasRows <- function(...) {
 
         output
     }
-    
+
     outputFun
 }
 
-isType <- function(x, typecheck, typename) {
+isType <- function(x, typename, typecheck=NULL) {
+    if (is.null(typecheck)) {
+        typecheck <- function(x) {
+            output <- class(x) == typename
+
+            output
+        }
+    }
+
     cond <- all(typecheck(x))
 
     output <- ""
@@ -79,22 +87,30 @@ isType <- function(x, typecheck, typename) {
     output
 }
 
+isClass <- function(typename) {
+    output <- function(x) {
+        isType(x, typename)
+    }
+
+    output
+}
+
 isString <- function(x) {
-    isType(x, is.character, "character")
+    isType(x, "character", is.character)
 }
 
 isCharacter <- isString
 
 isNumeric <- function(x) {
-    isType(x, is.numeric, "numeric")
+    isType(x, "numeric", is.numeric)
 }
 
 isLogical <- function(x) {
-    isType(x, is.logical, "logical")
+    isType(x, "logical", is.logical)
 }
 
 isFactor <- function(x) {
-    isType(x, is.factor, "factor")
+    isType(x, "factor", is.factor)
 }
 
 isUnique <- function(x) {
@@ -140,6 +156,24 @@ sameAs <- function(b) {
         if (!cond) {
             errMsg <- "Arguments should be same value,"
             errMsg <- paste(errMsg, "instead found", a, "vs", b)
+
+            output <- errMsg
+        }
+
+        output
+    }
+
+    outputFun
+}
+
+isIn <- function(b) {
+    outputFun <- function(a) {
+        cond <- a %in% b
+
+        output <- ""
+
+         if (!cond) {
+            errMsg <- "Second argument should contain the first."
 
             output <- errMsg
         }

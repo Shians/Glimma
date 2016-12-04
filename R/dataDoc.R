@@ -6,3 +6,12 @@
 #' @references \url{http://www.sciencedirect.com/science/article/pii/S2213596015301306}
 #' @keywords RNAseq
 NULL
+
+#' Example microarray dataset
+#'
+#' @name arraydata
+#' @docType data
+#' @author
+#' @references
+#' @keywords microarray
+NULL
