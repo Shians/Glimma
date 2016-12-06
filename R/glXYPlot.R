@@ -12,9 +12,9 @@
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colou
 #' @param anno the data.frame containing gene annotations.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
-#' @param id.column the column containing unique identifiers for each gene.
 #' @param xlab the label on the x axis for the left plot.
 #' @param ylab the label on the y axis for the left plot.
+#' @param side.main the column containing mains for right plot.
 #' @param side.xlab the label on the x axis for the right plot.
 #' @param side.ylab the label on the y axis for the right plot.
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
@@ -39,7 +39,7 @@
 #' @examples
 #' data(iris)
 #' \donttest{
-#' glXYPlot(iris$Sepal.Width, iris$Sepal.Length, xlab="Sepal.Width", ylab="Sepal.Length", id.column="PlantID")
+#' glXYPlot(iris$Sepal.Width, iris$Sepal.Length, xlab="Sepal.Width", ylab="Sepal.Length", side.main="PlantID")
 #' }
 #'
 #' @importFrom stats p.adjust
@@ -50,9 +50,9 @@
 
 glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
                         status=rep(0, nrow(data)),
-                        anno=NULL, display.columns=NULL, id.column="GeneID",
+                        anno=NULL, display.columns=NULL,
                         xlab="x", ylab="y",
-                        side.xlab="Group", side.ylab="logCPM",
+                        side.main="GeneID", side.xlab="Group", side.ylab="Expression",
                         sample.cols=rep("#1f77b4", length(groups)),
                         cols=c("#00bfff", "#858585", "#ff3030"),
                         jitter=30,
@@ -93,7 +93,7 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
         } else {
             anno <- data.frame(id=1:nrow(data))
         }
-        colnames(anno) <- id.column
+        colnames(anno) <- side.main
     } else {
         anno <- data.frame(anno)
         if (is.null(display.columns)) {
@@ -101,7 +101,7 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
         }
         display.columns <- intersect(display.columns, colnames(anno))
 
-        checkThat(id.column, isIn(display.columns))
+        checkThat(side.main, isIn(display.columns))
 
         anno <- anno[, colnames(anno) %in% display.columns]
     }
@@ -116,7 +116,7 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
     glMDPlot.default(data, xval=xlab, yval=ylab,
                     counts=counts, groups=groups, samples=samples,
                     status=status, anno=anno, display.columns=display.columns,
-                    id.column=id.column, xlab=xlab, ylab=ylab,
+                    side.main=side.main, xlab=xlab, ylab=ylab,
                     side.xlab=side.xlab, side.ylab=side.ylab,
                     sample.cols=sample.cols, cols=cols,
                     jitter=jitter, table=TRUE,
