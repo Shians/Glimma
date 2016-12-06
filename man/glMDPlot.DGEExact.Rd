@@ -8,11 +8,10 @@
   samples = NULL, status = rep(0, nrow(x)), transform = FALSE,
   side.xlab = "Group", side.ylab = "Expression", side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
-  p.adj.method = "BH", search.by = "Symbols", jitter = 30,
-  id.column = "GeneID", display.columns = NULL, cols = c("#00bfff",
-  "#858585", "#ff3030"), sample.cols = rep("#1f77b4", ncol(counts)),
-  table = TRUE, path = getwd(), folder = "glimma-plots",
-  html = "MD-Plot", launch = TRUE, ...)
+  p.adj.method = "BH", jitter = 30, side.main = "GeneID",
+  display.columns = NULL, cols = c("#00bfff", "#858585", "#ff3030"),
+  sample.cols = rep("#1f77b4", ncol(counts)), path = getwd(),
+  folder = "glimma-plots", html = "MD-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DGEExact object.}
@@ -29,29 +28,25 @@
 
 \item{transform}{TRUE if counts cpm transformed.}
 
-\item{side.xlab}{label for x axis on right side plot.}
+\item{side.xlab}{label for x axis on right plot.}
 
-\item{side.ylab}{label for y axis on right side plot.}
+\item{side.ylab}{label for y axis on right plot.}
 
-\item{side.log}{TRUE to plot expression on the side plot on log scale.}
+\item{side.log}{TRUE to plot expression on the right plot on log scale.}
 
 \item{side.gridstep}{intervals along which to place grid lines on y axis. Currently only available for linear scale.}
 
 \item{p.adj.method}{character vector indicating multiple testing correction method. See \code{\link{p.adjust}} for available methods. (defaults to "BH")}
 
-\item{search.by}{the name of the column which will be used to search for data points. (should contain unique values)}
-
 \item{jitter}{the amount of jitter to apply to the samples in the expressions plot.}
 
-\item{id.column}{the column containing unique identifiers for each gene.}
+\item{side.main}{the column containing mains for right plot.}
 
 \item{display.columns}{character vector containing names of columns to display in mouseover tooltips and table.}
 
 \item{cols}{vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)}
 
 \item{sample.cols}{vector of strings denoting colours for each sample point on the expression plot.}
-
-\item{table}{logical variable for whether a table of the data should appear on the bottom of the HTML page.}
 
 \item{path}{the path in which the folder will be created.}
 
