@@ -6,8 +6,8 @@
 \usage{
 glXYPlot(x, y, counts = NULL, groups = NULL, samples = NULL,
   status = rep(0, nrow(data)), anno = NULL, display.columns = NULL,
-  id.column = "GeneID", xlab = "x", ylab = "y", side.xlab = "Group",
-  side.ylab = "logCPM", sample.cols = rep("#1f77b4", length(groups)),
+  xlab = "x", ylab = "y", side.main = "GeneID", side.xlab = "Group",
+  side.ylab = "Expression", sample.cols = rep("#1f77b4", length(groups)),
   cols = c("#00bfff", "#858585", "#ff3030"), jitter = 30, path = getwd(),
   folder = "glimma-plots", html = "XY-Plot", launch = TRUE, ...)
 }
@@ -28,11 +28,11 @@ glXYPlot(x, y, counts = NULL, groups = NULL, samples = NULL,
 
 \item{display.columns}{character vector containing names of columns to display in mouseover tooltips and table.}
 
-\item{id.column}{the column containing unique identifiers for each gene.}
-
 \item{xlab}{the label on the x axis for the left plot.}
 
 \item{ylab}{the label on the y axis for the left plot.}
+
+\item{side.main}{the column containing mains for right plot.}
 
 \item{side.xlab}{the label on the x axis for the right plot.}
 
@@ -70,7 +70,7 @@ Draw an interactive XY plot with multiple panels
 \examples{
 data(iris)
 \donttest{
-glXYPlot(iris$Sepal.Width, iris$Sepal.Length, xlab="Sepal.Width", ylab="Sepal.Length", id.column="PlantID")
+glXYPlot(iris$Sepal.Width, iris$Sepal.Length, xlab="Sepal.Width", ylab="Sepal.Length", side.main="PlantID")
 }
 
 }
