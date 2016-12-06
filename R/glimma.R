@@ -58,10 +58,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     ##
 
     # Normalise input
-    folder <- ifelse(char(folder, nchar(folder)) == "/" ||
-                    char(folder, nchar(folder)) == "\\",
-                    substring(folder, 1, nchar(folder) - 1),
-                    folder) # If folder ends with /
+    folder <- sanitisePath(folder)
     layout <- round(layout)
 
     # Convert variable arguments into list
@@ -215,4 +212,14 @@ processTable <- function(write.data, data.table) {
     call6.func <- jsMethod("glimma", "layout", "addTable")
     call6 <- jsCall(call6.func, call5)
     write.data(call6)
+}
+
+sanitisePath <- function(folder) {
+    output <- folder
+
+    if (lastChar(folder) == "/" || lastChar(folder) == "\\") {
+        folder <- substring(folder, 1, nchar(folder) - 1)
+    }
+
+    output
 }
