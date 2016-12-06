@@ -160,7 +160,7 @@ glMDPlot(fit, counts=rnaseq$counts, groups=groups.age, transform=FALSE,
   \label{fig:mdsamples}
 \end{figure}
 
-Other arguments to consider for the plot of sample-specific expression include \Rarg{id.column} for the column of gene information that is extracted for the plot's main title, \Rarg{samples} for sample labels, the amount of \Rarg{jitter} applied to points in the plot so that they don't overlap (does not apply when \Rarg{groups} is numerical), \Rarg{side.log} to plot expression on the log-scale (by default this is set to {\sf FALSE}), and \Rarg{side.gridstep} to set intervals along which horizontal grid lines are drawn (the default setting is at 0.5).
+Other arguments to consider for the plot of sample-specific expression include \Rarg{side.main} for the column of gene information that is extracted for the plot's main title, \Rarg{samples} for sample labels, the amount of \Rarg{jitter} applied to points in the plot so that they don't overlap (does not apply when \Rarg{groups} is numerical), \Rarg{side.log} to plot expression on the log-scale (by default this is set to {\sf FALSE}), and \Rarg{side.gridstep} to set intervals along which horizontal grid lines are drawn (the default setting is at 0.5).
 
 For the main plot, genes can be highlighted using the \Rarg{status} argument which contains numeric values of -1 to represent down-regulated genes (colored in blue), 0 for no differential expression (colored in grey), and 1 for up-regulated genes (colored in red). These values can be specified within a numeric vector that is of the same length and ordering of genes in \Rarg{x}. Alternatively, if a matrix is supplied with number of rows matching the number of genes, the column specified by \Rarg{coef} will be used. The colors for highlighting genes can be changed using \Rarg{cols}.
 
@@ -172,7 +172,7 @@ anno <- as.data.frame(cbind(ID, DE))
 head(anno)
 glMDPlot(fit, status=dt, counts=rnaseq$counts, groups=groups,
   cols=c("dodgerblue", "seashell2", "maroon1"), sample.cols=sample.cols, side.gridstep=0.01,
-  anno=anno, display.columns=c("ID", "GeneName", "DE"), id.column="ID")
+  anno=anno, display.columns=c("ID", "GeneName", "DE"), side.main="ID")
 @
 
 \begin{figure}[!ht]
@@ -200,7 +200,7 @@ Since no other information is given to the function, genes are automatically ass
 <<Rxyvolcanomore>>=
 glXYPlot(x=fit$coef[,2], y=fit$lod[,2], xlab="logFC", ylab="logodds",
   anno=anno, counts=rnaseq$counts, groups=groups,
-  status=dt[,2], cols=c("deepskyblue", "seashell3", "firebrick1"), id.column="ID",
+  status=dt[,2], cols=c("deepskyblue", "seashell3", "firebrick1"), side.main="ID",
   sample.cols=sample.cols)
 @
 
@@ -210,7 +210,7 @@ glXYPlot(x=fit$coef[,2], y=fit$lod[,2], xlab="logFC", ylab="logodds",
   \label{fig:volcano}
 \end{figure}
 
-Other arguments in XY plot are analogous to those that are in the MD plot. In brief, \Rarg{status} and \Rarg{cols} are used to highlight DE genes in the main plot; \Rarg{display.columns} specifies the columns that are display within the table; in the plot of sample-specific expression, \Rarg{samples} and \Rarg{sample.cols} labels and colors points that have \Rarg{jitter} applied to avoid overlapping, and where \Rarg{id.column} is used as the main title label.
+Other arguments in XY plot are analogous to those that are in the MD plot. In brief, \Rarg{status} and \Rarg{cols} are used to highlight DE genes in the main plot; \Rarg{display.columns} specifies the columns that are display within the table; in the plot of sample-specific expression, \Rarg{samples} and \Rarg{sample.cols} labels and colors points that have \Rarg{jitter} applied to avoid overlapping, and where \Rarg{side.main} is used as the main title label.
 
 The XY plot allows users to come up with an unlimited number of plotting combinations between any two gene-wise statistcs and relate these to sample-specific expression.
 
@@ -243,7 +243,6 @@ Explain this dataset. Data has already been packaged into an RData object with g
 data(arraydata)
 arrays <- arraydata$arrays
 targets <- arraydata$targets
-arrays <- neqc(arrays)
 expressed <- rowSums(arrays$other$Detection>0.95)!=0
 quality <- !arrays$genes$Quality_score %in% c("Bad", "No match") | is.na(arrays$genes$Quality_score)
 arrays <- arrays[expressed & quality,]
@@ -275,7 +274,7 @@ MD-Plot
 <<Rmd.arrays>>=
 # MD Plot
 glMDPlot(fit, status=dt, counts=arrays$E, groups=targets$Condition,
-  id.column="ProbeID", side.ylab="log-expression", transform=FALSE,
+  side.main="ProbeID", side.ylab="log-expression", transform=FALSE,
   main=colnames(fit)[ncol(fit)])
 @
 
@@ -287,7 +286,7 @@ table2 <- topTable(fit, coef=2, sort.by="none", n=Inf)
 glXYPlot(x=table1$logFC, y=table2$logFC, side.ylab="log-expression", transform=FALSE,
   xlab="logFC", ylab="logFC2",
   counts=arrays$E, groups=targets$Condition,
-  anno=table1[,2:5], id.column="ProbeID")
+  anno=table1[,2:5], side.main="ProbeID")
 @
 
 
