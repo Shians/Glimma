@@ -774,9 +774,18 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
 }
 
+# TODO: Assumption is made that all possible status are present
+# need to generalise such no such assumption is made.
 convertStatusToCols <- function(x, cols) {
-    x <- factor(x, levels=sort(unique(x)))
-    output <- cols[x]
+    if (all(x == 0)) {
+        output <- rep(cols[2], length(x))
+    } else {
+        status.levels <- sort(unique(x))
+        cols <- c(cols[status.levels==0], cols[status.levels!=0])
+        col.levels <- c(0, setdiff(status.levels, 0))
+        x <- factor(x, levels=col.levels)
+        output <- cols[x]
+    }
 
     output
 }
