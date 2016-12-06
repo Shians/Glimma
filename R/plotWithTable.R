@@ -1,7 +1,7 @@
 # Hidden internal functions for use by edgeR and limma based plotting
 plotWithTable <- function(plotting.data, sample.exp, display.columns,
-                            search.by, id.column, default.col, jitter,
-                            table, path, folder, html, launch,
+                            side.main, default.col, jitter,
+                            path, folder, html, launch,
                             xval, yval, xlab, ylab, side.xlab, side.ylab,
                             side.log, side.gridstep,
                             ...) {
@@ -12,15 +12,15 @@ plotWithTable <- function(plotting.data, sample.exp, display.columns,
                            plotting.data[plotting.data$col != default.col, ])
 
     plot1 <- glScatter(plotting.data, xval=xval, yval=yval,
-                    xlab=xlab, idval=id.column,
+                    xlab=xlab, idval=side.main,
                     ylab=ylab,
                     annot=c(display.columns, xval, yval, "Adj.PValue"),
-                    flag="mdplot", ndigits=4, info=list(search.by=search.by),
+                    flag="mdplot", ndigits=4,
                     ...)
 
     if (!is.null(sample.exp)) {
-        link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
-        link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
+        link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=side.main)
+        link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=side.main)
         plot2 <- glScatter(sample.exp, xval="Group",
                         yval=colnames(sample.exp)[4],
                         idval="Sample", xlab=side.xlab, ylab=side.ylab,
@@ -36,40 +36,33 @@ plotWithTable <- function(plotting.data, sample.exp, display.columns,
         plot2 <- NULL
     }
 
-    draw.plots(table, display.columns, search.by, xval, yval,
-                plot1, plot2, link1, link2, path, folder, html,
-                launch)
+    draw.plots(display.columns=display.columns,
+                xval=xval,
+                yval=yval,
+                plot1=plot1,
+                plot2=plot2,
+                link1=link1,
+                link2=link2,
+                path=path,
+                folder=folder,
+                html=html,
+                launch=launch)
 }
 
-draw.plots <- function(table, display.columns, search.by, xval, yval,
+draw.plots <- function(display.columns, xval, yval,
                         plot1, plot2, link1, link2, path, folder, html,
                         launch) {
+    # TODO: Have different columns to tooltip
+    link3 <- gltablink(1, 1, action="highlightById")
+    table1 <- glTable(1, plot1$anno)
+
     if (!is.null(plot2)) {
-        if (table) {
-            # TODO: Have different columns to tooltip
-            link3 <- gltablink(1, 1, action="highlightById")
-            table1 <- glTable(1, plot1$anno)
-            glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
-                path=path, folder=folder, html=html, overwrite=TRUE,
-                launch=launch)
-        } else {
-            button1 <- glAutoinput(1, "highlightBySearch", search.by)
-            glimma(plot1, plot2, button1, link1, link2, layout=c(1, 2),
-                path=path, folder=folder, html=html, overwrite=TRUE,
-                launch=launch)
-        }
+        glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
+            path=path, folder=folder, html=html, overwrite=TRUE,
+            launch=launch)
     } else {
-        if (table) {
-            link3 <- gltablink(1, 1, action="highlightById")
-            table1 <- glTable(1, plot1$anno)
-            glimma(plot1, table1, link3, layout=c(1, 1),
-                path=path, folder=folder, html=html, overwrite=TRUE,
-                launch=launch)
-        } else {
-            button1 <- glAutoinput(1, "highlightBySearch", search.by)
-            glimma(plot1, button1, layout=c(1, 1),
-                path=path, folder=folder, html=html, overwrite=TRUE,
-                launch=launch)
-        }
+        glimma(plot1, table1, link3, layout=c(1, 1),
+            path=path, folder=folder, html=html, overwrite=TRUE,
+            launch=launch)
     }
 }

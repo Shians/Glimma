@@ -22,3 +22,8 @@ test_that("hex colour tools are correct", {
     expect_equal(as.hexcol(1), "#000000")
     expect_equal(as.hexcol(2), "#ff0000")
 })
+
+test_that("unique conversion works", {
+    expect_equal(makeUnique(c(1, 1, 2)), c("1.1", "1.2", "2"))
+    expect_equal(makeUnique(c("a", "a", "b")), c("a.1", "a.2", "b"))
+})

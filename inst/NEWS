@@ -1,6 +1,16 @@
 Glimma News
 
+CHANGES IN Glimma 1.3.0
+
+  * Added highlighting to bars in MDS plot.
+  * Added interaction with table when clicking on points in MD plot.
+  * Changed expressions to default to no transformation.
+  * Changed default colours.
+  * Changed style of table.
+  * Changed size of highlighted points.
+
 CHANGES IN Glimma 1.2.0
+
   * Added option to turn off internal cpm transform (transform=FALSE) in MD Plot.
   * Added gridlines to MD Plot.
   * Added enter to search on MD plot table search box.
@@ -15,10 +25,11 @@ CHANGES IN Glimma 1.2.0
   * Fixed numeric values not working for colours.
 
 CHANGES IN Glimma 1.1.0
-  * Added tables to MD Plot.  
+
+  * Added tables to MD Plot.
 
 CHANGES IN Glimma 1.0.0
-    
+
   * Bioconductor release version.
 
 CHANGES IN Glimma 0.99.4:
@@ -27,7 +38,7 @@ CHANGES IN Glimma 0.99.4:
   * Added DESeqResults method for glMDPlot
 
 CHANGES IN Glimma 0.99.3:
-  
+
   * Imported p.adjust for relevant functions.
 
 CHANGES IN Glimma 0.99.2:
