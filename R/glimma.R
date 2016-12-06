@@ -71,7 +71,6 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 
     # Create file
     index.path <- system.file(package="Glimma", "index.html")
-    img.path <- system.file(package="Glimma", "images")
     js.path <- system.file(package="Glimma", "js")
     css.path <- system.file(package="Glimma", "css")
 
@@ -81,11 +80,6 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 
     write.table(temp, file=file.path(path, folder, paste0(html, ".html")),
                 quote=FALSE, sep="\n", row.names=FALSE, col.names=FALSE)
-
-    file.copy(img.path,
-            file.path(path, folder),
-            recursive=TRUE,
-            overwrite=overwrite)
 
     file.copy(js.path,
             file.path(path, folder),
