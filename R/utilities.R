@@ -14,25 +14,6 @@ printJsonToFile <- function(json, filename, varname) {
     close(file.con)
 }
 
-# Function to get the nth character of a string
-char <- function(string, n) {
-    checkThat(string, isString)
-
-    if (any(abs(n) > nchar(string))) {
-        stop(paste(quotify("n"), "is outside index range"))
-    }
-
-    if (n == 0) {
-        return(rep("", length(string)))
-    }
-
-    if (n < 0) {
-        n <- nchar(string) + n + 1
-    }
-
-    return(substr(string, n, n))
-}
-
 # Function to return filepaths
 pathMaker <- function(path) {
     if (char(path, -1) != "/") {
@@ -45,3 +26,20 @@ pathMaker <- function(path) {
 rmDuplicateCols <- function(x) {
     x[, !duplicated(names(x))]
 }
+
+makeUnique <- function(x) {
+    x <- as.character(x)
+
+    dupes <- x[duplicated(x)]
+    dupes <- unique(dupes)
+
+    for(d in dupes) {
+        dupe_ind <- x == d
+        n_dupe <- sum(dupe_ind)
+        x[dupe_ind] <- paste(x[dupe_ind], 1:n_dupe, sep=".")
+    }
+
+    x
+}
+
+"%!in%" <- function(x, y)!("%in%"(x, y))

@@ -58,10 +58,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     ##
 
     # Normalise input
-    folder <- ifelse(char(folder, nchar(folder)) == "/" ||
-                    char(folder, nchar(folder)) == "\\",
-                    substring(folder, 1, nchar(folder) - 1),
-                    folder) # If folder ends with /
+    folder <- sanitisePath(folder)
     layout <- round(layout)
 
     # Convert variable arguments into list
@@ -74,7 +71,6 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 
     # Create file
     index.path <- system.file(package="Glimma", "index.html")
-    img.path <- system.file(package="Glimma", "images")
     js.path <- system.file(package="Glimma", "js")
     css.path <- system.file(package="Glimma", "css")
 
@@ -84,11 +80,6 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 
     write.table(temp, file=file.path(path, folder, paste0(html, ".html")),
                 quote=FALSE, sep="\n", row.names=FALSE, col.names=FALSE)
-
-    file.copy(img.path,
-            file.path(path, folder),
-            recursive=TRUE,
-            overwrite=overwrite)
 
     file.copy(js.path,
             file.path(path, folder),
@@ -215,4 +206,14 @@ processTable <- function(write.data, data.table) {
     call6.func <- jsMethod("glimma", "layout", "addTable")
     call6 <- jsCall(call6.func, call5)
     write.data(call6)
+}
+
+sanitisePath <- function(folder) {
+    output <- folder
+
+    if (lastChar(folder) == "/" || lastChar(folder) == "\\") {
+        folder <- substring(folder, 1, nchar(folder) - 1)
+    }
+
+    output
 }

@@ -15,6 +15,8 @@ test_that("MD Plot runs for voom", {
     expect_silent(
         glMDPlot(fit, counts=counts, anno=geneanno, groups=genotypes,
             samples=1:6, status=is.de, display.columns=display.columns, launch=FALSE))
+
+    expect_error(glMDPlot(fit, counts=counts, samples=1:2, anno=geneanno, launch=FALSE))
 })
 
 test_that("MD Plot runs for DGELRT", {
@@ -23,7 +25,7 @@ test_that("MD Plot runs for DGELRT", {
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
 
-    expect_silent(glMDPlot(qlf, samples=1:6, anno=geneanno, main="MDPlot", launch=FALSE))
+    expect_silent(glMDPlot(qlf, anno=geneanno, main="MDPlot", launch=FALSE))
 
     expect_silent(glMDPlot(qlf, counts=counts, anno=geneanno,
             samples=1:6, status=is.de, main="MDPlot", launch=FALSE))
@@ -42,8 +44,6 @@ test_that("MD Plot runs for DGEExact", {
     display.columns <- c("Symbols", "GeneID")
 
     expect_silent(glMDPlot(et, main="MDPlot", launch=FALSE))
-
-    expect_silent(glMDPlot(et, samples=1:6, main="MDPlot", launch=FALSE))
 
     expect_silent(glMDPlot(et, counts=counts,
         samples=1:6, status=is.de, main="MDPlot", launch=FALSE))

@@ -67,19 +67,17 @@ glMDPlot <- function(x, ...) {
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param transform TRUE if counts cpm transformed.
-#' @param side.xlab label for x axis on right side plot.
-#' @param side.ylab label for y axis on right side plot.
-#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.main the column containing mains for right plot.
+#' @param side.xlab label for x axis on right plot.
+#' @param side.ylab label for y axis on right plot.
+#' @param side.log TRUE to plot expression on the right plot on log scale.
 #' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param xlab the label on the x axis for the left plot.
 #' @param ylab the label on the y axis for the left plot.
-#' @param search.by the name of the column which will be used to search for data points if table is not used. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param id.column the column containing unique identifiers for each gene.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
-#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -104,15 +102,14 @@ glMDPlot <- function(x, ...) {
 glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
                         groups=NULL, samples=NULL,
                         status=rep(0, nrow(x)), transform=FALSE,
+                        side.main="GeneID",
                         side.xlab="Group", side.ylab="Expression",
                         side.log=FALSE,
                         side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
-                        xlab=xval, ylab=yval,
-                        search.by="Symbols", jitter=30,
-                        id.column="GeneID", display.columns=id.column,
+                        xlab=xval, ylab=yval, jitter=30,
+                        display.columns=side.main,
                         cols=c("#00bfff", "#858585", "#ff3030"),
                         sample.cols=rep("#1f77b4", ncol(counts)),
-                        table=TRUE,
                         path=getwd(), folder="glimma-plots", html="MD-Plot",
                         launch=TRUE, ...) {
 
@@ -121,12 +118,8 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     checkThat(length(status), sameAs(nrow(x)))
 
-    if (id.column %in% colnames(x)) {
-        checkThat(x[[id.column]], isUnique)
-    } else if (id.column %in% colnames(anno)) {
-        checkThat(anno[[id.column]], isUnique)
-    } else {
-        stop(paste("column", quotify(id.column), "cannot be found in x or anno."))
+    if (side.main %!in% union(colnames(anno), colnames(x))) {
+        stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
     }
 
     #
@@ -134,6 +127,12 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     ##
     # Value initialisation
+
+    if (side.main %in% colnames(x)) {
+        x[[side.main]] <- makeUnique(x[[side.main]])
+    } else if (side.main %in% colnames(anno)) {
+        anno[[side.main]] <- makeUnique(anno[[side.main]])
+    }
 
     cols <- convertColsToHex(cols)
 
@@ -157,7 +156,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
+        tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
@@ -177,14 +176,14 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     plot1 <- glScatter(plotting.data, xval=xval, yval=yval,
-                    xlab=xlab, idval=id.column, ylab=ylab,
+                    xlab=xlab, idval=side.main, ylab=ylab,
                     annot=c(display.columns, xval, yval), flag="mdplot",
-                    ndigits=4, info=list(search.by=search.by), ...)
+                    ndigits=4, ...)
 
     if (!is.null(counts)) {
 
-        link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=id.column)
-        link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=id.column)
+        link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=side.main)
+        link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=side.main)
 
         if (side.gridstep) {
             plot2 <- glScatter(sample.exp, xval="Group",
@@ -214,9 +213,17 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         plot2 <- NULL
     }
 
-    draw.plots(table, display.columns, search.by, xval, yval,
-                plot1, plot2, link1, link2, path, folder, html,
-                launch)
+    draw.plots(display.columns=display.columns,
+                xval=xval,
+                yval=yval,
+                plot1=plot1,
+                plot2=plot2,
+                link1=link1,
+                link2=link2,
+                path=path,
+                folder=folder,
+                html=html,
+                launch=launch)
 }
 
 #' Glimma MD Plot
@@ -232,18 +239,16 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param transform TRUE if counts cpm transformed.
-#' @param side.xlab label for x axis on right side plot.
-#' @param side.ylab label for y axis on right side plot.
-#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.main the column containing mains for right plot.
+#' @param side.xlab label for x axis on right plot.
+#' @param side.ylab label for y axis on right plot.
+#' @param side.log TRUE to plot expression on the right plot on log scale.
 #' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param p.adj.method character vector indicating multiple testing correction method. See \code{\link{p.adjust}} for available methods. (defaults to "BH")
-#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param id.column the column containing unique identifiers for each gene.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
-#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -270,11 +275,10 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
                             side.xlab="Group", side.ylab="Expression",
                             side.log=FALSE,
                             side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
-                            p.adj.method="BH", search.by="Symbols", jitter=30,
-                            id.column="GeneID", display.columns=NULL,
+                            p.adj.method="BH", jitter=30,
+                            side.main="GeneID", display.columns=NULL,
                             cols=c("#00bfff", "#858585", "#ff3030"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
-                            table=TRUE,
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
                             launch=TRUE, ...) {
 
@@ -329,7 +333,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
+        tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
@@ -346,10 +350,10 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
         sample.exp <- NULL
     }
 
-    plotWithTable(plotting.data, sample.exp, display.columns, search.by,
-                id.column=id.column, default.col=cols[2], jitter=jitter,
+    plotWithTable(plotting.data, sample.exp, display.columns,
+                side.main=side.main, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
-                table=table, xval=xval, yval=yval,
+                xval=xval, yval=yval,
                 xlab="Average log CPM", ylab="log-fold-change",
                 side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                 side.gridstep=side.gridstep,
@@ -394,19 +398,17 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param transform TRUE if counts cpm transformed.
-#' @param side.xlab label for x axis on right side plot.
-#' @param side.ylab label for y axis on right side plot.
-#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.main the column containing mains for right plot.
+#' @param side.xlab label for x axis on right plot.
+#' @param side.ylab label for y axis on right plot.
+#' @param side.log TRUE to plot expression on the right plot on log scale.
 #' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
 #' @param coef integer or character index vector indicating which column of object to plot.
 #' @param p.adj.method character vector indicating multiple testing correction method. See \code{\link{p.adjust}} for available methods. (defaults to "BH")
-#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param id.column the column containing unique identifiers for each gene.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
-#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -460,15 +462,15 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
                             groups=NULL, samples=NULL,
                             status=rep(0, nrow(x)), transform=FALSE,
+                            side.main="GeneID",
                             side.xlab="Group", side.ylab="Expression",
                             side.log=FALSE,
                             side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
                             coef=ncol(x$coefficients),
-                            p.adj.method="BH", search.by="Symbols", jitter=30,
-                            id.column="GeneID", display.columns=NULL,
+                            p.adj.method="BH", jitter=30,
+                            display.columns=NULL,
                             cols=c("#00bfff", "#858585", "#ff3030"),
                             sample.cols=rep("#1f77b4", ncol(counts)),
-                            table=TRUE,
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
                             launch=TRUE, ...) {
 
@@ -539,7 +541,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     }
 
     if (!is.null(counts)) {
-        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
+        tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
@@ -556,10 +558,10 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         sample.exp <- NULL
     }
 
-    plotWithTable(plotting.data, sample.exp, display.columns, search.by,
-                id.column=id.column, default.col=cols[2], jitter=jitter,
+    plotWithTable(plotting.data, sample.exp, display.columns,
+                side.main=side.main, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
-                table=table, xval=xval, yval=yval,
+                xval=xval, yval=yval,
                 xlab="Average log CPM", ylab="log-fold-change",
                 side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                 side.gridstep=side.gridstep,
@@ -578,17 +580,15 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 #' @param samples the names of the samples.
 #' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.
 #' @param transform TRUE if counts cpm transformed.
-#' @param side.xlab label for x axis on right side plot.
-#' @param side.ylab label for y axis on right side plot.
-#' @param side.log TRUE to plot expression on the side plot on log scale.
+#' @param side.main the column containing mains for right plot.
+#' @param side.xlab label for x axis on right plot.
+#' @param side.ylab label for y axis on right plot.
+#' @param side.log TRUE to plot expression on the right plot on log scale.
 #' @param side.gridstep intervals along which to place grid lines on y axis. Currently only available for linear scale.
-#' @param search.by the name of the column which will be used to search for data points. (should contain unique values)
 #' @param jitter the amount of jitter to apply to the samples in the expressions plot.
-#' @param id.column the column containing unique identifiers for each gene.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param cols vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)
 #' @param sample.cols vector of strings denoting colours for each sample point on the expression plot.
-#' @param table logical variable for whether a table of the data should appear on the bottom of the HTML page.
 #' @param path the path in which the folder will be created.
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
@@ -615,12 +615,10 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
                                 side.xlab="Group", side.ylab="logMean",
                                 side.log=FALSE,
                                 side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
-                                search.by="Symbols",
-                                jitter=30, id.column="GeneID",
+                                jitter=30, side.main="GeneID",
                                 display.columns=NULL,
                                 cols=c("#00bfff", "#858585", "#ff3030"),
                                 sample.cols=rep("#1f77b4", ncol(x)),
-                                table=TRUE,
                                 path=getwd(), folder="glimma-plots",
                                 html="MD-Plot", launch=TRUE, ...) {
 
@@ -663,17 +661,17 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     bg.col <- cols[2]
     plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
-    tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
+    tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
     sample.exp <- data.frame(Sample = samples,
                              col = as.hexcol(sample.cols),
                              Group = factor(groups),
                              tr.counts)
 
-    plotWithTable(plotting.data, sample.exp, display.columns, search.by,
-                    id.column=id.column, default.col=cols[2], jitter=jitter,
+    plotWithTable(plotting.data, sample.exp, display.columns,
+                    side.main=side.main, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
-                    table=table, xval=xval, yval=yval,
+                    xval=xval, yval=yval,
                     xlab="Mean Expression", ylab="log-fold-change",
                     side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                     side.gridstep=side.gridstep,
@@ -710,12 +708,10 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                                 side.xlab="Group", side.ylab="Expression",
                                 side.log=FALSE,
                                 side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
-                                search.by="Symbols",
-                                jitter=30, id.column="GeneID",
+                                jitter=30, side.main="GeneID",
                                 display.columns=NULL,
                                 cols=c("#00bfff", "#858585", "#ff3030"),
                                 sample.cols=rep("#1f77b4", ncol(counts)),
-                                table=TRUE,
                                 path=getwd(), folder="glimma-plots",
                                 html="MD-Plot", launch=TRUE, ...) {
 
@@ -757,7 +753,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     bg.col <- cols[2]
     plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
     if (!is.null(counts)) {
-        tr.counts <- transformCounts(counts, transform, plotting.data[[id.column]])
+        tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         sample.exp <- data.frame(Sample = samples,
                                  col = as.hexcol(sample.cols),
@@ -767,10 +763,10 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
         sample.exp <- NULL
     }
 
-    plotWithTable(plotting.data, sample.exp, display.columns, search.by,
-                    id.column=id.column, default.col=cols[2], jitter=jitter,
+    plotWithTable(plotting.data, sample.exp, display.columns,
+                    side.main=side.main, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
-                    table=table, xval=xval, yval=yval,
+                    xval=xval, yval=yval,
                     xlab="Mean Expression", ylab="log-fold-change",
                     side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                     side.gridstep=side.gridstep,
@@ -778,9 +774,18 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
 }
 
+# TODO: Assumption is made that all possible status are present
+# need to generalise such no such assumption is made.
 convertStatusToCols <- function(x, cols) {
-    x <- factor(x, levels=sort(unique(x)))
-    output <- cols[x]
+    if (all(x == 0)) {
+        output <- rep(cols[2], length(x))
+    } else {
+        status.levels <- sort(unique(x))
+        cols <- c(cols[status.levels==0], cols[status.levels!=0])
+        col.levels <- c(0, setdiff(status.levels, 0))
+        x <- factor(x, levels=col.levels)
+        output <- cols[x]
+    }
 
     output
 }
@@ -817,6 +822,7 @@ setDisplayColumns <- function(display.columns, anno, xval, yval) {
         display.columns <- display.columns[display.columns != xval]
         display.columns <- display.columns[display.columns != yval]
     }
+
     output <- display.columns
 
     output
