@@ -8,8 +8,8 @@ plotWithTable <- function(plotting.data, sample.exp, display.columns,
 
     # Reordering so that significant points appear on top of insignificant
     # points.
-    plotting.data <- rbind(plotting.data[plotting.data$col == default.col, ],
-                           plotting.data[plotting.data$col != default.col, ])
+    plotting.data <- rbind(plotting.data[plotting.data$cols == default.col, ],
+                           plotting.data[plotting.data$cols != default.col, ])
 
     plot1 <- glScatter(plotting.data, xval=xval, yval=yval,
                     xlab=xlab, idval=side.main,
@@ -26,7 +26,7 @@ plotWithTable <- function(plotting.data, sample.exp, display.columns,
                         idval="Sample", xlab=side.xlab, ylab=side.ylab,
                         main=colnames(sample.exp)[4],
                         annot=c("Sample", colnames(sample.exp)[4]),
-                        colval="col", log=ifelse(side.log, "y", ""),
+                        colval="cols", log=ifelse(side.log, "y", ""),
                         annot.lab=c("Sample", side.ylab), x.jitter = jitter,
                         ndigits=4, hide=TRUE, ystep=side.gridstep,
                         ygrid=TRUE)

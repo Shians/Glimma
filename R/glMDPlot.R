@@ -118,6 +118,10 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     checkThat(length(status), sameAs(nrow(x)))
 
+    if (!is.null(anno)) {
+        checkThat(nrow(anno), sameAs(nrow(x)))
+    }
+
     if (side.main %!in% union(colnames(anno), colnames(x))) {
         stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
     }
@@ -147,12 +151,12 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     jitter <- ifelse(is.numeric(groups), 0, jitter)
 
-    col <- convertStatusToCols(status, cols)
+    cols <- convertStatusToCols(status, cols)
 
     if (is.null(anno)) {
-        plotting.data <- data.frame(x, col = col)
+        plotting.data <- data.frame(x, cols = cols)
     } else {
-        plotting.data <- data.frame(anno, x, col = col)
+        plotting.data <- data.frame(anno, x, cols = cols)
     }
 
     if (!is.null(counts)) {
@@ -160,12 +164,12 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
-                                 col = as.hexcol(sample.cols),
+                                 cols = as.hexcol(sample.cols),
                                  Group = groups,
                                  tr.counts)
         } else {
             sample.exp <- data.frame(Sample = samples,
-                                 col = as.hexcol(sample.cols),
+                                 cols = as.hexcol(sample.cols),
                                  Group = factor(groups),
                                  tr.counts)
         }
@@ -190,7 +194,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
                                 yval=colnames(sample.exp)[4],
                                 xlab=side.xlab, ylab=side.ylab,
                                 main=colnames(sample.exp)[4],
-                                colval="col",
+                                colval="cols",
                                 annot=c("Sample", colnames(sample.exp)[4]),
                                 annot.lab=c("Sample", "logCPM"),
                                 x.jitter = jitter,
@@ -201,7 +205,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
                                 yval=colnames(sample.exp)[4],
                                 xlab=side.xlab, ylab=side.ylab,
                                 main=colnames(sample.exp)[4],
-                                colval="col",
+                                colval="cols",
                                 annot=c("Sample", colnames(sample.exp)[4]),
                                 annot.lab=c("Sample", "logCPM"),
                                 x.jitter = jitter,
@@ -287,6 +291,10 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     checkThat(length(status), sameAs(nrow(x)))
 
+    if (!is.null(anno)) {
+        checkThat(nrow(anno), sameAs(nrow(x)))
+    }
+
     checkCountsAndSamples(counts, samples, side.log)
 
     #
@@ -320,14 +328,14 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     #
     ##
 
-    col <- convertStatusToCols(status, cols)
+    cols <- convertStatusToCols(status, cols)
 
     if (is.null(anno)) {
-        plotting.data <- data.frame(x$table, col = col,
+        plotting.data <- data.frame(x$table, cols = cols,
                                     Adj.PValue = stats::p.adjust(x$table$PValue,
                                     method = p.adj.method))
     } else {
-        plotting.data <- data.frame(anno, x$table, col = col,
+        plotting.data <- data.frame(anno, x$table, cols = cols,
                                     Adj.PValue = stats::p.adjust(x$table$PValue,
                                     method = p.adj.method))
     }
@@ -337,12 +345,12 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
-                                     col = as.hexcol(sample.cols),
+                                     cols = as.hexcol(sample.cols),
                                      Group = groups,
                                      tr.counts)
         } else {
             sample.exp <- data.frame(Sample = samples,
-                                     col = as.hexcol(sample.cols),
+                                     cols = as.hexcol(sample.cols),
                                      Group = factor(groups),
                                      tr.counts)
         }
@@ -483,6 +491,10 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         checkThat(nrow(status), sameAs(nrow(x)))
     }
 
+    if (!is.null(anno)) {
+        checkThat(nrow(anno), sameAs(nrow(x)))
+    }
+
     checkCountsAndSamples(counts, samples, side.log)
 
     #
@@ -522,19 +534,19 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     #
     ##
 
-    col <- convertStatusToCols(status, cols)
+    cols <- convertStatusToCols(status, cols)
 
     Adj.PValue <- stats::p.adjust(x$p.value[, coef], method=p.adj.method)
     if (is.null(anno)) {
         plotting.data <- data.frame(logFC = x$coefficients[, coef],
                                      logCPM = x$Amean,
-                                     col = col,
+                                     cols = cols,
                                      PValue = x$p.value[, coef],
                                      Adj.PValue = Adj.PValue)
     } else {
         plotting.data <- data.frame(logFC = x$coefficients[, coef],
                                      logCPM = x$Amean,
-                                     col = col,
+                                     cols = cols,
                                      PValue = x$p.value[, coef],
                                      Adj.PValue = Adj.PValue,
                                      anno)
@@ -545,12 +557,12 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 
         if (is(groups, "numeric")) {
             sample.exp <- data.frame(Sample = samples,
-                                     col = as.hexcol(sample.cols),
+                                     cols = as.hexcol(sample.cols),
                                      Group = groups,
                                      tr.counts)
         } else {
             sample.exp <- data.frame(Sample = samples,
-                                     col = as.hexcol(sample.cols),
+                                     cols = as.hexcol(sample.cols),
                                      Group = factor(groups),
                                      tr.counts)
         }
@@ -628,6 +640,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     # Input checking
 
     checkThat(length(status), sameAs(nrow(x)))
+    checkThat(nrow(anno), sameAs(nrow(x)))
 
     checkCountsAndSamples(counts, samples, side.log)
 
@@ -649,11 +662,16 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     res <- DESeq2::results(x)
     res.df <- as.data.frame(res)
 
-    col <- convertStatusToCols(status, cols)
+    res.df <- res.df[!delRows, ]
+    anno <- anno[!delRows, ]
+    counts <- counts[!delRows, ]
+    status <- status[!delRows]
+
+    cols <- convertStatusToCols(status, cols)
 
     plotting.data <- data.frame(logFC = res.df$log2FoldChange,
                                  logMean = log(res.df$baseMean + 0.5),
-                                 col = col,
+                                 cols = cols,
                                  PValue = res.df$pvalue,
                                  Adj.PValue = res.df$padj,
                                  anno)
@@ -664,7 +682,7 @@ glMDPlot.DESeqDataSet <- function(x, anno, groups, samples,
     tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
     sample.exp <- data.frame(Sample = samples,
-                             col = as.hexcol(sample.cols),
+                             cols = as.hexcol(sample.cols),
                              Group = factor(groups),
                              tr.counts)
 
@@ -719,6 +737,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     # Input checking
 
     checkThat(length(status), sameAs(nrow(x)))
+    checkThat(nrow(anno), sameAs(nrow(x)))
 
     checkCountsAndSamples(counts, samples, side.log)
 
@@ -739,13 +758,18 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     res <- x
     res.df <- as.data.frame(res)
-    counts <- counts
+    delRows <- naRowInds(res.df, "log2FoldChange", "padj")
 
-    col <- convertStatusToCols(status, cols)
+    res.df <- res.df[!delRows, ]
+    anno <- anno[!delRows, ]
+    counts <- counts[!delRows, ]
+    status <- status[!delRows]
+
+    cols <- convertStatusToCols(status, cols)
 
     plotting.data <- data.frame(logFC = res.df$log2FoldChange,
                                  logMean = log(res.df$baseMean + 0.5),
-                                 col = col,
+                                 cols = cols,
                                  PValue = res.df$pvalue,
                                  Adj.PValue = res.df$padj,
                                  anno)
@@ -756,7 +780,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         sample.exp <- data.frame(Sample = samples,
-                                 col = as.hexcol(sample.cols),
+                                 cols = as.hexcol(sample.cols),
                                  Group = factor(groups),
                                  tr.counts)
     } else {
@@ -782,8 +806,8 @@ convertStatusToCols <- function(x, cols) {
     } else {
         status.levels <- sort(unique(x))
         cols <- c(cols[status.levels==0], cols[status.levels!=0])
-        col.levels <- c(0, setdiff(status.levels, 0))
-        x <- factor(x, levels=col.levels)
+        cols.levels <- c(0, setdiff(status.levels, 0))
+        x <- factor(x, levels=cols.levels)
         output <- cols[x]
     }
 
@@ -838,8 +862,8 @@ initialiseGroups <- function(n) {
 }
 
 sortInsigPointsToTop <- function(plotting.data, bg.col) {
-    output <- rbind(plotting.data[plotting.data$col == bg.col, ],
-                    plotting.data[plotting.data$col != bg.col, ])
+    output <- rbind(plotting.data[plotting.data$cols == bg.col, ],
+                    plotting.data[plotting.data$cols != bg.col, ])
 
     output
 }
@@ -868,4 +892,17 @@ checkCountsAndSamples <- function(counts, samples, side.log=FALSE) {
             stop("Zeros in expression matrix cannot be plotted on log-scale, consider adding small offset.")
         }
     }
+}
+
+naRowInds <- function(res.df, ...) {
+    res.df <- data.frame(res.df)
+    filterCols <- unlist(list(...))
+
+    delRows <- rep(FALSE, nrow(res.df))
+
+    for (cols in filterCols) {
+        delRows <- delRows | is.na(res.df[, cols])
+    }
+
+    delRows
 }
