@@ -183,3 +183,18 @@ isIn <- function(b) {
 
     outputFun
 }
+
+notNull <- function(x) {
+    cond <- is.null(x)
+
+    output <- ""
+
+    if (cond) {
+        errMsg <- paste("Argument must not be NULL")
+
+        output <- errMsg
+    }
+
+    output
+
+}
