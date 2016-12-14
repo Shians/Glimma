@@ -1,7 +1,7 @@
 Package: Glimma
 Type: Package
 Title: Interactive HTML graphics
-Version: 1.3.8
+Version: 1.3.9
 Date: 2016-02-29
 Author: Shian Su, Matt Ritchie, Charity Law
 Maintainer: Shian Su <su.s@wehi.edu.au>
