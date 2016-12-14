@@ -18,11 +18,3 @@ source("https://bioconductor.org/biocLite.R")
 useDevel()
 biocLite("Glimma")
 ```
-
-### Using Devtools
-The developmental version of the package can also be installed directly from GitHub using the [devtools](https://github.com/hadley/devtools) package.
-
-```r
-install.packages("devtools")
-devtools::install_github("Shians/Glimma")
-```
