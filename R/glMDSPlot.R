@@ -4,8 +4,17 @@
 #'
 #' @author Shian Su, Gordon Smyth
 #'
-#' @param x the data.frame containing data to plot.
-#' @param ... additional arguments affecting the plots produced. See specific methods for detailed arguments.
+#' @param x the matrix containing the gene expressions.
+#' @param top the number of top most variable genes to use.
+#' @param labels the labels for each sample.
+#' @param groups the experimental group to which samples belong.
+#' @param gene.selection "pairwise" if most variable genes are to be chosen for each pair of samples or "common" to select the same genes for all comparisons.
+#' @param main the title of the plot.
+#' @param path the path in which the folder will be created.
+#' @param folder the name of the fold to save html file to.
+#' @param html the name of the html file to save plots to.
+#' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments.
 #'
 #' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
 #'
@@ -30,17 +39,8 @@ glMDSPlot <- function(x, ...) {
 #'
 #' @author Shian Su, Gordon Smyth
 #'
+#' @inheritParams glMDSPlot
 #' @param x the matrix containing the gene expressions.
-#' @param top the number of top most variable genes to use.
-#' @param labels the labels for each sample.
-#' @param groups the experimental group to which samples belong.
-#' @param gene.selection "pairwise" if most variable genes are to be chosen for each pair of samples or "common" to select the same genes for all comparisons.
-#' @param main the title of the plot.
-#' @param path the path in which the folder will be created.
-#' @param folder the name of the fold to save html file to.
-#' @param html the name of the html file to save plots to.
-#' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments.
 #'
 #' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
 #'
@@ -158,17 +158,8 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
 #'
 #' @author Shian Su, Gordon Smyth
 #'
+#' @inheritParams glMDSPlot.default
 #' @param x the DGEList containing the gene expressions.
-#' @param top the number of top most variable genes to use.
-#' @param labels the labels for each sample.
-#' @param groups the experimental group to which samples belong.
-#' @param gene.selection "pairwise" if most variable genes are to be chosen for each pair of samples or "common" to select the same genes for all comparisons.
-#' @param main the title of the plot.
-#' @param path the path in which the folder will be created.
-#' @param folder the name of the fold to save html file to.
-#' @param html the name of the html file to save plots to.
-#' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments.
 #'
 #' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
 #'

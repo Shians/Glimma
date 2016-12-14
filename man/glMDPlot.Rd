@@ -9,15 +9,59 @@ glMDPlot(x, ...)
 \arguments{
 \item{x}{the DE object to plot.}
 
-\item{...}{additional arguments affecting the plots produced. See specific methods for detailed arguments.}
+\item{...}{additional arguments affecting the plots produced. See specific
+methods for detailed arguments.}
+
+\item{anno}{the data.frame containing gene annotations.}
+
+\item{groups}{the factor containing experimental groups of the samples.}
+
+\item{samples}{the names of the samples.}
+
+\item{status}{vector giving the control status of data point, of same length
+as the number of rows of object. If NULL, then all points are plotted in
+the default colour.}
+
+\item{transform}{TRUE if counts cpm transformed.}
+
+\item{side.main}{the column containing mains for right plot.}
+
+\item{side.xlab}{label for x axis on right plot.}
+
+\item{side.ylab}{label for y axis on right plot.}
+
+\item{side.log}{TRUE to plot expression on the right plot on log scale.}
+
+\item{side.gridstep}{intervals along which to place grid lines on y axis.
+Currently only available for linear scale.}
+
+\item{jitter}{the amount of jitter to apply to the samples in the expressions
+plot.}
+
+\item{display.columns}{character vector containing names of columns to
+display in mouseover tooltips and table.}
+
+\item{cols}{vector of strings denoting colours corresponding to control
+status -1, 0 and 1. (may be R named colours or Hex values)}
+
+\item{sample.cols}{vector of strings denoting colours for each sample point
+on the expression plot.}
+
+\item{path}{the path in which the folder will be created.}
+
+\item{folder}{the name of the fold to save html file to.}
+
+\item{html}{the name of the html file to save plots to.}
+
+\item{launch}{TRUE to launch plot after call.}
 }
 \value{
 Draws a two-panel interactive MD plot in an html page. The left plot
-shows the log-fold-change vs average expression. The right plot shows the
-expression levels of a particular gene of each sample. Hovering over points
-on left plot will plot expression level for corresponding gene, clicking
-on points will fix the expression plot to gene. Clicking on rows on the table
-has the same effect as clicking on the corresponding gene in the plot.
+  shows the log-fold-change vs average expression. The right plot shows the
+  expression levels of a particular gene of each sample. Hovering over points
+  on left plot will plot expression level for corresponding gene, clicking on
+  points will fix the expression plot to gene. Clicking on rows on the table
+  has the same effect as clicking on the corresponding gene in the plot.
 }
 \description{
 Draw an interactive MD plot
@@ -57,6 +101,8 @@ glMDPlot(vfit, counts=x$counts, anno=x$genes, groups=genotype, samples=1:7,
 Shian Su
 }
 \seealso{
-\code{\link{glMDPlot.default}}, \code{\link{glMDPlot.DGELRT}}, \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}}, \code{\link{glMDPlot.DESeqDataSet}}
+\code{\link{glMDPlot.default}}, \code{\link{glMDPlot.DGELRT}},
+  \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}},
+  \code{\link{glMDPlot.DESeqDataSet}}
 }
 

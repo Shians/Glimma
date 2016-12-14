@@ -21,15 +21,15 @@
 
 \item{yval}{the column to plot on y axis of left plot.}
 
-\item{counts}{the matrix containing all counts.}
-
 \item{anno}{the data.frame containing gene annotations.}
 
 \item{groups}{the factor containing experimental groups of the samples.}
 
 \item{samples}{the names of the samples.}
 
-\item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour.}
+\item{status}{vector giving the control status of data point, of same length
+as the number of rows of object. If NULL, then all points are plotted in
+the default colour.}
 
 \item{transform}{TRUE if counts cpm transformed.}
 
@@ -41,19 +41,20 @@
 
 \item{side.log}{TRUE to plot expression on the right plot on log scale.}
 
-\item{side.gridstep}{intervals along which to place grid lines on y axis. Currently only available for linear scale.}
+\item{side.gridstep}{intervals along which to place grid lines on y axis.
+Currently only available for linear scale.}
 
-\item{xlab}{the label on the x axis for the left plot.}
+\item{jitter}{the amount of jitter to apply to the samples in the expressions
+plot.}
 
-\item{ylab}{the label on the y axis for the left plot.}
+\item{display.columns}{character vector containing names of columns to
+display in mouseover tooltips and table.}
 
-\item{jitter}{the amount of jitter to apply to the samples in the expressions plot.}
+\item{cols}{vector of strings denoting colours corresponding to control
+status -1, 0 and 1. (may be R named colours or Hex values)}
 
-\item{display.columns}{character vector containing names of columns to display in mouseover tooltips and table.}
-
-\item{cols}{vector of strings denoting colours corresponding to control status -1, 0 and 1. (may be R named colours or Hex values)}
-
-\item{sample.cols}{vector of strings denoting colours for each sample point on the expression plot.}
+\item{sample.cols}{vector of strings denoting colours for each sample point
+on the expression plot.}
 
 \item{path}{the path in which the folder will be created.}
 
@@ -63,15 +64,16 @@
 
 \item{launch}{TRUE to launch plot after call.}
 
-\item{...}{additional arguments to be passed onto the MD plot. (main, xlab, ylab can be set for the left plot)}
+\item{...}{additional arguments affecting the plots produced. See specific
+methods for detailed arguments.}
 }
 \value{
 Draws a two-panel interactive MD plot in an html page. The left plot
-shows the log-fold-change vs average expression. The right plot shows the
-expression levels of a particular gene of each sample. Hovering over points
-on left plot will plot expression level for corresponding gene, clicking
-on points will fix the expression plot to gene. Clicking on rows on the table
-has the same effect as clicking on the corresponding gene in the plot.
+  shows the log-fold-change vs average expression. The right plot shows the
+  expression levels of a particular gene of each sample. Hovering over points
+  on left plot will plot expression level for corresponding gene, clicking on
+  points will fix the expression plot to gene. Clicking on rows on the table
+  has the same effect as clicking on the corresponding gene in the plot.
 }
 \description{
 Draw an interactive MD plot from a data.frame
