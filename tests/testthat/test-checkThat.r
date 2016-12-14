@@ -41,4 +41,10 @@ test_that("Checking functions are correct", {
 
     expect_that(checkThat("a", isIn(c("a", "b", "c"))), is_true())
     expect_that(checkThat("d", isIn(c("a", "b", "c"))), throws_error())
+
+    expect_error(checkThat(NULL, notNull))
+    expect_equal(checkThat(1, notNull), TRUE)
+    expect_equal(checkThat(c(1, 2), notNull), TRUE)
+    expect_equal(checkThat("NULL", notNull), TRUE)
+    expect_equal(checkThat(c("NULL", "b"), notNull), TRUE)
 })
