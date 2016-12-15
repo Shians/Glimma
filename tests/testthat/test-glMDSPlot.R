@@ -25,11 +25,10 @@ test_that("MDS Plot runs for DGEList", {
     expect_silent(glMDSPlot(all_counts, groups=groups, launch=FALSE))
 })
 
-test_that("MDS Plot runs", {
+test_that("MDS Plot runs for DESeqDataSet", {
     load("test_data_MDS_DESeq.rda")
 
     expect_silent(glMDSPlot(dds, launch=FALSE))
-
 })
 
 unlink("glimma-plots", recursive=TRUE)

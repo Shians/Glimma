@@ -193,8 +193,6 @@ glMDSPlot.DGEList <- function (x, top=500, labels=NULL,
 #'
 #' @method glMDSPlot DESeqDataSet
 #'
-#' @importFrom DESeq2 DESeqDataSet counts
-#'
 #' @export
 glMDSPlot.DESeqDataSet <- function (x, top=500, labels=NULL,
                             groups=rep(1, ncol(x)), gene.selection="pairwise",
@@ -204,8 +202,8 @@ glMDSPlot.DESeqDataSet <- function (x, top=500, labels=NULL,
     labels <- getLabels(x, labels)
     transformedCounts <- edgeR::cpm(DESeq2::counts(x), log=TRUE)
 
-    if (not.null(dds@colData)) {
-        groups <- dds@colData
+    if (not.null(x@colData)) {
+        groups <- S4Vectors::as.data.frame.DataTable(x@colData)
     }
 
     glMDSPlot.default(transformedCounts, top=500, labels=labels, groups=groups,

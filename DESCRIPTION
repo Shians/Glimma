@@ -19,6 +19,7 @@ Imports:
     jsonlite,
     methods,
     stats,
+    S4Vectors,
     utils
 Suggests:
     BiocStyle,
