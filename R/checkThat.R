@@ -5,7 +5,7 @@ checkThat <- function(x, fun=NULL, type=c("error", "warning"), msg=NULL) {
     output <- TRUE
 
     if (errMsg != "") {
-        if (!is.null(msg)) {
+        if (not.null(msg)) {
             errMsg <- msg
         }
         if (type == "error") {

@@ -155,7 +155,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         plotting.data <- data.frame(anno, x, cols = cols)
     }
 
-    if (!is.null(counts)) {
+    if (not.null(counts)) {
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         if (is(groups, "numeric")) {
@@ -180,7 +180,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
                     annot=c(display.columns, xval, yval), flag="mdplot",
                     ndigits=4, ...)
 
-    if (!is.null(counts)) {
+    if (not.null(counts)) {
 
         link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=side.main)
         link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=side.main)
@@ -264,7 +264,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     checkThat(length(status), sameAs(nrow(x)))
 
-    if (!is.null(anno)) {
+    if (not.null(anno)) {
         checkThat(nrow(anno), notNull)
         checkThat(nrow(x), notNull)
         checkThat(nrow(anno), sameAs(nrow(x)))
@@ -285,8 +285,8 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     if (is.null(samples)) {
-        if (!is.null(counts)) {
-            if (!is.null(colnames(counts))) {
+        if (not.null(counts)) {
+            if (not.null(colnames(counts))) {
                 samples <- colnames(counts)
             } else {
                 samples <- 1:ncol(counts)
@@ -315,7 +315,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
                                     method = p.adj.method))
     }
 
-    if (!is.null(counts)) {
+    if (not.null(counts)) {
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         if (is(groups, "numeric")) {
@@ -437,7 +437,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         checkThat(nrow(status), sameAs(nrow(x)))
     }
 
-    if (!is.null(anno)) {
+    if (not.null(anno)) {
         checkThat(nrow(anno), notNull)
         checkThat(nrow(x), notNull)
         checkThat(nrow(anno), sameAs(nrow(x)))
@@ -457,15 +457,15 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     cols <- convertColsToHex(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
-    if (!is.null(ncol(status))) {
+    if (not.null(ncol(status))) {
         if (ncol(status) > 1) {
             status <- status[, coef]
         }
     }
 
     if (is.null(samples)) {
-        if (!is.null(counts)) {
-            if (!is.null(colnames(counts))) {
+        if (not.null(counts)) {
+            if (not.null(colnames(counts))) {
                 samples <- colnames(counts)
             } else {
                 samples <- 1:ncol(counts)
@@ -500,7 +500,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
                                      anno)
     }
 
-    if (!is.null(counts)) {
+    if (not.null(counts)) {
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         if (is(groups, "numeric")) {
@@ -700,7 +700,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 
     bg.col <- cols[2]
     plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
-    if (!is.null(counts)) {
+    if (not.null(counts)) {
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         sample.exp <- data.frame(Sample = samples,
@@ -748,12 +748,12 @@ makeAnno <- function(x, anno) {
 
         warning("No gene annotation provided.")
 
-    } else if (!is.null(anno) && !is.null(x$genes)) {
+    } else if (not.null(anno) && not.null(x$genes)) {
 
         anno <- cbind(anno, x$genes)
         anno <- rmDuplicateCols(anno)
 
-    } else if (!is.null(x$genes)) {
+    } else if (not.null(x$genes)) {
 
         anno <- x$genes
 
@@ -778,7 +778,7 @@ setDisplayColumns <- function(display.columns, anno, xval, yval) {
 
 initialiseGroups <- function(n) {
     output <- NULL
-    if (!is.null(n)) {
+    if (not.null(n)) {
         output <- 1:n
     }
 
@@ -786,8 +786,8 @@ initialiseGroups <- function(n) {
 }
 
 sortInsigPointsToTop <- function(plotting.data, bg.col) {
-    output <- rbind(plotting.data[plotting.data$cols == bg.col, ],
-                    plotting.data[plotting.data$cols != bg.col, ])
+    output <- rbind(getRows(plotting.data, plotting.data$cols == bg.col),
+                    getRows(plotting.data, plotting.data$cols != bg.col))
 
     output
 }
@@ -807,8 +807,8 @@ transformCounts <- function(counts, transform, colnames=colnames(counts)) {
 }
 
 checkCountsAndSamples <- function(counts, samples, side.log=FALSE) {
-    if (!is.null(counts)) {
-        if (!is.null(samples)) {
+    if (not.null(counts)) {
+        if (not.null(samples)) {
             checkThat(ncol(counts), sameAs(length(samples)))
         }
 
@@ -832,7 +832,7 @@ naRowInds <- function(res.df, ...) {
 }
 
 checkObjAnnoCountsShapes <- function(anno, counts, x) {
-	if (!is.null(anno)) {
+	if (not.null(anno)) {
 		checkThat(nrow(anno), notNull)
 		checkThat(nrow(x), notNull)
 		checkThat(nrow(anno), sameAs(nrow(x)))

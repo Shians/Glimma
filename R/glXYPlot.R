@@ -68,7 +68,7 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
     colnames(data) <- c(xlab, ylab)
 
     # Check input data
-    if (!is.null(counts)) {
+    if (not.null(counts)) {
         checkThat(nrow(counts), sameAs(nrow(data)))
 
         if (is.null(groups)) {
@@ -88,7 +88,7 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
 
     # Check and create annotation
     if (is.null(anno)) {
-        if (!is.null(counts)) {
+        if (not.null(counts)) {
             anno <- data.frame(id=rownames(counts))
         } else {
             anno <- data.frame(id=1:nrow(data))

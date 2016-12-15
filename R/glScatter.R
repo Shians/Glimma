@@ -82,11 +82,11 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
     checkThat(xval, isIn(names(x)))
     checkThat(yval, isIn(names(x)))
 
-    if (!is.null(colval)) {
+    if (not.null(colval)) {
         checkThat(colval, isIn(names(x)))
     }
 
-    if (!is.null(idval)) {
+    if (not.null(idval)) {
         checkThat(idval, isIn(names(x)))
     }
     # TODO: Ensure uniqueness of identifiers
@@ -110,7 +110,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
     x.log <- "x" %in% unlist(strsplit(log, NULL))
     y.log <- "y" %in% unlist(strsplit(log, NULL))
 
-    if (!is.null(colval)) {
+    if (not.null(colval)) {
         if (all(is.hex(x[[colval]]))) {
             cfixed <- TRUE
         } else {
@@ -170,7 +170,7 @@ constructScatterPlot <- function(chart, index, write.out) {
     width <- paste0(".width(", chart$width, ")")
     command <- paste0(command, width)
 
-    if (!is.null(chart$pntsize)) {
+    if (not.null(chart$pntsize)) {
         size <- paste0(".size(function (d) { return ", chart$pntsize, "; })")
         command <- paste0(command, size)
     }
@@ -223,7 +223,7 @@ constructScatterPlot <- function(chart, index, write.out) {
         command <- paste0(command, y.is.log)
     }
 
-    if (!is.null(chart$id)) {
+    if (not.null(chart$id)) {
         id <- paste0(".id(function (d) { return d[", quotify(chart$id), "]; })")
         command <- paste0(command, id)
     }
@@ -231,7 +231,7 @@ constructScatterPlot <- function(chart, index, write.out) {
     anno <- paste0(".tooltip(glimma.storage.chartInfo[", index - 1, "].anno)")
     command <- paste0(command, anno)
 
-    if (!is.null(chart$annoLabels)) {
+    if (not.null(chart$annoLabels)) {
         annoLabels <- paste0(".tooltipLabels(glimma.storage.chartInfo[", index - 1, "].annoLabels)")
         command <- paste0(command, annoLabels)
     }
@@ -239,14 +239,14 @@ constructScatterPlot <- function(chart, index, write.out) {
     main <- paste0(".title(glimma.storage.chartInfo[", index - 1, "].title)")
     command <- paste0(command, main)
 
-    if (!is.null(chart$ndigits)) {
+    if (not.null(chart$ndigits)) {
         nformat <- paste0(".ndigits(", chart$ndigits, ")")
     } else {
         nformat <- paste0(".signif(", chart$signif, ")")
     }
     command <- paste0(command, nformat)
 
-    if (!is.null(chart$col)) {
+    if (not.null(chart$col)) {
         c.func <- paste0(".col(function(d) { return d[", quotify(chart$col), "]; })")
         command <- paste0(command, c.func)
         if (chart$cfixed) {
