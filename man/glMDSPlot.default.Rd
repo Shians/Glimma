@@ -18,7 +18,9 @@
 
 \item{groups}{the experimental group to which samples belong.}
 
-\item{gene.selection}{"pairwise" if most variable genes are to be chosen for each pair of samples or "common" to select the same genes for all comparisons.}
+\item{gene.selection}{"pairwise" if most variable genes are to be chosen for
+each pair of samples or "common" to select the same genes for all
+comparisons.}
 
 \item{main}{the title of the plot.}
 
@@ -33,10 +35,17 @@
 \item{...}{additional arguments.}
 }
 \value{
-Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
+Draws a two-panel interactive MDS plot in an html page. The left
+  panel contains the plot between two MDS dimensions, with annotations
+  displayed on hover. The right panel contains a bar plot of the eigenvalues
+  of each dimension, clicking on any of the bars will plot the corresponding
+  dimension against the next dimension.
 }
 \description{
-Draw an interactive MDS plot from a gene expression matrix with distances calculated from most variable genes.
+Glimma MDS Plot
+
+Draw an interactive MD plot from a DGEList object with distances calculated
+from most variable genes.
 }
 \author{
 Shian Su, Gordon Smyth
