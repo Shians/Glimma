@@ -1,5 +1,13 @@
 context("Test MD Plot")
 
+test_that("Helper functions run as expected", {
+    status <- c(0, 1, -1)
+    cols <- c("blue", "black", "red")
+
+    expect_equal(convertStatusToCols(status, cols), c("black", "red", "blue"))
+
+})
+
 test_that("MD Plot runs for voom", {
     load("test_data_voom.rda")
 

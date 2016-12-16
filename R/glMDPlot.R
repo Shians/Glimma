@@ -5,8 +5,7 @@
 #' @author Shian Su
 #'
 #' @param x the DE object to plot.
-#' @param ... additional arguments affecting the plots produced. See specific
-#'   methods for detailed arguments.
+#' @param counts the matrix of expression values, with samples in columns.
 #' @param anno the data.frame containing gene annotations.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
@@ -32,6 +31,8 @@
 #' @param folder the name of the fold to save html file to.
 #' @param html the name of the html file to save plots to.
 #' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments affecting the plots produced. See specific
+#'   methods for detailed arguments.
 #'
 #' @seealso \code{\link{glMDPlot.default}}, \code{\link{glMDPlot.DGELRT}},
 #'   \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}},
@@ -85,7 +86,8 @@ glMDPlot <- function(x, ...) {
 #' @param x the data.frame object containing expression and fold change values.
 #' @param xval the column to plot on x axis of left plot.
 #' @param yval the column to plot on y axis of left plot.
-
+#' @param xlab the label on the x axis for the left plot.
+#' @param ylab the label on the y axis for the left plot.
 #'
 #' @template return_glMDPlot
 #'
@@ -134,7 +136,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         anno[[side.main]] <- makeUnique(anno[[side.main]])
     }
 
-    cols <- convertColsToHex(cols)
+    cols <- as.hexcol(cols)
 
     checkCountsAndSamples(counts, samples, side.log)
 
@@ -159,15 +161,19 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         if (is(groups, "numeric")) {
+
             sample.exp <- data.frame(Sample = samples,
                                  cols = as.hexcol(sample.cols),
                                  Group = groups,
                                  tr.counts)
+
         } else {
+
             sample.exp <- data.frame(Sample = samples,
                                  cols = as.hexcol(sample.cols),
                                  Group = factor(groups),
                                  tr.counts)
+
         }
     } else {
         sample.exp <- NULL
@@ -234,6 +240,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #'
 #' @inheritParams glMDPlot
 #' @param x the DGELRT object.
+#' @param p.adj.method character vector indicating multiple testing correction method. See \code{\link{p.adjust}} for available methods. (defaults to "BH")
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab,
 #'   ylab can be set for the left plot)
 #'
@@ -281,7 +288,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     xval <- "logCPM"
     yval <- "logFC"
     anno <- makeAnno(x, anno)
-    cols <- convertColsToHex(cols)
+    cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     if (is.null(samples)) {
@@ -306,13 +313,17 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     cols <- convertStatusToCols(status, cols)
 
     if (is.null(anno)) {
+
         plotting.data <- data.frame(x$table, cols = cols,
                                     Adj.PValue = stats::p.adjust(x$table$PValue,
                                     method = p.adj.method))
+
     } else {
+
         plotting.data <- data.frame(anno, x$table, cols = cols,
                                     Adj.PValue = stats::p.adjust(x$table$PValue,
                                     method = p.adj.method))
+
     }
 
     if (not.null(counts)) {
@@ -349,8 +360,8 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 #'
 #' @author Shian Su
 #'
-#' @param x the DGEExact object.
 #' @inheritParams glMDPlot.DGELRT
+#' @param x the DGEExact object.
 #'
 #' @template return_glMDPlot
 #'
@@ -369,8 +380,9 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #'
 #' @author Shian Su
 #'
-#' @inheritParams glMDPlot
+#' @inheritParams glMDPlot.DGELRT
 #' @param x the MArrayLM object.
+#' @param coef integer or character index vector indicating which column of object to plot.
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab,
 #'   ylab can be set for the left plot)
 #'
@@ -454,7 +466,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     xval <- "logCPM"
     yval <- "logFC"
     anno <- makeAnno(x, anno)
-    cols <- convertColsToHex(cols)
+    cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     if (not.null(ncol(status))) {
@@ -486,18 +498,22 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 
     Adj.PValue <- stats::p.adjust(x$p.value[, coef], method=p.adj.method)
     if (is.null(anno)) {
+
         plotting.data <- data.frame(logFC = x$coefficients[, coef],
                                      logCPM = x$Amean,
                                      cols = cols,
                                      PValue = x$p.value[, coef],
                                      Adj.PValue = Adj.PValue)
+
     } else {
+
         plotting.data <- data.frame(logFC = x$coefficients[, coef],
                                      logCPM = x$Amean,
                                      cols = cols,
                                      PValue = x$p.value[, coef],
                                      Adj.PValue = Adj.PValue,
                                      anno)
+
     }
 
     if (not.null(counts)) {
@@ -534,6 +550,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 #'
 #' @author Shian Su
 #'
+#' @inheritParams glMDPlot
 #' @param x the DESeqDataSet object.
 #' @param ... additional arguments to be passed onto the MD plot. (main, xlab,
 #'   ylab can be set for the left plot)
@@ -544,7 +561,6 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 #'
 #' @importFrom methods is
 #' @importFrom edgeR cpm
-#' @importFrom DESeq2 counts results DESeqDataSet
 #'
 #' @export
 
@@ -581,7 +597,7 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples,
     xval <- "logMean"
     yval <- "logFC"
 
-    cols <- convertColsToHex(cols)
+    cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     #
@@ -641,7 +657,6 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples,
 #'
 #' @importFrom methods is
 #' @importFrom edgeR cpm
-#' @importFrom DESeq2 counts results DESeqResults
 #'
 #' @export
 
@@ -674,7 +689,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     xval <- "logMean"
     yval <- "logFC"
 
-    cols <- convertColsToHex(cols)
+    cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     #
@@ -701,12 +716,14 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     bg.col <- cols[2]
     plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
     if (not.null(counts)) {
+
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         sample.exp <- data.frame(Sample = samples,
                                  cols = as.hexcol(sample.cols),
                                  Group = factor(groups),
                                  tr.counts)
+
     } else {
         sample.exp <- NULL
     }
@@ -738,10 +755,7 @@ convertStatusToCols <- function(x, cols) {
     output
 }
 
-convertColsToHex <- function(cols) {
-    as.hexcol(cols)
-}
-
+#TODO: Add test
 makeAnno <- function(x, anno) {
     output <- NULL
     if (is.null(anno) && is.null(x$genes)) {
@@ -764,6 +778,7 @@ makeAnno <- function(x, anno) {
     output
 }
 
+#TODO: Add test
 setDisplayColumns <- function(display.columns, anno, xval, yval) {
     if (is.null(display.columns)) {
         display.columns <- names(anno)
@@ -776,6 +791,7 @@ setDisplayColumns <- function(display.columns, anno, xval, yval) {
     output
 }
 
+#TODO: Add test
 initialiseGroups <- function(n) {
     output <- NULL
     if (not.null(n)) {
@@ -785,6 +801,7 @@ initialiseGroups <- function(n) {
     output
 }
 
+#TODO: Add test
 sortInsigPointsToTop <- function(plotting.data, bg.col) {
     output <- rbind(getRows(plotting.data, plotting.data$cols == bg.col),
                     getRows(plotting.data, plotting.data$cols != bg.col))
@@ -792,6 +809,7 @@ sortInsigPointsToTop <- function(plotting.data, bg.col) {
     output
 }
 
+#TODO: Add test
 transformCounts <- function(counts, transform, colnames=colnames(counts)) {
     rownames(counts) <- make.names(colnames)
 
@@ -806,6 +824,7 @@ transformCounts <- function(counts, transform, colnames=colnames(counts)) {
     output
 }
 
+#TODO: Add test
 checkCountsAndSamples <- function(counts, samples, side.log=FALSE) {
     if (not.null(counts)) {
         if (not.null(samples)) {
@@ -818,6 +837,7 @@ checkCountsAndSamples <- function(counts, samples, side.log=FALSE) {
     }
 }
 
+#TODO: Add test
 naRowInds <- function(res.df, ...) {
     res.df <- data.frame(res.df)
     filterCols <- unlist(list(...))
@@ -831,6 +851,7 @@ naRowInds <- function(res.df, ...) {
     delRows
 }
 
+#TODO: Add test
 checkObjAnnoCountsShapes <- function(anno, counts, x) {
 	if (not.null(anno)) {
 		checkThat(nrow(anno), notNull)

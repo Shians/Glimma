@@ -27,16 +27,16 @@ as.hexcol <- function(x) {
         requireNamespace("grDevices")
         x <- as.integer(x)
 
-        if (x < 0) {
-            return("#000000")
+        output <- "#000000"
+
+        if (x > 0) {
+            output <- as.character(charToHexCol(palette()[x]))
         }
 
-        x <- palette()[x]
-
-        as.character(charToHexCol(x))
+        output
     }
 
-    output <- NULL
+    output <- ""
 
     if (is.character(x)) {
         if (all(is.hex(x))) {

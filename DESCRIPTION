@@ -13,7 +13,6 @@ biocViews:
     Visualization
 Depends: R (>= 3.3.0)
 Imports:
-    DESeq2,
     edgeR,
     grDevices,
     jsonlite,
@@ -23,6 +22,7 @@ Imports:
     utils
 Suggests:
     BiocStyle,
+    DESeq2,
     limma,
     testthat
 License: GPL-3 | file LICENSE

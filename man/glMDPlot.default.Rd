@@ -21,6 +21,8 @@
 
 \item{yval}{the column to plot on y axis of left plot.}
 
+\item{counts}{the matrix of expression values, with samples in columns.}
+
 \item{anno}{the data.frame containing gene annotations.}
 
 \item{groups}{the factor containing experimental groups of the samples.}
@@ -43,6 +45,10 @@ the default colour.}
 
 \item{side.gridstep}{intervals along which to place grid lines on y axis.
 Currently only available for linear scale.}
+
+\item{xlab}{the label on the x axis for the left plot.}
+
+\item{ylab}{the label on the y axis for the left plot.}
 
 \item{jitter}{the amount of jitter to apply to the samples in the expressions
 plot.}

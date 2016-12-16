@@ -12,6 +12,8 @@ glMDPlot(x, ...)
 \item{...}{additional arguments affecting the plots produced. See specific
 methods for detailed arguments.}
 
+\item{counts}{the matrix of expression values, with samples in columns.}
+
 \item{anno}{the data.frame containing gene annotations.}
 
 \item{groups}{the factor containing experimental groups of the samples.}

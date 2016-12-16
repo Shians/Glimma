@@ -18,6 +18,49 @@
 
 \item{counts}{the matrix containing all counts.}
 
+\item{anno}{the data.frame containing gene annotations.}
+
+\item{groups}{the factor containing experimental groups of the samples.}
+
+\item{samples}{the names of the samples.}
+
+\item{status}{vector giving the control status of data point, of same length
+as the number of rows of object. If NULL, then all points are plotted in
+the default colour.}
+
+\item{transform}{TRUE if counts cpm transformed.}
+
+\item{side.xlab}{label for x axis on right plot.}
+
+\item{side.ylab}{label for y axis on right plot.}
+
+\item{side.log}{TRUE to plot expression on the right plot on log scale.}
+
+\item{side.gridstep}{intervals along which to place grid lines on y axis.
+Currently only available for linear scale.}
+
+\item{jitter}{the amount of jitter to apply to the samples in the expressions
+plot.}
+
+\item{side.main}{the column containing mains for right plot.}
+
+\item{display.columns}{character vector containing names of columns to
+display in mouseover tooltips and table.}
+
+\item{cols}{vector of strings denoting colours corresponding to control
+status -1, 0 and 1. (may be R named colours or Hex values)}
+
+\item{sample.cols}{vector of strings denoting colours for each sample point
+on the expression plot.}
+
+\item{path}{the path in which the folder will be created.}
+
+\item{folder}{the name of the fold to save html file to.}
+
+\item{html}{the name of the html file to save plots to.}
+
+\item{launch}{TRUE to launch plot after call.}
+
 \item{...}{additional arguments to be passed onto the MD plot. (main, xlab,
 ylab can be set for the left plot)}
 }

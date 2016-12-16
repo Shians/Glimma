@@ -16,6 +16,8 @@
 \arguments{
 \item{x}{the MArrayLM object.}
 
+\item{counts}{the matrix of expression values, with samples in columns.}
+
 \item{anno}{the data.frame containing gene annotations.}
 
 \item{groups}{the factor containing experimental groups of the samples.}
@@ -38,6 +40,10 @@ the default colour.}
 
 \item{side.gridstep}{intervals along which to place grid lines on y axis.
 Currently only available for linear scale.}
+
+\item{coef}{integer or character index vector indicating which column of object to plot.}
+
+\item{p.adj.method}{character vector indicating multiple testing correction method. See \code{\link{p.adjust}} for available methods. (defaults to "BH")}
 
 \item{jitter}{the amount of jitter to apply to the samples in the expressions
 plot.}

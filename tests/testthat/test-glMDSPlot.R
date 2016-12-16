@@ -26,6 +26,8 @@ test_that("MDS Plot runs for DGEList", {
 })
 
 test_that("MDS Plot runs for DESeqDataSet", {
+    library(DESeq2)
+    library(S4Vectors)
     load("test_data_MDS_DESeq.rda")
 
     expect_silent(glMDSPlot(dds, launch=FALSE))
