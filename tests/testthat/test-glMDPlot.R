@@ -9,7 +9,7 @@ test_that("Helper functions run as expected", {
 })
 
 test_that("MD Plot runs for voom", {
-    load("test_data_voom.rda")
+    load("test_data_voom.RData")
 
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
@@ -28,7 +28,7 @@ test_that("MD Plot runs for voom", {
 })
 
 test_that("MD Plot runs for DGELRT", {
-    load("test_data_DGELRT.rda")
+    load("test_data_DGELRT.RData")
 
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
@@ -46,7 +46,7 @@ test_that("MD Plot runs for DGELRT", {
 })
 
 test_that("MD Plot runs for DGEExact", {
-    load("test_data_DGEExact.rda")
+    load("test_data_DGEExact.RData")
 
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
