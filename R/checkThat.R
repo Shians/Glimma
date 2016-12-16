@@ -196,5 +196,4 @@ notNull <- function(x) {
     }
 
     output
-
 }

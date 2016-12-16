@@ -5,12 +5,12 @@ test_that("Helper functions run as expected", {
     cols <- c("blue", "black", "red")
 
     expect_equal(convertStatusToCols(status, cols), c("black", "red", "blue"))
-
+    expect_equal(initialiseGroups(5), 1:5)
+    expect_equal(initialiseGroups(NULL), NULL)
 })
 
 test_that("MD Plot runs for voom", {
     load("test_data_voom.RData")
-
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
 
@@ -29,7 +29,6 @@ test_that("MD Plot runs for voom", {
 
 test_that("MD Plot runs for DGELRT", {
     load("test_data_DGELRT.RData")
-
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
 
@@ -47,7 +46,6 @@ test_that("MD Plot runs for DGELRT", {
 
 test_that("MD Plot runs for DGEExact", {
     load("test_data_DGEExact.RData")
-
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
 

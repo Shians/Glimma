@@ -271,11 +271,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     checkThat(length(status), sameAs(nrow(x)))
 
-    if (not.null(anno)) {
-        checkThat(nrow(anno), notNull)
-        checkThat(nrow(x), notNull)
-        checkThat(nrow(anno), sameAs(nrow(x)))
-    }
+    checkObjAnnoCountsShapes(anno, counts, x$table)
 
     checkCountsAndSamples(counts, samples, side.log)
 
@@ -449,11 +445,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         checkThat(nrow(status), sameAs(nrow(x)))
     }
 
-    if (not.null(anno)) {
-        checkThat(nrow(anno), notNull)
-        checkThat(nrow(x), notNull)
-        checkThat(nrow(anno), sameAs(nrow(x)))
-    }
+    checkObjAnnoCountsShapes(anno, counts, x)
 
     checkCountsAndSamples(counts, samples, side.log)
 
@@ -583,8 +575,7 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples,
     ##
     # Input checking
 
-    checkThat(length(status), sameAs(nrow(x)))
-    checkThat(nrow(anno), sameAs(nrow(x)))
+    checkObjAnnoCountsShapes(anno, counts, x)
 
     checkCountsAndSamples(counts, samples, side.log)
 
@@ -675,8 +666,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     ##
     # Input checking
 
-    checkThat(length(status), sameAs(nrow(x)))
-    checkThat(nrow(anno), sameAs(nrow(x)))
+    checkObjAnnoCountsShapes(anno, counts, x)
 
     checkCountsAndSamples(counts, samples, side.log)
 
@@ -856,6 +846,15 @@ checkObjAnnoCountsShapes <- function(anno, counts, x) {
 	if (not.null(anno)) {
 		checkThat(nrow(anno), notNull)
 		checkThat(nrow(x), notNull)
-		checkThat(nrow(anno), sameAs(nrow(x)))
+
+        checkThat(nrow(anno), sameAs(nrow(x)))
 	}
+
+    if (not.null(counts)) {
+        checkThat(nrow(counts), notNull)
+        if (not.null(anno)) {
+            checkThat(nrow(anno), notNull)
+            checkThat(nrow(counts), sameAs(nrow(anno)))
+        }
+    }
 }
