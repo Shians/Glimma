@@ -43,3 +43,15 @@ makeUnique <- function(x) {
 }
 
 "%!in%" <- function(x, y)!("%in%"(x, y))
+
+getRows <- function(x, inds) {
+    x[inds, , drop=FALSE]
+}
+
+getCols <- function(x, inds) {
+    x[, inds, drop=FALSE]
+}
+
+not.null <- function(x) {
+    !is.null(x)
+}

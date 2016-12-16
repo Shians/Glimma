@@ -18,7 +18,7 @@ plotWithTable <- function(plotting.data, sample.exp, display.columns,
                     flag="mdplot", ndigits=4,
                     ...)
 
-    if (!is.null(sample.exp)) {
+    if (not.null(sample.exp)) {
         link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=side.main)
         link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=side.main)
         plot2 <- glScatter(sample.exp, xval="Group",
@@ -56,7 +56,7 @@ draw.plots <- function(display.columns, xval, yval,
     link3 <- gltablink(1, 1, action="highlightById")
     table1 <- glTable(1, plot1$anno)
 
-    if (!is.null(plot2)) {
+    if (not.null(plot2)) {
         glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
             path=path, folder=folder, html=html, overwrite=TRUE,
             launch=launch)

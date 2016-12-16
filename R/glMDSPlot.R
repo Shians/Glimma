@@ -1,13 +1,24 @@
 #' Glimma MDS Plot
 #'
-#' Draw an interactive MDS plot gene expression matrix with distances calculated from most variable genes.
+#' @template desc_glMDSPlot
 #'
 #' @author Shian Su, Gordon Smyth
 #'
-#' @param x the data.frame containing data to plot.
-#' @param ... additional arguments affecting the plots produced. See specific methods for detailed arguments.
+#' @param x the matrix containing the gene expressions.
+#' @param top the number of top most variable genes to use.
+#' @param labels the labels for each sample.
+#' @param groups the experimental group to which samples belong.
+#' @param gene.selection "pairwise" if most variable genes are to be chosen for
+#'   each pair of samples or "common" to select the same genes for all
+#'   comparisons.
+#' @param main the title of the plot.
+#' @param path the path in which the folder will be created.
+#' @param folder the name of the fold to save html file to.
+#' @param html the name of the html file to save plots to.
+#' @param launch TRUE to launch plot after call.
+#' @param ... additional arguments.
 #'
-#' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
+#' @template return_glMDSPlot
 #'
 #' @seealso \code{\link{glMDSPlot.default}}, \code{\link{glMDSPlot.DGEList}}
 #'
@@ -26,23 +37,13 @@ glMDSPlot <- function(x, ...) {
 
 #' Glimma MDS Plot
 #'
-#' Draw an interactive MDS plot from a gene expression matrix with distances calculated from most variable genes.
+#' @template desc_glMDSPlot
 #'
 #' @author Shian Su, Gordon Smyth
 #'
-#' @param x the matrix containing the gene expressions.
-#' @param top the number of top most variable genes to use.
-#' @param labels the labels for each sample.
-#' @param groups the experimental group to which samples belong.
-#' @param gene.selection "pairwise" if most variable genes are to be chosen for each pair of samples or "common" to select the same genes for all comparisons.
-#' @param main the title of the plot.
-#' @param path the path in which the folder will be created.
-#' @param folder the name of the fold to save html file to.
-#' @param html the name of the html file to save plots to.
-#' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments.
+#' @inheritParams glMDSPlot
 #'
-#' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
+#' @template return_glMDSPlot
 #'
 #' @method glMDSPlot default
 #'
@@ -96,7 +97,7 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
         topindex <- nprobes - top + 1L
         for (i in 2L:(nsamples)) {
             for (j in 1L:(i - 1L)) {
-                dist <- sort.int((x[, i] - x[, j])^2, partial=topindex)
+                dist <- sort.int((getCols(x, i) - getCols(x, j))^2, partial=topindex)
                 topdist <- dist[topindex:nprobes]
                 dd[i, j] <- sqrt(mean(topdist))
             }
@@ -106,7 +107,7 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
         if (nprobes > top) {
             s <- rowMeans((x-rowMeans(x))^2)
             o <- order(s, decreasing=TRUE)
-            x <- x[o[1L:top], , drop=FALSE]
+            x <- getRows(x, o[1L:top])
         }
         for (i in 2L:(nsamples))
             dist <- sqrt(colMeans( (x[, i]-x[, 1:(i-1), drop=FALSE])^2 ))
@@ -120,13 +121,13 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
     # Method for MDS objects
     points <- a1$points
 
-    if (!is.data.frame(groups)) {
+    if (!is.data.frame(groups) && class(groups) != "DataFrame") {
     # Rename for the column name in dataframe
-        group <- groups
-        groups <- data.frame(group)
+        groups <- data.frame(groups)
     }
 
-    first.col.name <- colnames(groups)[1]
+    all.col.names <- colnames(groups)
+    first.col.name <- all.col.names[1]
 
     points <- data.frame(points)
     names(points) <- paste0("dim", 1:ncol(points))
@@ -137,7 +138,7 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
 
     plot1 <- glScatter(points, xval="dim1", yval="dim2", point.size=4,
                         xlab="Dimension 1", ylab="Dimension 2",
-                        annot=c("label", first.col.name, "dim1", "dim2"),
+                        annot=c("label", all.col.names, "dim1", "dim2"),
                         colval=first.col.name, main=main,
                         info=list(groupsNames=colnames(groups)))
 
@@ -154,34 +155,79 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
 
 #' Glimma MDS Plot
 #'
-#' Draw an interactive MD plot from a DGEList object with distances calculated from most variable genes.
+#' @template desc_glMDSPlot
 #'
 #' @author Shian Su, Gordon Smyth
 #'
+#' @inheritParams glMDSPlot.default
 #' @param x the DGEList containing the gene expressions.
-#' @param top the number of top most variable genes to use.
-#' @param labels the labels for each sample.
-#' @param groups the experimental group to which samples belong.
-#' @param gene.selection "pairwise" if most variable genes are to be chosen for each pair of samples or "common" to select the same genes for all comparisons.
-#' @param main the title of the plot.
-#' @param path the path in which the folder will be created.
-#' @param folder the name of the fold to save html file to.
-#' @param html the name of the html file to save plots to.
-#' @param launch TRUE to launch plot after call.
-#' @param ... additional arguments.
 #'
-#' @return Draws a two-panel interactive MDS plot in an html page. The left panel contains the plot between two MDS dimensions, with annotations displayed on hover. The right panel contains a bar plot of the eigenvalues of each dimension, clicking on any of the bars will plot the corresponding dimension against the next dimension.
+#' @template return_glMDSPlot
 #'
 #' @method glMDSPlot DGEList
 #'
 #' @export
-glMDSPlot.DGEList <- function (x, top=500, labels=1:ncol(x),
+glMDSPlot.DGEList <- function (x, top=500, labels=NULL,
                             groups=rep(1, ncol(x)), gene.selection="pairwise",
                             main="MDS Plot", path=getwd(),
                             folder="glimma-plots", html="MDS-Plot",
                             launch=TRUE, ...) {
-    x <- edgeR::cpm(x, log=TRUE)
-    glMDSPlot.default(x, top=500, labels=labels, groups=groups,
+    labels <- getLabels(x, labels)
+    transformedCounts <- edgeR::cpm(x, log=TRUE)
+
+    glMDSPlot.default(transformedCounts, top=500, labels=labels, groups=groups,
                     gene.selection="pairwise", main=main, path=path,
                     folder=folder, html=html, launch=launch, ...)
+}
+
+#' Glimma MDS Plot
+#'
+#' @template desc_glMDSPlot
+#'
+#' @author Shian Su, Gordon Smyth
+#'
+#' @inheritParams glMDSPlot.default
+#' @param x the DESeqDataSet containing the gene expressions.
+#'
+#' @template return_glMDSPlot
+#'
+#' @method glMDSPlot DESeqDataSet
+#'
+#' @export
+glMDSPlot.DESeqDataSet <- function (x, top=500, labels=NULL,
+                            groups=rep(1, ncol(x)), gene.selection="pairwise",
+                            main="MDS Plot", path=getwd(),
+                            folder="glimma-plots", html="MDS-Plot",
+                            launch=TRUE, ...) {
+    labels <- getLabels(x, labels)
+    transformedCounts <- edgeR::cpm(DESeq2::counts(x), log=TRUE)
+
+    if (not.null(x@colData)) {
+        groups <- S4Vectors::as.data.frame.DataTable(x@colData)
+    }
+
+    glMDSPlot.default(transformedCounts, top=500, labels=labels, groups=groups,
+                    gene.selection="pairwise", main=main, path=path,
+                    folder=folder, html=html, launch=launch, ...)
+}
+
+
+getLabels <- function(x, labels) {
+    if (class(x) == "DGEList") {
+        if (is.null(labels)) {
+            if (not.null(x$samples$groups)) {
+                labels <- rownames(x$samples$groups)
+            } else {
+                labels <- 1:ncol(x)
+            }
+        }
+    } else if (class(x) == "DESeqDataSet") {
+        if (not.null(x$sampleTable)) {
+            labels <- rownames(x$samples$group)
+        } else {
+            labels <- 1:ncol(x)
+        }
+    }
+
+    labels
 }

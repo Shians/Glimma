@@ -1,7 +1,7 @@
 Package: Glimma
 Type: Package
 Title: Interactive HTML graphics
-Version: 1.3.8
+Version: 1.3.11
 Date: 2016-02-29
 Author: Shian Su, Matt Ritchie, Charity Law
 Maintainer: Shian Su <su.s@wehi.edu.au>
@@ -13,15 +13,16 @@ biocViews:
     Visualization
 Depends: R (>= 3.3.0)
 Imports:
-    DESeq2,
     edgeR,
     grDevices,
     jsonlite,
     methods,
     stats,
+    S4Vectors,
     utils
 Suggests:
     BiocStyle,
+    DESeq2,
     limma,
     testthat
 License: GPL-3 | file LICENSE

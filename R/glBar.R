@@ -75,7 +75,7 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
         stop(paste(names.arg, "does not correspond to a column"))
     }
 
-    if (!is.null(colval)) {
+    if (not.null(colval)) {
         if (is.na(match(colval, names(x)))) {
             stop(paste(colval, "does not correspond to a column"))
         }
@@ -134,7 +134,7 @@ constructBarPlot <- function(chart, index, write.out) {
     main <- paste0(".title(glimma.storage.chartInfo[", index - 1, "].title)")
     command <- paste0(command, main)
 
-    if (!is.null(chart$ndigits)) {
+    if (not.null(chart$ndigits)) {
         nformat <- paste0(".ndigits(", chart$ndigits, ")")
     } else {
         nformat <- paste0(".signif(", chart$signif, ")")

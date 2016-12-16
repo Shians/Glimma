@@ -5,7 +5,7 @@ checkThat <- function(x, fun=NULL, type=c("error", "warning"), msg=NULL) {
     output <- TRUE
 
     if (errMsg != "") {
-        if (!is.null(msg)) {
+        if (not.null(msg)) {
             errMsg <- msg
         }
         if (type == "error") {
@@ -182,4 +182,18 @@ isIn <- function(b) {
     }
 
     outputFun
+}
+
+notNull <- function(x) {
+    cond <- is.null(x)
+
+    output <- ""
+
+    if (cond) {
+        errMsg <- paste("Argument must not be NULL")
+
+        output <- errMsg
+    }
+
+    output
 }
