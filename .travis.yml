@@ -2,7 +2,13 @@ language: r
 
 cache: packages
 
-r: bioc-release
+r: bioc-devel
+
+bioc_packages:
+  - S4Vectors
+  - limma
+  - edgeR
+
 
 r_packages:
   - covr
