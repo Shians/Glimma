@@ -108,15 +108,6 @@ arrayify <- function(x) {
     paste("[", paste(x, collapse=","), "]", sep="")
 }
 
-# Function to add braces around string
-objectify <- function(x, y) {
-    paste("{", paste(x, y, sep=":", collapse=","), "}", sep="")
-}
-
-notNumericOrLogical <- function(x) {
-    !is(x, "numeric") && !is(x, "logical")
-}
-
 getLogicalCols <- function(df) {
     logicalCols <- logical(ncol(df))
     for (i in 1:ncol(df)) {
