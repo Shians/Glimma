@@ -110,7 +110,7 @@ groups2
 glMDSPlot(lcpm, groups=groups2)
 @
 \begin{figure}[!ht]
-  \centerline{\includegraphics[width=0.7\linewidth]{MDSgroups.pdf}}
+  \centerline{\includegraphics[width=0.7\linewidth]{MDSgroups.png}}
   \caption{MDS plots showing A. dimensions 1 and 2 and coloring of samples by group (or genotype) and B. dimensions 2 and 3 and coloring of samples by sequencing lane.}
   \label{fig:mdsgroups}
 \end{figure}
@@ -243,9 +243,8 @@ Explain this dataset. Data has already been packaged into an RData object with g
 data(arraydata)
 arrays <- arraydata$arrays
 targets <- arraydata$targets
-expressed <- rowSums(arrays$other$Detection>0.95)!=0
 quality <- !arrays$genes$Quality_score %in% c("Bad", "No match") | is.na(arrays$genes$Quality_score)
-arrays <- arrays[expressed & quality,]
+arrays <- arrays[quality,]
 @
 
 Create MDS plot.
