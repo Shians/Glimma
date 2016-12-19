@@ -117,12 +117,8 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     # Input checking
 
     checkThat(length(status), sameAs(nrow(x)))
-
 	checkObjAnnoCountsShapes(anno, counts, x)
-
-    if (side.main %!in% union(colnames(anno), colnames(x))) {
-        stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
-    }
+    if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
 
     #
     ##
@@ -269,11 +265,28 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     ##
     # Input checking
 
-    checkThat(length(status), sameAs(nrow(x)))
+    if (is(status, "numeric")) {
+        checkThat(length(status), sameAs(nrow(x)))
+    } else if (is(status, "matrix")) {
+        checkThat(nrow(status), sameAs(nrow(x)))
+    }
 
     checkObjAnnoCountsShapes(anno, counts, x$table)
-
     checkCountsAndSamples(counts, samples, side.log)
+
+    # Assign side.main column from rowname of counts if required
+    if (not.null(counts) && side.main %!in% union(names(x$table), names(anno))) {
+        geneIds <- rownames(counts)
+        if (is.null(anno)) {
+            anno <- data.frame(geneIds)
+            names(anno) <- side.main
+        } else {
+            anno <- data.frame(geneIds, anno)
+            names(anno)[1] <- side.main
+        }
+    }
+
+    if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
 
     #
     ##
@@ -446,8 +459,21 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     }
 
     checkObjAnnoCountsShapes(anno, counts, x)
-
     checkCountsAndSamples(counts, samples, side.log)
+
+    # Assign side.main column from rowname of counts if required
+    if (not.null(counts) && side.main %!in% union(names(x), names(anno))) {
+        geneIds <- rownames(counts)
+        if (is.null(anno)) {
+            anno <- data.frame(geneIds)
+            names(anno) <- side.main
+        } else {
+            anno <- data.frame(geneIds, anno)
+            names(anno)[1] <- side.main
+        }
+    }
+
+    if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
 
     #
     ##
@@ -575,9 +601,15 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples,
     ##
     # Input checking
 
-    checkObjAnnoCountsShapes(anno, counts, x)
+    if (is(status, "numeric")) {
+        checkThat(length(status), sameAs(nrow(x)))
+    } else if (is(status, "matrix")) {
+        checkThat(nrow(status), sameAs(nrow(x)))
+    }
 
+    checkObjAnnoCountsShapes(anno, counts, x)
     checkCountsAndSamples(counts, samples, side.log)
+    if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
 
     #
     ##
@@ -666,9 +698,15 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     ##
     # Input checking
 
-    checkObjAnnoCountsShapes(anno, counts, x)
+    if (is(status, "numeric")) {
+        checkThat(length(status), sameAs(nrow(x)))
+    } else if (is(status, "matrix")) {
+        checkThat(nrow(status), sameAs(nrow(x)))
+    }
 
+    checkObjAnnoCountsShapes(anno, counts, x)
     checkCountsAndSamples(counts, samples, side.log)
+    if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
 
     #
     ##
@@ -855,6 +893,18 @@ checkObjAnnoCountsShapes <- function(anno, counts, x) {
         if (not.null(anno)) {
             checkThat(nrow(anno), notNull)
             checkThat(nrow(counts), sameAs(nrow(anno)))
+        }
+    }
+}
+
+checkSideMainPresent <- function(side.main, anno, x) {
+    if (class(x) == "DGELRT" || class(x) == "DGEExact") {
+        if (side.main %!in% union(colnames(anno), colnames(x$table))) {
+            stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
+        }
+    } else {
+        if (side.main %!in% union(colnames(anno), colnames(x))) {
+            stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
         }
     }
 }
