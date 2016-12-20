@@ -18,7 +18,6 @@ Imports:
     jsonlite,
     methods,
     stats,
-    statmod,
     S4Vectors,
     utils
 Suggests:
