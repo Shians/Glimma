@@ -1,3 +1,4 @@
+.travis.yml
 .DS_Store
 .git
 _site
