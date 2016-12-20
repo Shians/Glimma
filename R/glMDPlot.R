@@ -662,6 +662,7 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples,
 
     checkObjAnnoCountsShapes(anno, counts, x)
     checkCountsAndSamples(counts, samples, side.log)
+
     if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
 
     #
@@ -957,6 +958,10 @@ checkSideMainPresent <- function(side.main, anno, x) {
     } else if (class(x) == "MArrayLM") {
         if (side.main %!in% union(colnames(anno), colnames(x$genes))) {
             stop(paste("column", quotify(side.main), "cannot be found in x$genes or anno."))
+        }
+    } else if (class(x) == "DESeqResults") {
+        if (side.main %!in% union(colnames(anno), names(listData))) {
+            stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
         }
     } else {
         if (side.main %!in% union(colnames(anno), colnames(x))) {
