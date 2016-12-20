@@ -13,8 +13,8 @@ bioc_packages:
   - limma
   - edgeR
 
-
 r_packages:
+  - statmod
   - covr
 
 after_success:
