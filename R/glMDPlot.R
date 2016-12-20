@@ -952,7 +952,11 @@ checkObjAnnoCountsShapes <- function(anno, counts, x) {
 checkSideMainPresent <- function(side.main, anno, x) {
     if (class(x) == "DGELRT" || class(x) == "DGEExact") {
         if (side.main %!in% union(colnames(anno), colnames(x$table))) {
-            stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
+            stop(paste("column", quotify(side.main), "cannot be found in x$table or anno."))
+        }
+    } else if (class(x) == "MArrayLM") {
+        if (side.main %!in% union(colnames(anno), colnames(x$genes))) {
+            stop(paste("column", quotify(side.main), "cannot be found in x$genes or anno."))
         }
     } else {
         if (side.main %!in% union(colnames(anno), colnames(x))) {
