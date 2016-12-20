@@ -38,6 +38,10 @@ Displays within Glimma were inspired by visualisations from {\it Degust} softwar
 
 The main dataset used in this vignette is taken from an RNA-seq experiment examining lymphoma cell-lines in mice with alterations to the Smchd1 gene \cite{Smchd1}. The data is available for 4 wildtype samples and 3 samples with null levels of Smchd1. The count data is available within Glimma and is stored as a {\sf DGEList} object that is native to edgeR. In our analysis, we begin by removing lowly expressed genes and by performing TMM-normalisation \cite{tmm}.
 
+<<HideBrowseURL, echo=false, result=hide>>=
+browseURL <- function(...) invisible()
+@
+
 <<Rgetstarted>>=
 set.seed(20161000)
 options(digits=2)
@@ -51,7 +55,7 @@ rnaseq <- calcNormFactors(rnaseq)
 @
 
 \begin{figure}[!ht]
-  \centerline{\includegraphics[width=0.7\linewidth]{quickstart.pdf}}
+  \centerline{\includegraphics[width=0.7\linewidth]{quickstart.png}}
   \caption{A. Interactive MDS plot where the dimensions displayed in the MDS plot (left) can be changed by clicking on the associated bars in the barplot (right). B. Interactive MD plot where gene-wise logFCs are plotted against mean expression values (top left). The expression of individual samples are displayed (top right) by selecting an associated gene within the MD plot. A table of gene-wise information is displayed in the table (bottom), where genes and keywords can be searched specifically using the Search-bar.}
   \label{fig:quickstart}
 \end{figure}
