@@ -1,7 +1,7 @@
 #' Plot linkages
-#' 
+#'
 #' Helper function for writing the link properties in interactive Glimma plots
-#' 
+#'
 #' @param from the index of the plot from which the event is dispatched.
 #' @param to the index of the plot which receives the event and performs an action.
 #' @param src the action that is performed in the "from" plot.
@@ -9,9 +9,9 @@
 #' @param flag indicates special links for particular chart types.
 #' @param both creates symmetric links whereby the "dest" action in "to" also triggers the "src" action in "from".
 #' @param info additional info for creating the link.
-#' 
+#'
 #' @return a link object containing the plot linking information.
-#' 
+#'
 #' @examples
 #' data(iris)
 #' data <- data.frame(Name=paste("Flower", 1:nrow(iris), sep="-"), iris)
@@ -31,7 +31,7 @@ gllink <- function(from, to, src="none", dest="none", flag="none", both=FALSE, i
 
     if (src == "none" && dest != "none") {
         stop("dest cannot be defined while src is 'none'")
-    }   
+    }
 
     if (src == "none" && dest == "none" && flag == "none") {
         stop("'src', 'dest' and 'flag' cannot simultaneously be 'none'")

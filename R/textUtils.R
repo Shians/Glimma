@@ -8,11 +8,11 @@ char <- function(string, n) {
     checkThat(string, isString)
 
     if (any(abs(n) > nchar(string))) {
-        stop(paste(quotify("n"), "is outside index range"))
+        stop(paste(quotify(n), "is outside index range"))
     }
 
     if (n == 0) {
-        return(rep("", length(string)))
+        return("")
     }
 
     if (n < 0) {
@@ -23,7 +23,7 @@ char <- function(string, n) {
 }
 
 lastChar <- function(string) {
-    char(string, length(string))
+    char(string, nchar(string))
 }
 
 firstChar <- function(string) {
