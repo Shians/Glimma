@@ -16,7 +16,7 @@
 \arguments{
 \item{x}{the DESeqResults object.}
 
-\item{counts}{the matrix containing all counts.}
+\item{counts}{the matrix of expression values, with samples in columns.}
 
 \item{anno}{the data.frame containing gene annotations.}
 

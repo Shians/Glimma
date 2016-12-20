@@ -3,9 +3,17 @@
 \docType{data}
 \name{arraydata}
 \alias{arraydata}
-\title{Example microarray dataset}
+\title{Example microarray for the study of Ezh2.}
 \description{
-Example microarray dataset
+Example microarray for the study of Ezh2.
+}
+\author{
+Bhupinder Pal, Toula Bouras, Wei Shi, Francois Vaillant, Julie M. Sheridan,
+  Naiyang Fu, Kelsey Breslin, Kun Jiang, Matthew E. Ritchie, Matthew Young,
+  Geoffrey J. Lindeman, Gordon K. Smyth, Jane E. Visvader
+}
+\references{
+\url{http://www.cell.com/cell-reports/abstract/S2211-1247(13)00007-7}
 }
 \keyword{microarray}
 

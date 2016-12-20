@@ -70,8 +70,8 @@ on the expression plot.}
 
 \item{launch}{TRUE to launch plot after call.}
 
-\item{...}{additional arguments affecting the plots produced. See specific
-methods for detailed arguments.}
+\item{...}{additional arguments to be passed onto the MD plot. (main, xlab,
+ylab can be set for the left plot)}
 }
 \value{
 Draws a two-panel interactive MD plot in an html page. The left plot

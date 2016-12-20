@@ -10,26 +10,6 @@ glMDSPlot(x, ...)
 \item{x}{the matrix containing the gene expressions.}
 
 \item{...}{additional arguments.}
-
-\item{top}{the number of top most variable genes to use.}
-
-\item{labels}{the labels for each sample.}
-
-\item{groups}{the experimental group to which samples belong.}
-
-\item{gene.selection}{"pairwise" if most variable genes are to be chosen for
-each pair of samples or "common" to select the same genes for all
-comparisons.}
-
-\item{main}{the title of the plot.}
-
-\item{path}{the path in which the folder will be created.}
-
-\item{folder}{the name of the fold to save html file to.}
-
-\item{html}{the name of the html file to save plots to.}
-
-\item{launch}{TRUE to launch plot after call.}
 }
 \value{
 Draws a two-panel interactive MDS plot in an html page. The left
