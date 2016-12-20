@@ -490,7 +490,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     checkCountsAndSamples(counts, samples, side.log)
 
     # Assign side.main column from rowname of counts if required
-    if (not.null(counts) && side.main %!in% union(names(x), names(anno))) {
+    if (not.null(counts) && side.main %!in% union(names(x$genes), names(anno))) {
         geneIds <- rownames(counts)
         if (is.null(anno)) {
             anno <- data.frame(geneIds)
