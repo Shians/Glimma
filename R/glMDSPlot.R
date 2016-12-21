@@ -185,15 +185,19 @@ glMDSPlot.DGEList <- function (x, top=500, labels=NULL,
 #'
 #' @export
 glMDSPlot.DESeqDataSet <- function (x, top=500, labels=NULL,
-                            groups=rep(1, ncol(x)), gene.selection="pairwise",
+                            groups=NULL, gene.selection="pairwise",
                             main="MDS Plot", path=getwd(),
                             folder="glimma-plots", html="MDS-Plot",
                             launch=TRUE, ...) {
     labels <- getLabels(x, labels)
     transformedCounts <- edgeR::cpm(DESeq2::counts(x), log=TRUE)
 
-    if (not.null(x@colData)) {
-        groups <- S4Vectors::as.data.frame.DataTable(x@colData)
+    if (is.null(groups)) {
+        if (not.null(x@colData)) {
+            groups <- S4Vectors::as.data.frame.DataTable(x@colData)
+        } else {
+            groups <- rep(1, ncol(x))
+        }
     }
 
     glMDSPlot.default(transformedCounts, top=500, labels=labels, groups=groups,
