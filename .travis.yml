@@ -9,10 +9,10 @@ r:
   - bioc-release
 
 bioc_packages:
-  - S4Vectors
+  - BiocStyle
+  - testthat
+  - DESeq2
   - limma
-  - edgeR
-
 
 r_packages:
   - covr

@@ -4,7 +4,7 @@
 \alias{glMDPlot.DESeqResults}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{DESeqResults}(x, counts, anno, groups, samples,
+\method{glMDPlot}{DESeqResults}(x, counts, anno, groups, samples = NULL,
   status = rep(0, nrow(x)), transform = FALSE, side.xlab = "Group",
   side.ylab = "Expression", side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5), jitter = 30,

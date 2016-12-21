@@ -119,7 +119,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     # Input checking
 
     checkThat(length(status), sameAs(nrow(x)))
-	checkObjAnnoCountsShapes(anno, counts, x)
+    checkObjAnnoCountsShapes(anno, counts, x)
     if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
 
     #
@@ -635,7 +635,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 #'
 #' @export
 
-glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples,
+glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
                                 status=rep(0, nrow(x)), transform=FALSE,
                                 side.xlab="Group", side.ylab="logMean",
                                 side.log=FALSE,
@@ -662,6 +662,7 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples,
 
     checkObjAnnoCountsShapes(anno, counts, x)
     checkCountsAndSamples(counts, samples, side.log)
+
     if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
 
     #
@@ -675,6 +676,10 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples,
 
     cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
+
+    if (is.null(samples)) {
+        samples <- colnames(counts)
+    }
 
     #
     ##
@@ -698,9 +703,10 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples,
                                  anno)
 
     bg.col <- cols[2]
-    plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
     tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
+
+    plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
     sample.exp <- data.frame(Sample = samples,
                              cols = as.hexcol(sample.cols),
@@ -735,7 +741,7 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples,
 #'
 #' @export
 
-glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
+glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
                                 status=rep(0, nrow(x)), transform=FALSE,
                                 side.xlab="Group", side.ylab="Expression",
                                 side.log=FALSE,
@@ -772,6 +778,10 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
+    if (is.null(samples)) {
+        samples <- colnames(counts)
+    }
+
     #
     ##
 
@@ -794,7 +804,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
                                  anno)
 
     bg.col <- cols[2]
-    plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
+
     if (not.null(counts)) {
 
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
@@ -807,6 +817,8 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
     } else {
         sample.exp <- NULL
     }
+
+    plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
     plotWithTable(plotting.data, sample.exp, display.columns,
                     side.main=side.main, default.col=cols[2], jitter=jitter,
@@ -822,13 +834,29 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples,
 # TODO: Assumption is made that all possible status are present
 # need to generalise such no such assumption is made.
 convertStatusToCols <- function(x, cols) {
-    if (all(x == 0)) {
-        output <- rep(cols[2], length(x))
+
+    isDefaultStates <- function(x) all(x == -1 || x == 0 || x == 1)
+    isDefaultCols <- function(x) all(x == c("#00bfff", "#858585", "#ff3030"))
+
+    if (isDefaultStates(x) && isDefaultCols(cols)) {
+        x <- factor(x, levels=c(-1, 0, 1))
     } else {
+        uniqueStates <- length(unique(x))
+
+        if (uniqueStates != length(cols)) {
+            stop("The number of status levels differ from number of supplied colours. ",
+                    uniqueStates, " vs ", length(cols), ".")
+        }
+
         status.levels <- sort(unique(x))
         cols <- c(cols[status.levels==0], cols[status.levels!=0])
         cols.levels <- c(0, setdiff(status.levels, 0))
         x <- factor(x, levels=cols.levels)
+    }
+
+    if (all(x == 0)) {
+        output <- rep(cols[2], length(x))
+    } else {
         output <- cols[x]
     }
 
@@ -933,12 +961,12 @@ naRowInds <- function(res.df, ...) {
 
 #TODO: Add test
 checkObjAnnoCountsShapes <- function(anno, counts, x) {
-	if (not.null(anno)) {
-		checkThat(nrow(anno), notNull)
-		checkThat(nrow(x), notNull)
+    if (not.null(anno)) {
+        checkThat(nrow(anno), notNull)
+        checkThat(nrow(x), notNull)
 
         checkThat(nrow(anno), sameAs(nrow(x)))
-	}
+    }
 
     if (not.null(counts)) {
         checkThat(nrow(counts), notNull)
@@ -957,6 +985,10 @@ checkSideMainPresent <- function(side.main, anno, x) {
     } else if (class(x) == "MArrayLM") {
         if (side.main %!in% union(colnames(anno), colnames(x$genes))) {
             stop(paste("column", quotify(side.main), "cannot be found in x$genes or anno."))
+        }
+    } else if (class(x) == "DESeqResults") {
+        if (side.main %!in% union(colnames(anno), names(x@listData))) {
+            stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
         }
     } else {
         if (side.main %!in% union(colnames(anno), colnames(x))) {
