@@ -119,7 +119,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     # Input checking
 
     checkThat(length(status), sameAs(nrow(x)))
-	checkObjAnnoCountsShapes(anno, counts, x)
+    checkObjAnnoCountsShapes(anno, counts, x)
     if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
 
     #
