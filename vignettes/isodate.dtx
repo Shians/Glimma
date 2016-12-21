@@ -1,0 +1,3397 @@
+% \iffalse meta comment
+% File: isodate.dtx Copyright (C) 2000--2010 Harald Harders
+% \fi
+%
+% \iffalse
+%
+%<*driver>
+\documentclass[UKenglish]{ltxdoc}
+\usepackage{babel}
+\IfFileExists{isodate.sty}{\usepackage[english,iso]{isodate}
+ \let\isodateSTYfound\active}{\GenericWarning{isodate.dtx}{Package
+ file isodate.sty not found (Documentation will be messed up!^^J^^A
+ Generate isodate.sty by (La)TeXing isodate.ins, process
+ isodate.dtx again)^^J}\stop}
+\usepackage{array}
+\usepackage{url}
+\usepackage{longtable}
+\usepackage{morefloats}
+\GetFileInfo{isodate.sty}
+\title{The \texttt{isodate} package\thanks{This file has version 
+    \fileversion\ last revised \printdateTeX{\filedate}.}}
+\author{Harald Harders\\\texttt{h.harders@tu-bs.de}}
+\date{File Date \printdateTeX{\filedate}, Printed \today}
+\newlength{\tempdima}%
+\makeatletter
+\renewenvironment{table}[1][]{%
+  \@float{table}[#1]%
+  \centering%
+  \setlength{\tempdima}{\abovecaptionskip}%
+  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+  \setlength{\belowcaptionskip}{\tempdima}%
+  }{%
+\end@float
+}
+\makeatother
+\EnableCrossrefs
+\CodelineIndex
+\DoNotIndex{\def,\edef,\let,\newcommand,\newenvironment,\newcounter,%
+  \gdef,\@ifundefined,\@empty,\@firstoftwo,\@secondoftwo,\@nil,%
+  \,,\number,\renewcommand,\setboolean,\whiledo,\ifthenelse}
+\DoNotIndex{\setcounter,\space,\MessageBreak,\DeclareRobustCommand,\equal}
+\DoNotIndex{\csname,\endcsname,\ifx,\else,\fi,\if,\fi,\@tempswafalse}
+\DoNotIndex{\@tempswatrue,\undefined,\if,\or,\and,\fi}
+\DoNotIndex{\begingroup,\endgroup,\begin,\end,\CurrentOption}
+\CodelineNumbered
+\RecordChanges
+\CheckSum{2493}
+\begin{document}
+ \DocInput{isodate.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+% \changes{2.30}{2010/01/03}{Add a month-year format}%
+% \changes{2.30}{2010/01/03}{Move defintion of language-independent
+%   formats into the main style file}%
+% \changes{2.26}{2005/03/10}{Support different input formats
+%   containing slashes}%
+% \changes{2.23}{2004/11/19}{Avoid to use the \texttt{calc} package
+%   since it causes problems with many other packages}%
+% \changes{2.22}{2004/02/12}{Path changed according to new CTAN
+%   structure}%
+% \changes{2.22}{2004/02/12}{Makefile adapted for \TeX Live}%
+% \changes{2.21}{2003/12/06}{Fix some bugs in date ranges when both
+%   month and year are equal (several language)}%
+% \changes{2.21}{2003/12/06}{Support to print date without year (in
+%   all language-dependent commands \cs{iso@printmonthday@...} and
+%   \cs{iso@printdate@...})}%
+% \changes{2.20}{2003/12/06}{Avoid usage of \cs{filedate} and
+%   \cs{fileversion}}
+% \changes{2.01}{2000/08/24}{For the case that none of the packages
+%   babel, german, and ngerman is loaded there is a new macro
+%   \texttt{\textbackslash iso@languagename} that contains the name of
+%   the last loaded language. If one of the packages is loaded it
+%   contains the current language.}
+% \changes{2.00}{2000/08/21}{Total reimplementation of the
+%   package. The old package has renamed to isodateo.}
+%
+% \maketitle
+%
+% \begin{abstract}
+% \noindent This package provides commands to switch between different 
+% date formats (standard, ISO, numeric, \LaTeX\ package).
+% They are used by the \cs{today} command, by the \cs{printdate} and
+% \cs{printdateTeX} commands that print any date, and by the
+% \cs{daterange} command that prints a date range.
+% At the moment, this package supports German (old and new
+% orthography, Austrian), British, US, Australian as well as New
+% Zealand English,\footnote{In order to use Australian or New Zealand,
+% you need a version of babel that supports the used language. It
+% should be available, soon.}
+% French, Italian, Danish, Swedish, and Norwegian.
+%
+% The idea for this package was taken from the akletter class. 
+% \end{abstract}
+%
+% \tableofcontents
+% 
+% \section*{Acknowledgements}
+%
+% First of all I have to thank Axel Kielhorn who wrote the package
+% \verb|akletter| which inspired me to write \verb|isodate|. The help
+% of Heiko Oberdiek was necessary to handle characters in substrings
+% which resulted in the package \verb|substr|. David Sanderson found
+% the bug which disabled \verb|isodate| to work without
+% \verb|babel|. He also helped me to improve the documentation and
+% sent me a link to the ISO 8601 norm \cite{iso8601a}.
+% Svend Tollak Munkejord has added the Norwegian language, Christian
+% Schlauer has added Swedish, Philip Ratcliffe has added Italian.
+%
+% \section*{Requirements}
+%
+% The package |isodate| needs the package |substr.sty| which can be
+% obtained from |CTAN:macros/latex/contrib/substr/|.
+%
+% \section{Commands}
+% 
+% \subsection{Switching the date output format}
+%
+% \DescribeMacro{\isodate}%
+% \DescribeMacro{\numdate}%
+% \DescribeMacro{\shortdate}%
+% \DescribeMacro{\TeXdate}%
+% \DescribeMacro{\origdate}%
+% \changes{2.05}{2001/05/19}{Added an original format with a two digit year.}%
+% \DescribeMacro{\shortorigdate}%
+% \DescribeMacro{\Romandate}%
+% \DescribeMacro{\romandate}%
+% This package provides five commands to switch the output format of
+% all commands that print dates (described later):
+% \DescribeMacro{\shortRomandate}%
+% \DescribeMacro{\shortromandate}%
+% \medskip 
+%
+% \begin{longtable}[l]{@{}ll}
+% \verb|\isodate|&date format described in ISO 8601 and DIN 5008
+% \cite{iso8601a}\\
+% &(yyyy-mm-dd)\\
+% \verb|\numdate|&numeric date format with four digits of the year\\
+% \verb|\shortdate|&short numeric date format with two digits of the
+% year\\
+% \verb|\TeXdate|&date format used for version description of 
+% packages\\
+% &(yyyy/mm/dd)\\
+% \verb|\origdate|&original \LaTeX\ format\\
+% \verb|\shortorigdate|&original \LaTeX\ format with two instead of four
+% digits of\\
+% &the year\\
+% \verb|\Romandate|& As \cs{numdate} but with uppercase Roman numerals
+% \\
+% & for the month\\
+% \verb|\romandate|& As \cs{numdate} but with lowercase Roman numerals
+% \\
+% & for the month\\
+% \verb|\shortRomandate|& As \cs{shortdate} but with uppercase Roman numerals
+% \\
+% & for the month\\
+% \verb|\shortromandate|& As \cs{shortdate} but with lowercase Roman numerals
+% \\
+% & for the month\\
+% \end{longtable}
+% \medskip 
+%
+% These commands \emph{do not} print any dates and they don't take an
+% argument.
+% They just switch the format for later usage of the date-printing
+% commands \cs{today}, \cs{printdate}, \cs{printdateTeX}, and
+% \cs{daterange}.
+%
+% The numeric and short numeric as well as the Roman numbered formats
+% change their behaviour depending on the current language:
+%
+% \noindent\begin{tabular}{@{}llll@{}}
+% German, nGerman&\verb|dd.\,mm.~yyyy|&resp.&\verb|dd.\,mm.\,yy|\\
+% US English&\verb|mm/dd/yyyy|&resp.&\verb|mm/dd/yy|\\ 
+% other languages&\verb|dd/mm/yyyy|&resp.&\verb|dd/mm/yy|
+% \end{tabular}
+%
+% This package supports German (old and new rules, Austrian), US
+% English, French, Danish, Italian, Swedish, and Norwegian.
+% Switching the language by using \verb|\selectlanguage| does \emph{not}
+% switch back to the original date format. So the current date format
+% stays active when changing the language.
+%
+% The change of the date format works locally. So it is possible to
+% change it locally inside a group; e.g.,
+% \begin{verbatim}
+%\today, {\origdate\today}, \today\end{verbatim}
+% leads to `\today, {\origdate\today}, \today'.
+%
+% \DescribeMacro{\printyearoff}%
+% \DescribeMacro{\printyearon}%
+% By default, all formats print the day, month, and year.
+% Sometimes, you may want to print the date without the year. 
+% This can be reached by using the command \cs{printyearoff}.
+% You can switch back with \cs{printyearon} or by using
+% \cs{printyearoff} inside a group (e.g., an environment).
+% To switch globally, preceed the command by \cs{global}.
+% An example:
+% \begin{verbatim}
+%\today, {\printyearoff\today}, \today\end{verbatim}
+% leads to `{\origdate\today, {\printyearoff\today}, \today}'.
+%
+% \DescribeMacro{\printdayoff}%
+% \DescribeMacro{\printdayon}%
+% Likewise you can switch on or off printing the day using
+% \cs{printdayon} and \cs{printdayoff}.
+% Note that you still have to provide complete dates in the
+% \cs{printdate} command, described in Section~\ref{sec:anydate} below.
+%
+% \subsection{Printing today's date}
+%
+% \DescribeMacro{\today}%
+% As usual, the command \cs{today} prints the date of today. Its
+% appearance is influenced by the current date format
+%
+% \subsection{Printing any date}
+% \label{sec:anydate}
+%
+% \DescribeMacro{\printdate}%
+% The command \verb|\printdate{#1}| prints any date in the current
+% format. The argument may be a date in German, British English, or
+% ISO format, e.g.,
+% \begin{verbatim}
+%\printdate{24.12.2000}
+%\printdate{24/12/2000}
+%\printdate{2000-12-24}\end{verbatim}
+%
+% \DescribeMacro{\printdateTeX}%
+% The command \verb|\printdateTeX{#1}| prints any date in the actual
+% format. The argument must be in the \LaTeX\ format
+% \verb|yyyy/mm/dd|, e.g.,
+% \begin{verbatim}
+%\printdateTeX{2000/12/24}\end{verbatim}
+% This command is useful for printing version information stored in a
+% macro. For example the version of this package is stored in
+% the macro \verb|\filedate| (`\filedate'). To print it with the actual
+% date format you can use the command \verb|\printdateTeX{\filedate}|
+% which leads to e.g., `\printdateTeX{\filedate}' or
+% {\origdate`\printdateTeX{\filedate}'}.
+% Another possibility is to switch the input format to |tex| using
+% \cs{dateinputformat}, described below.
+%
+% \subsection{Printing date ranges}
+%
+% \DescribeMacro{\daterange}%
+% The command \verb|\daterange{#1}{#2}| prints a date range in the current
+% format. The arguments may be a date in German, British English, or
+% ISO format (see above). But there is a limitation: Both arguments
+% must have the same input format.
+%
+% Depending on the language and date format, this commands leaves out
+% some of the data. The simplest way to understand it is to watch some
+% examples:
+% \par\medskip\noindent
+% \verb|{\isodate|{\isodate\\
+% \verb|\daterange{1999-05-03}{1999-05-31}| $\longrightarrow$
+%   \daterange{1999-05-03}{1999-05-31}\\
+% \verb|\daterange{1999-05-03}{1999-11-03}| $\longrightarrow$
+%   \daterange{1999-05-03}{1999-11-03}\\
+% \verb|\daterange{1999-05-03}{2000-04-07}| $\longrightarrow$
+%   \daterange{1999-05-03}{2000-04-07}\\
+% \verb|}|}\\
+% \verb|{\origdate|{\origdate\\
+% \verb|\daterange{1999-05-03}{1999-05-31}| $\longrightarrow$
+%   \daterange{1999-05-03}{1999-05-31}\\
+% \verb|\daterange{1999-05-03}{1999-11-03}| $\longrightarrow$
+%   \daterange{1999-05-03}{1999-11-03}\\
+% \verb|\daterange{1999-05-03}{2000-04-07}| $\longrightarrow$
+%   \daterange{1999-05-03}{2000-04-07}\\
+% \verb|}|}
+%
+% \subsection{Changing the ISO format}
+%
+% \DescribeMacro{\isodash}%
+% The ISO norm says that the date format is `yyyy-mm-dd' or
+% `yyyymmdd' \cite{iso8601a}.
+% By default I use the hyphen `-' as separator. You can change this
+% using the \verb|\isodash|\footnote{The name `isodash' is a little
+% bit confusing and was chosen due to my limited knowledge in
+% English. It should be named `isoseparator' or `isosep'. But for 
+% compatiblity reasons I will not change it.} command, e.g.,
+% \begin{verbatim}
+%\printdate{24/12/2000},
+%\isodash{--}%
+%\printdate{24/12/2000},
+%\isodash{}%
+%\printdate{24/12/2000}\end{verbatim}
+% leads to `2000-12-24, 2000--12--24, 20001224'. Or for example
+% \begin{verbatim}
+%\isodash{$\cdot$}
+%\printdate{24/12/2000}\end{verbatim}
+% leads to `2000$\cdot$12$\cdot$24'.
+%
+%
+% \subsection{Changing the original and short original format}
+%
+% \DescribeMacro{\isospacebeforeday}%
+% \DescribeMacro{\isospacebeforemonth}%
+% \DescribeMacro{\isospacebeforeyear}%
+%
+% By default, the original and short original format prints
+% unbreakable spaces between the parts of the dates, e.g.,
+% `|19~May~2001|'.
+% If you want to allow breakable spaces or other characters, you can
+% redefine the spaces using \cs{isospacebeforeday},
+% \cs{isospacebeforemonth}, and \cs{isospacebeforeyear}:
+% \begin{verbatim}
+%\isospacebeforeyear{\ }\end{verbatim}
+% leads to `|19~May\ 2001|'. Notice that the space is written as
+% \verb*|\ | to ensure that the space is not getting lost under all
+% circumstances.
+%
+% As the names imply, the spaces before the specified part (day, month,
+% or year) is changed. For most formats, only \cs{isospacebeforemonth}
+% and \cs{isospacebeforeyear} are relevant, while for US English,
+% \cs{isospacebeforeday} and \cs{isospacebeforeyear} are used.
+%
+% This only effects the \verb|orig| and \verb|shortorig| formats.
+%
+%
+% \subsection{Changing the short original format}
+%
+% \DescribeMacro{\shortyearsign}%
+%
+% The short original format normally prints the year with two digits, e.g.,
+% `19th May 01'.
+% Some people want to add an additional sign before the year, e.g.,
+% `19th May '01'.
+% This can be achieved by using the command \verb|\shortyearsign|, e.g.,
+% \begin{verbatim}
+%\printdate{24/12/2000},
+%\shortyearsign{'}%
+%\printdate{24/12/2000}\end{verbatim}
+% leads to `24 december 00, 24 december '00' in English.
+%
+% This only effects the \verb|shortorig| format. The \verb|short| numerical
+% format stays unchanged.
+%
+%
+% \subsection{Changing the German format}
+%
+% \changes{2.03}{2001/05/04}{Allow change of spaces for German language}%
+% The spacings for the numerical formats in the German language 
+% (24.\,12.~2000 resp. 24.\,12.\,00) were taken from the Duden
+% \cite{duden1996a} and are the defaults when using one of the
+% German derivatives.
+% Some people want to use different spacings. Thus from version 2.03 on it 
+% is possible to change them.
+% \DescribeMacro{\daymonthsepgerman}%
+% \DescribeMacro{\monthyearsepgerman}%
+% \DescribeMacro{\monthyearsepnodaygerman}%
+% You can change the spacing between the day and the month using the 
+% command \cs{daymonthsepgerman}. Using the command
+% \cs{monthyearsepgerman} you can change the spacing between the
+% month and the year for the long and the short format, e.g.,
+% \begin{verbatim}
+%\daymonthsepgerman{\quad}%
+%\monthyearsepgerman{\qquad}{\quad}%
+%{\numdate\printdate{24.12.2000}}, {\shortdate\printdate{24.12.2000}}\end{verbatim}
+% leads to `24.\quad12.\qquad2000, 24.\quad12.\quad00'.
+%
+% The default values are `\cs{,}' for the separator between day and
+% month resp.\ `\cs{,}' between month and year in the short format
+% and `|~|' in the long format.
+%
+% Likewise, \cs{monthyearsepnodaygerman} is used for defining the
+% spacing between the month and the year when printing the day is
+% switched off (using \cs{printdayoff}).
+% The arguments are the same as for \cs{monthyearsepgerman}.
+% Default is no space for long and short format.
+%
+%
+% \subsection{Changing the English format}
+%
+% \changes{2.28}{2005/04/15}{Introduce option cleanlook for English
+%   date format}%
+% By default, the English date format looks like `24th December
+% 2000'.
+% During the last years, a change has occured in many documents
+% towards `24 December 2000'.
+% This new format is called `clean look'.
+% \DescribeMacro{\cleanlookdateon}%
+% \DescribeMacro{\cleanlookdateoff}%
+% Isodate's behaviour can be changed towards it using
+% \cs{cleanlookdateon} and \cs{cleanlookdateoff}.
+% This can also be done globally using the |cleanlook| package option.
+%
+% At the moment, the `clean look' functionality only affects British
+% English.
+% If this trend also counts for different languages, please tell it me
+% that I can add support for them.
+%
+%
+%
+% \subsection{User defined month formatting}
+%
+% Internally, the formats using Roman numerals for the month are just
+% links to the \cs{numdate} and \cs{shortdate} formats with a changed
+% format for printing the month.
+% Therefore, the command \cs{Romandate} calls \cs{numdate} by
+% following sequence:
+% \begin{verbatim}
+%\numdate[Roman]%
+%\isotwodigitdayfalse\end{verbatim}
+% This tells \cs{numdate} to format the month using the \cs{Roman}
+% command and to typeset the day without a leading zero if it is
+% less than ten.
+%
+% You may do similar things, e.g.,
+% \begin{verbatim}
+%\numdate[Alph]\end{verbatim}
+% prints the months with the command \cs{Alph}, `A', `B', \ldots{}
+% The day is printed with two digits since every call of \cs{numdate}
+% or \cs{shortdate} calls \cs{isotwodigitdaytrue} which switches
+% printing the day with two digits on.
+% This does not make any sence but may serve as example.
+% If you want to enable days with one digit, append
+% \cs{isotwodigitdaytrue}:
+% \begin{verbatim}
+%\numdate[Alph]%
+%\isotwodigitdaytrue\end{verbatim}
+%
+% You may declare any command that typesets a counter that is given as
+% its mandatory argument (e.g., \cs{alph}, \cs{Alph}, \cs{arabic},
+% \ldots) in the optional argument of the \cs{numdate},
+% \cs{shortdate}, \cs{isodate}, and \cs{TeXdate} commands, without the
+% leading backslash.
+% You can, of course, define own commands that do it.
+% For instance,
+% \begin{verbatim}
+%{\def\boldnum#1{\textbf{\twodigitarabic{#1}}}%
+%\numdate[boldnum]%
+%\printdate{24.3.2000}}\end{verbatim}
+% leas to
+% `{\def\boldnum#1{\textbf{\twodigitarabic{#1}}}\ignorespaces
+% \numdate[boldnum]\ignorespaces
+% \printdate{24.3.2000}}'.
+% \DescribeMacro{\twodigitarabic}
+% Here, the \cs{twodigitarabic} command has been used that prints a
+% positive number with at least two digits.\footnote{This command is
+%   also used for the numerical date formats.}
+%
+% If you, for example want a numerical date format with the day and
+% month printed with the `natural' number of digits rather than with
+% two digits, you may do it as follows:
+% \begin{verbatim}
+%{\numdate[arabic]\isotwodigitdayfalse
+%\printdate{1.2.2000}}\end{verbatim}
+% which leads to `{\numdate[arabic]\isotwodigitdayfalse
+% \printdate{1.2.2000}}'.
+%
+% Using one of the other date formats reset the numerical format to
+% its standard settings with arabic numerals (with two digits), e.g.,
+% \begin{verbatim}
+%{\numdate[Alph]\printdate{6.12.2000};
+%\isodate\printdate{6.12.2000};
+%\numdate\printdate{6.12.2000}}\end{verbatim}
+% leads to `{\numdate[Alph]\isotwodigitdayfalse\printdate{6.12.2000};
+% \isodate\printdate{6.12.2000};
+% \numdate\printdate{6.12.2000}}'.
+%
+% \subsection{Switching the date input format}
+%
+% \DescribeMacro{\dateinputformat}%
+% As described above, the date can be given in different formats.
+% For the German format |dd.mm.yyyy| and the ISO format |yyyy-mm-dd|,
+% the input format is definite.
+% But when using slashes to seperate the day, month, and year,
+% different formats exist.
+% British people use |dd/mm/yyyy|, American people use |mm/dd/yyyy|,
+% while \TeX\ uses |yyyy/mm/dd| which in fact is an ISO format with
+% slashes instead of dashes.
+%
+% By default, the British format is used.
+% If the user wants to give the American or \TeX\ format as argument
+% of the \cs{printdate} or \cs{daterange} commands, the macro
+% \cs{dateinputformat} can be used to change the behaviour.
+% This macro takes the name of the input format as single parameter,
+% e.g., \cs{dateinputformat\{american\}}, for switching to American
+% behaviour, e.i., |mm/dd/yyyy|.
+% For example,
+% \begin{verbatim}
+%\numdate
+%\selectlanguage{UKenglish}%
+%\dateinputformat{american}%
+%\printdate{12/31/2004}\end{verbatim}
+% gives
+% \begingroup
+% \numdate
+% \selectlanguage{UKenglish}\dateinputformat{american}\printdate{12/31/2004}.
+% \endgroup
+% In this example, \emph{input} format is American while the
+% \emph{output} format is English.
+%
+% Valid arguments for the \cs{dateinputformat} command are |english|,
+% |UKenglish|, |british|, |american|, |USenglish|, |tex|, |latex|,
+% |TeX|, |LaTeX|.
+% The meaning of most possibilities should be clear; |english| means
+% British English.
+%
+% Beware that the input format may only be changed for the date format
+% using slashes.
+% Thus, you don't have to and are not allowed to specify input formats
+% other than these described above.
+% For example, \cs{dateinputformat\{german\}} is not
+% allowed (and not necessary).
+%
+% \section{Calling the package}
+%
+% The package is called using the \verb|\usepackage| command:\\
+% \verb|\usepackage[|option\verb|]{isodate}|. 
+%
+% The possible package options can be seen in table~\ref{tab:options}.
+% %
+% \begin{table}[!tbp]
+% \centering
+% \caption{Package options}
+% \label{tab:options}
+% \begin{minipage}{\linewidth}
+% \begin{tabular}{ll}\hline
+% option&function\\ \hline
+% \verb|iso|&start with ISO date format\\
+% \verb|num|&start with numeric date format with 4 digits of the year\\
+% \verb|short|&start with numeric date format with 2 digits of the year\\
+% \verb|TeX|&start with \LaTeX\ numeric date format (yyyy/mm/dd)\\
+% \verb|orig|&start with normal \LaTeX\ date format
+% (default\footnote{The original format is used as default in order
+% to avoid a different document output by just including the package.})\\
+% \verb|shortorig|&start with short normal \LaTeX\ date format (2 digits)\\
+% \verb|Roman|&start with numeric date format (month in uppercase\\
+%   & Roman numerals)\\
+% \verb|roman|&start with numeric date format (month in lowercase\\
+%   & Roman numerals)\\
+% \verb|shortRoman|&start with short Roman format\\
+% \verb|shortroman|&start with short roman format\\
+% \hline
+% \verb|american|&support American English date format\\
+% \verb|austrian|&support Austrian date format\\
+% \verb|british|&support British English date format\\
+% \verb|danish|&support Danish date format\\
+% \verb|english|&support British English date format\\
+% \verb|french|&support French date format\\
+% \verb|german|&support German date format\\
+% \verb|naustrian|&support new Austrian date format\\
+% \verb|ngerman|&support new German date format\\
+% \verb|italian|&support Italian date format\\
+% \verb|norsk|&support Norwegian date format\\
+% \verb|norwegian|&support Norwegian date format\\
+% \verb|swedish|&support Swedish date format\\
+% \verb|UKenglish|&support British English date format\\
+% \verb|USenglish|&support American English date format\\
+% \hline
+% \verb|inputenglish|& English date input format (default)\\ 
+% \verb|inputbritish|& English date input format (default)\\
+% \verb|inputUKenglish|& English date input format (default)\\
+% \verb|inputamerican|& American date input format\\
+% \verb|inputUSenglish|& American date input format\\
+% \verb|inputtex|& \TeX\ date input format\\
+% \verb|inputTeX|& \TeX\ date input format\\
+% \verb|inputlatex|& \TeX\ date input format\\
+% \verb|inputLaTeX|& \TeX\ date input format\\
+% \hline
+% \verb|cleanlook|&use `clean look' for English dates\\
+% \verb|nocleanlook|&don't use `clean look' for English dates (default)\\
+% \hline
+% \verb|printdayon|&print complete date including the day (default)\\
+% \verb|printdayoff|&omit the day in the date\\
+% \hline
+% \end{tabular}
+% \end{minipage}
+% \end{table}
+%
+% \emph{Be aware that at least one language option must be set when calling
+% isodate.} The last language in the option list is the default language.
+%
+% The package isodate works well together with \verb|babel.sty|,
+% \verb|german.sty|, or \verb|ngerman.sty|.
+% It does not matter if \verb|isodate| is loaded before or after the
+% used language package.
+%
+% It is also possible to use isodate without one of the language
+% packages. Then it is not possible to switch between languages using 
+% the \verb|\selectlanguage| command.\footnote{Yes, there is a way to
+%   change the date language, but it is a little bit tricky:\\
+% \texttt{\textbackslash makeatletter\\
+% \textbackslash def\textbackslash iso@languagename\{german\}\%\\
+% \textbackslash dategerman\%\\
+% \textbackslash makeatother}} 
+% Then the default language is the last one in the option list. If an
+% error occurs when using isodate without one of the packages
+% \verb|babel.sty|, \verb|german.sty|, and \verb|ngerman.sty| please
+% run \verb|tstlang.tex| through latex and send the file
+% \verb|tstlang.log| to the address \verb|h.harders@tu-bs.de|.
+%
+% If using isodate
+% together with babel it can be useful to put the language options as 
+% global options into the optional parameters of the
+% \verb|\documentclass| command.
+% Then automatically the available languages are the same for the text
+% and the dates, and the default language is also the same.
+% For example:
+% \begin{verbatim}
+%\documentclass[english,german]{article}
+%\usepackage{babel}
+%\usepackage[num]{isodate}\end{verbatim}
+%
+% The input format options specify the input format that is used at
+% the begin of the document. 
+% You don't have to define multiple options if you want to change the
+% input format in the document using \cs{dateinputformat}.
+% For example,
+% \begin{verbatim}
+%\documentclass[american,german,british]{article}
+%\usepackage{babel}
+%\usepackage[iso,inputamerican]{isodate}
+%\begin{document}
+%D \printdate{28.2.2000}\par  
+%ISO \printdate{2000-2-28}\par
+%US \printdate{2/28/2000}\par 
+%\dateinputformat{british}UK \printdate{28/2/2000}\par
+%\dateinputformat{tex}\TeX\ \printdate{2000/2/28}
+%\end{document}\end{verbatim}
+% works as expected.
+%
+% Beware that only the mentioned input formats are defined.
+% For example, |inputgerman| does not exist because it is not
+% necessary.
+% 
+%
+% \section{Add new languages to the package}
+%
+% The easiest way to add new languages to the package is to copy one
+% of the simple language files \verb|danish.idf| or \verb|french.idf|
+% to the new language name, e.g., \verb|plattdeutsch.idf|, and change it
+% as necessary.
+%
+% This new file can be used without changing \verb|isodate.sty| if you 
+% use its name explicitly in the optional parameter of the
+% \verb|\usepackage| command. If you have added support for a new
+% language please mail me.
+%
+% \changes{2.04}{2001/05/17}{Added section for solvable problems.}
+% \changes{2.10}{2003/10/13}{Removed section about solvable problems
+%   since it was wrong.}
+%
+% \appendix
+% 
+% \section{Licence} 
+% 
+% Copyright 2000--2010 Harald Harders
+%
+% This program can be redistributed and/or modified under the terms
+% of the LaTeX Project Public License Distributed from CTAN
+% archives in directory macros/latex/base/lppl.txt; either
+% version 1 of the License, or any later version.
+% 
+% \section{Known errors}
+%
+% \begin{itemize} 
+% \item The \cs{printdate} and \cs{printdateTeX} commands are not
+%   very good in checking the argument for correct syntax.
+% \item The language definition files \verb|french.idf| and
+% \verb|german.idf| are not yet commented.
+% \item Isodate and draftcopy do not work together.
+% \item Documentation of the code is partly poor.
+% \end{itemize}
+%
+% \section{Planned features and changes}
+%
+% \begin{itemize}
+% \item Add other languages.
+%   Please help me with this topic. I don't know the date formats in
+%   other languages.
+% \item Format short given years to four digits and calculate
+%   reasonable first and second digits.
+% \end{itemize}
+%
+% \begin{thebibliography}{1}
+% \bibitem{iso8601a}
+%   International Standard: ISO~8601.
+%   \newblock \url{http://www.iso.ch/markete/8601.pdf}, 1988-06-15.
+% \bibitem{duden1996a}
+%   DUDEN Band 1.
+%   \newblock Die deutsche Rechtschreibung.
+%   \newblock 21. Auf\/lage, Dudenverlag, Mannheim, Germany, 1996.
+% \end{thebibliography}
+%                                
+% \StopEventually{\PrintChanges \PrintIndex}
+%
+%
+% \section{The implementation}
+%
+% \subsection{Package file isodate.sty}
+%
+% Heading of the files:
+%    \begin{macrocode}
+%<isodate>\NeedsTeXFormat{LaTeX2e}
+%<isodate>\ProvidesPackage{isodate}
+%<danish>\ProvidesFile{danish.idf}
+%<english>\ProvidesFile{english.idf}
+%<french>\ProvidesFile{french.idf}
+%<german>\ProvidesFile{german.idf}
+%<italian>\ProvidesFile{italian.idf}
+%<norsk>\ProvidesFile{norsk.idf}
+%<swedish>\ProvidesFile{swedish.idf}
+%<isodate>  [2010/01/03  v2.30  Print dates with different formats (HH)]
+%<language>  [2010/01/03  v2.30  Language definitions for isodate package (HH)]
+%    \end{macrocode}
+% The package:
+%    \begin{macrocode}
+%<*isodate>
+\RequirePackage{ifthen}
+\IfFileExists{substr.sty}{\RequirePackage{substr}%
+ }{\PackageError{isodate.sty}{Package file substr.sty not found}
+   {This version of isodate.sty needs the package substr.sty.^^J%
+     You can download it from
+     CTAN:/macros/latex/contrib/substr/^^J%
+     e.g., one CTAN node is ftp.dante.de.
+     Install substr.sty into your TeX tree.}}
+%    \end{macrocode}
+% Declare the options for the default date format.
+% \changes{2.05}{2001/05/19}{Execute options at the end of the package instead
+%   of at the end of the preamble.}
+% \changes{2.10}{2003/10/13}{Add month in Roman numerals}%
+%    \begin{macrocode}
+\DeclareOption{iso}{\AtEndOfPackage{\isodate}}
+\DeclareOption{num}{\AtEndOfPackage{\numdate}}
+\DeclareOption{short}{\AtEndOfPackage{\shortdate}}
+\DeclareOption{TeX}{\AtEndOfPackage{\TeXdate}}
+\DeclareOption{orig}{\AtEndOfPackage{\origdate}}
+\DeclareOption{shortorig}{\AtEndOfPackage{\shortorigdate}}
+\DeclareOption{Roman}{\AtEndOfPackage{\Romandate}}
+\DeclareOption{roman}{\AtEndOfPackage{\romandate}}
+\DeclareOption{shortRoman}{\AtEndOfPackage{\shortRomandate}}
+\DeclareOption{shortroman}{\AtEndOfPackage{\shortromandate}}
+\DeclareOption{cleanlook}{\AtEndOfPackage{\cleanlookdateon}}
+\DeclareOption{nocleanlook}{\AtEndOfPackage{\cleanlookdateoff}}
+%    \end{macrocode}
+% \changes{2.30}{2010/01/03}{Add a month-year format}%
+% Declare the options which decide wheather day is printed.
+%    \begin{macrocode}
+\DeclareOption{printdayoff}{\AtEndOfPackage{\printdayoff}}
+\DeclareOption{printdayon}{\AtEndOfPackage{\printdayon}}
+%    \end{macrocode}
+% \changes{2.26}{2005/03/10}{Support different input formats
+%   containing slashes}%
+% Declare the options for the default date input format.
+%    \begin{macrocode}
+\DeclareOption{inputenglish}{\AtEndOfPackage{\dateinputformat{english}}}
+\DeclareOption{inputbritish}{\AtEndOfPackage{\dateinputformat{english}}}
+\DeclareOption{inputUKenglish}{\AtEndOfPackage{\dateinputformat{english}}}
+\DeclareOption{inputamerican}{\AtEndOfPackage{\dateinputformat{american}}}
+\DeclareOption{inputUSenglish}{\AtEndOfPackage{\dateinputformat{american}}}
+\DeclareOption{inputtex}{\AtEndOfPackage{\dateinputformat{tex}}}
+\DeclareOption{inputTeX}{\AtEndOfPackage{\dateinputformat{tex}}}
+\DeclareOption{inputlatex}{\AtEndOfPackage{\dateinputformat{tex}}}
+\DeclareOption{inputLaTeX}{\AtEndOfPackage{\dateinputformat{tex}}}
+%    \end{macrocode}
+% Declare the options for language support.
+% \changes{2.07}{2003/07/29}{Add Swedish language}%
+% \changes{2.20}{2003/12/06}{Add Australian and New Zealand}%
+% \changes{2.24}{2005/02/17}{Add option frenchb}%
+% \changes{2.26}{2005/03/10}{Add option british}%
+%    \begin{macrocode}
+\DeclareOption{american}{\input{english.idf}}
+\DeclareOption{australian}{\input{english.idf}}
+\DeclareOption{austrian}{\input{german.idf}}
+\DeclareOption{danish}{\input{danish.idf}}
+\DeclareOption{english}{\input{english.idf}}
+\DeclareOption{british}{\input{english.idf}}
+\DeclareOption{french}{\input{french.idf}}
+\DeclareOption{frenchb}{\input{french.idf}}
+\DeclareOption{german}{\input{german.idf}}
+\DeclareOption{italian}{\input{italian.idf}}
+\DeclareOption{naustrian}{\input{german.idf}}
+\DeclareOption{newzealand}{\input{english.idf}}
+\DeclareOption{ngerman}{\input{german.idf}}
+\DeclareOption{norsk}{\input{norsk.idf}}
+\DeclareOption{norwegian}{\input{norsk.idf}}
+\DeclareOption{swedish}{\input{swedish.idf}}
+\DeclareOption{UKenglish}{\input{english.idf}}
+\DeclareOption{USenglish}{\input{english.idf}}
+%    \end{macrocode}
+% Make it possible to load language definition files that are not
+% known by this package.
+%    \begin{macrocode}
+\DeclareOption*{%
+  \InputIfFileExists{\CurrentOption.idf}{}{%
+    \PackageError{isodate}{%
+      Isodate definition file \CurrentOption.idf not found}{%
+      Maybe you misspelled the language option?}}%
+  }
+%    \end{macrocode}
+% Set default option to \verb|orig|.
+%    \begin{macrocode}
+\ExecuteOptions{orig,nocleanlook,printdayon}
+%    \end{macrocode}
+% Process the options.
+%    \begin{macrocode}
+\ProcessOptions*
+%    \end{macrocode}
+% Handle the case that no language was given. Throw an error message.
+% Each language definition file \verb|*.idf| must contain a line
+% \begin{verbatim}
+%\let\iso@languageloaded\active\end{verbatim}
+% that defines the command \verb|\iso@languageloaded|.
+%    \begin{macrocode}
+\ifx\iso@languageloaded\@undefined
+  \PackageError{isodate}{%
+    You haven't specified a language option}{%
+    You need to specify a language, either as a global
+    option\MessageBreak
+    or as an optional argument to the \string\usepackage\space
+    command.\MessageBreak
+    If you have used the old isodate package (version <=1.06) you can
+    change the\MessageBreak
+    usepackage command to \protect\usepackage{isodate}.\MessageBreak
+    You shouldn't try to proceed from here, type x to quit.}
+\fi
+%    \end{macrocode}
+% \changes{2.10}{2003/10/13}{Add month in Roman numerals}%
+% \begin{macro}{\iso@printday}
+% \changes{2.14}{2003/10/26}{Control the number of digits for the day
+%   by a boolean rather than by the command calls}%
+% Prints a day.
+%    \begin{macrocode}
+\newcommand*\iso@printday[1]{%
+  \ifisotwodigitday
+    \ifthenelse{\number#1<10}{0}{}%
+  \fi
+  \number#1%
+}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\twodigitarabic}
+% \changes{2.10}{2003/10/13}{Added \cs{twodigitarabic}}%
+% Typesets the given counter with at least two digits.
+% This command is very simple and does only work for positive numbers
+% below 100.
+%    \begin{macrocode}
+\newcommand*\twodigitarabic[1]{%
+  \ifthenelse{\number\arabic{#1}<10}{0}{}%
+  \arabic{#1}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printmonth}
+% \changes{2.10}{2003/10/13}{Use \cs{twodigitarabic}}%
+% Prints a month using \cs{theiso@tmpmonth} as output fourmat.
+%    \begin{macrocode}
+\newcommand*\iso@printmonth[1]{%
+  \setcounter{iso@tmpmonth}{#1}%
+  \theiso@tmpmonth%
+}
+%    \end{macrocode}
+% Define the help counter that prints the month and initialize it to
+% print arabic numbers.
+%    \begin{macrocode}
+\newcounter{iso@tmpmonth}
+%\def\theiso@tmpmonth{\arabic{iso@tmpmonth}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@yeartwo}
+% Prints the argument of the command with two
+% digits. 
+%
+% Example: \verb|\iso@yeartwo{1873}| $\longrightarrow$
+% \makeatletter\iso@yeartwo{1873}\makeatother.
+%    \begin{macrocode}
+\newcounter{iso@yeartwo}%
+\newcommand*\iso@yeartwo[1]{%
+  \setcounter{iso@yeartwo}{\number#1}%
+  \whiledo{\theiso@yeartwo>99}{%
+    \addtocounter{iso@yeartwo}{-100}}{}%
+  \ifthenelse{\number\theiso@yeartwo<10}{0}{}\theiso@yeartwo
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@yearfour}
+% \changes{2.26}{2005/03/10}{Force year in four digits for long formats}%
+% Prints the argument of the command with four digits. 
+%    \begin{macrocode}
+\newcommand*\iso@yearfour[1]{%
+  \ifthenelse{\number#1<1000}{0}{}%
+  \ifthenelse{\number#1<100}{0}{}%
+  \ifthenelse{\number#1<10}{0}{}%
+  \number#1%
+}%
+%    \end{macrocode}
+% \end{macro}
+% \changes{2.14}{2003/10/26}{Control the number of digits for the day
+%   by a boolean rather than by the command calls}%
+% \begin{macro}{\ifisotwodigitday}
+% Print day with two digits or natural number of digits?
+%    \begin{macrocode}
+\newif\ifisotwodigitday
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@dateformat}
+% In this command, the current active date format ist stored. Possible
+% values are: \verb|numeric|, \verb|short|, \verb|iso|, \verb|orig|,
+% \verb|shortorig|, \verb|TeX|.
+%    \begin{macrocode}
+\def\iso@dateformat{numeric}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@inputformat}
+% \changes{2.26}{2005/03/10}{Support different input formats
+%   containing slashes}%
+% This macro stores which input format is used for dates given with
+% slashes. Valid formats are |english| (dd/mm/yyyy), |american|
+% (mm/dd/yyyy), and |tex| (yyyy/mm/dd). By default, English is used.
+%    \begin{macrocode}
+\DeclareRobustCommand*\dateinputformat[1]{%
+  \ifthenelse{%
+    \equal{#1}{english}\OR
+    \equal{#1}{british}\OR
+    \equal{#1}{UKenglish}}{%
+    \def\iso@inputformat{english}%
+  }{%
+    \ifthenelse{%
+      \equal{#1}{american}\OR
+      \equal{#1}{USenglish}}{%
+      \def\iso@inputformat{american}%
+    }{%
+      \ifthenelse{%
+        \equal{#1}{tex}\OR
+        \equal{#1}{TeX}\OR
+        \equal{#1}{latex}\OR
+        \equal{#1}{LaTeX}}{%
+        \def\iso@inputformat{tex}%
+      }{%
+        \PackageError{isodate}{Invalid date input format}{%
+          Maybe you misspelled the language option (english, american,
+          tex)?}%
+      }%
+    }%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@inputformat}
+% \changes{2.26}{2005/03/10}{Support different input formats
+%   containing slashes}%
+% This macro stores which input format is used for dates given with
+% slashes. Valid formats are |english| (dd/mm/yyyy), |american|
+% (mm/dd/yyyy), and |tex| (yyyy/mm/dd). By default, English is used.
+%    \begin{macrocode}
+\dateinputformat{english}
+%    \end{macrocode}
+% \end{macro}
+% \changes{2.10}{2003/10/13}{Add month in Roman numerals}%
+% \begin{macro}{\numdate}
+% Switches to long numerical date format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\numdate[1][twodigitarabic]{%
+  \def\iso@dateformat{numeric}%
+  \isotwodigitdaytrue
+  \def\theiso@tmpmonth{\csname #1\endcsname{iso@tmpmonth}}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \changes{2.10}{2003/10/13}{Add month in Roman numerals}%
+% \changes{2.14}{2003/10/26}{Don't print day with two digits when
+%   Roman numerals are used for the month}%
+% \begin{macro}{\shortdate}
+% Switches to short numerical date format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\shortdate[1][twodigitarabic]{%
+  \def\iso@dateformat{short}%
+  \isotwodigitdaytrue
+  \def\theiso@tmpmonth{\csname #1\endcsname{iso@tmpmonth}}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \changes{2.12}{2003/10/14}{Wrong one-digit months avoided}%
+% \begin{macro}{\isodate}
+% \changes{2.14}{2003/10/26}{Allow change in format for month}%
+% Switches to ISO date format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\isodate[1][twodigitarabic]{%
+  \def\iso@dateformat{iso}%
+  \isotwodigitdaytrue
+  \def\theiso@tmpmonth{\csname #1\endcsname{iso@tmpmonth}}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\origdate}
+% Switches to the original date format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\origdate{%
+  \def\iso@dateformat{orig}%
+  \isotwodigitdayfalse
+  \def\theiso@tmpmonth{\twodigitarabic{iso@tmpmonth}}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\shortorigdate}
+% Switches to the short original date format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\shortorigdate{%
+  \def\iso@dateformat{shortorig}%
+  \isotwodigitdayfalse
+  \def\theiso@tmpmonth{\twodigitarabic{iso@tmpmonth}}%
+}
+%    \end{macrocode}
+% \end{macro}q
+% \begin{macro}{\TeXdate}
+% \changes{2.14}{2003/10/26}{Allow change in format for month}%
+% Switches to \LaTeX\ date format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\TeXdate[1][twodigitarabic]{%
+  \def\iso@dateformat{TeX}%
+  \isotwodigitdaytrue
+  \def\theiso@tmpmonth{\csname #1\endcsname{iso@tmpmonth}}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \changes{2.10}{2003/10/13}{Add month in Roman numerals}%
+% \begin{macro}{\Romandate}
+% Switches to long numerical date format with month printed in
+% uppercase Roman numerals.
+%    \begin{macrocode}
+\DeclareRobustCommand*\Romandate{%
+  \numdate[Roman]%
+  \isotwodigitdayfalse
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\romandate}
+% Switches to long numerical date format with month printed in
+% lowercase Roman numerals.
+%    \begin{macrocode}
+\DeclareRobustCommand*\romandate{%
+  \numdate[roman]%
+  \isotwodigitdayfalse
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\shortRomandate}
+% Switches to short numerical date format with month printed in
+% uppercase Roman numerals.
+%    \begin{macrocode}
+\DeclareRobustCommand*\shortRomandate{%
+  \shortdate[Roman]%
+  \isotwodigitdayfalse
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\shortromandate}
+% Switches to short numerical date format with month printed in
+% lowercase Roman numerals.
+%    \begin{macrocode}
+\DeclareRobustCommand*\shortromandate{%
+  \shortdate[roman]%
+  \isotwodigitdayfalse
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\isodash}
+% Changes the dash in the ISO date format. The default is `-'.
+%    \begin{macrocode}
+\def\iso@isodash{-}%
+\DeclareRobustCommand*\isodash[1]{\def\iso@isodash{#1}}%
+%    \end{macrocode}
+% \end{macro}
+% Define the sign that is printed before a two digit year in the short
+% original format. Default is nothing.
+% \begin{macro}{\shortyearsign}
+%    \begin{macrocode}
+\def\iso@twodigitsign{}
+\DeclareRobustCommand*\shortyearsign[1]{\def\iso@twodigitsign{#1}}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\isorangesign}
+% Defines the sign or word that is printed between the two dates in a
+% date range. e.g., in English the default is `~to~'.
+%    \begin{macrocode}
+\def\iso@rangesign{\csname iso@rangesign@\iso@languagename\endcsname}%
+\DeclareRobustCommand*\isorangesign[1]{\def\iso@rangesign{#1}}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\printyearoff}
+% \begin{macro}{\printyearon}
+% \changes{2.21}{2003/12/06}{Switch on or off printing of year}%
+% Switches printing of the year on or off.
+% Default is to print the year.
+%    \begin{macrocode}
+\newif\ifiso@printyear
+\DeclareRobustCommand*\printyearon{\iso@printyeartrue}
+\DeclareRobustCommand*\printyearoff{\iso@printyearfalse}
+\printyearon
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\printdayoff}
+% \begin{macro}{\printdayon}
+%   \changes{2.30}{2010/01/03}{Add a month-year format}%
+% Switch on or off suppressing the day in date output.
+% Default is not print the day.
+%    \begin{macrocode}
+\newif\ifiso@doprintday
+\DeclareRobustCommand*\printdayon{\iso@doprintdaytrue}
+\DeclareRobustCommand*\printdayoff{\iso@doprintdayfalse}
+\printdayon
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\cleanlookdateoff}
+% \begin{macro}{\cleanlookdateon}
+% \changes{2.28}{2005/04/15}{Introduce option cleanlook for English
+%   date format}%
+% Switch on or off `clean look' for English dates.
+% Default is not to use `clean look'.
+%    \begin{macrocode}
+\newif\ifiso@cleanlook
+\DeclareRobustCommand*\cleanlookdateon{\iso@cleanlooktrue}
+\DeclareRobustCommand*\cleanlookdateoff{\iso@cleanlookfalse}
+\cleanlookdateoff
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\isospacebeforeday}
+% \begin{macro}{\isospacebeforemonth}
+% \begin{macro}{\isospacebeforeyear}
+% \changes{2.29}{2007/04/09}{Allow to change the unbreakable spaces in
+%   the orig and shortorig format}%
+% Change the spaces in the orig and short orig format.
+% Default is |~| for all of them.
+%    \begin{macrocode}
+\newcommand*\iso@daysep{~}
+\newcommand*\iso@monthsep{~}
+\newcommand*\iso@yearsep{~}
+\DeclareRobustCommand*\isospacebeforeday[1]{\def\iso@daysep{#1}}
+\DeclareRobustCommand*\isospacebeforemonth[1]{\def\iso@monthsep{#1}}
+\DeclareRobustCommand*\isospacebeforeyear[1]{\def\iso@yearsep{#1}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\iso@printdate}
+% Defines the command \verb|iso@printdate| which takes three arguments 
+% (year, month, day) and prints the date by using the \cs{today} command.
+%    \begin{macrocode}
+\newcommand*\iso@printdate[3]{%
+  \begingroup%
+%    \end{macrocode}
+% \changes{2.25}{2005/02/21}{Warning for unknown languages}%
+% \changes{2.25}{2005/02/21}{Fall-back format for unknown languages}%
+% Generate a warning if the active language is not known by |isodate|.
+%    \begin{macrocode}
+    \@ifundefined{iso@printdate@\iso@languagename}{%
+      \PackageWarning{isodate}{Language \iso@languagename\space unknown
+        to isodate.\MessageBreak
+        Using default format}%
+    }{}%
+%    \end{macrocode}
+% \changes{2.25}{2005/02/21}{Changed \cs{year}, \cs{month}, and
+%   \cs{day} from macros to counters}%
+% The counters \cs{year}, \cs{month}, and \cs{day} are preserved as
+% counters instead of changed to macros (as it has been done until
+% version 2.25) to avoid problems with languages that are not defined
+% in |isodate.sty|.
+%    \begin{macrocode}
+    \year=#1 %
+    \month=#2 %
+    \day=#3 %
+    \today%
+  \endgroup%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\printdate}
+% Prints a date that is given as one argument in one of these formats: 
+% \verb|yyyy-mm-dd|, \verb|dd/mm/yyyy|, \verb|dd.mm.yyyy|.
+%    \begin{macrocode}
+\DeclareRobustCommand*\printdate[1]{%
+%    \end{macrocode}
+% Define \verb|\iso@date| command to expand the argument \verb|#1|.
+%    \begin{macrocode}
+  \edef\iso@date{#1}%
+%    \end{macrocode}
+% Count appearances of `/', `-', and `.' in the argument.
+%    \begin{macrocode}
+  \SubStringsToCounter{iso@slash}{/}{\iso@date}%
+  \SubStringsToCounter{iso@minus}{-}{\iso@date}%
+  \SubStringsToCounter{iso@dot}{.}{\iso@date}%
+%    \end{macrocode}
+% If number of `.' in the argument is equal to 2 then the German
+% format \verb|dd.mm.yyyy| is used.
+%    \begin{macrocode}
+  \ifthenelse{\equal{\theiso@dot}{2}}{%
+    \expandafter\iso@input@german\iso@date\@empty}{%
+%    \end{macrocode}
+% If number of `-' in the argument is equal to 2 then the ISO
+% format \verb|yyyy-mm-dd| is used.
+%    \begin{macrocode}
+    \ifthenelse{\equal{\theiso@minus}{2}}{%
+      \expandafter\iso@input@iso\iso@date\@empty}{%
+%    \end{macrocode}
+% If number of `/' in the argument is equal to 2 then the British English
+% format \verb|dd/mm/yyyy| is used.
+%    \begin{macrocode}
+      \ifthenelse{\equal{\theiso@slash}{2}}{%
+        \expandafter\iso@input@english\iso@date\@empty}{%
+%    \end{macrocode}
+% Else no of the formats above is used an thus an error message is thrown.
+%    \begin{macrocode}
+        ????\iso@isodash ??\iso@isodash ??%
+        \PackageError{isodate}{unrecognized date format}{Use one of
+          the following formats as macro argument:^^J%
+          \space\space dd.mm.yyyy^^J%
+          \space\space dd/mm/yyyy^^J%
+          \space\space yyyy-mm-dd^^J%
+          Don't use any spaces or commands like \protect\, or
+          \protect~ inside the argument.}%
+        }}}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@input@iso}
+% Converts a string with the format \verb|yyyy-mm-dd| to three
+% arguments \verb|{#1}{#2}{#3}| and calls \verb|\iso@printdate|.
+%    \begin{macrocode}
+\def\iso@input@iso#1-#2-#3\@empty{\iso@printdate{#1}{#2}{#3}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@input@german}
+% Converts a string with the format \verb|dd.mm.yyyy| to three
+% arguments \verb|{#3}{#2}{#1}| and calls \verb|\iso@printdate|.
+%    \begin{macrocode}
+\def\iso@input@german#1.#2.#3\@empty{\iso@printdate{#3}{#2}{#1}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@input@english}
+% \changes{2.26}{2005/03/10}{Support different input formats
+%   containing slashes}%
+% Converts a string with the format \verb|dd/mm/yyyy| to three
+% arguments \verb|{#3}{#2}{#1}| and calls \verb|\iso@printdate|.
+%    \begin{macrocode}
+\def\iso@input@english#1/#2/#3\@empty{%
+  \ifthenelse{\equal{\iso@inputformat}{tex}}{%
+    \iso@printdate{#1}{#2}{#3}%
+  }{%
+    \ifthenelse{\equal{\iso@inputformat}{american}}{%
+      \iso@printdate{#3}{#1}{#2}%
+    }{%
+      \iso@printdate{#3}{#2}{#1}%
+    }%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\printdateTeX}
+% Prints a date that is given as one argument in the format
+% \verb|yyyy/mm/dd|.
+%    \begin{macrocode}
+\DeclareRobustCommand*\printdateTeX[1]{%
+%    \end{macrocode}
+% Define \verb|\iso@date| command to expand the argument \verb|#1|.
+%    \begin{macrocode}
+  \edef\iso@date{#1}%
+%    \end{macrocode}
+% Count appearances of `/' in the argument.
+%    \begin{macrocode}
+  \SubStringsToCounter{iso@slash}{/}{\iso@date}%
+%    \end{macrocode}
+% If number of `/' in the argument is equal to 2 then the \LaTeX\
+% format \verb|yyyy/mm/dd| is used.
+%    \begin{macrocode}
+  \ifthenelse{\equal{\theiso@slash}{2}}{%
+    \expandafter\iso@input@TeX\iso@date\@empty}{%
+%    \end{macrocode}
+% Else no of the formats above is used an thus an error message is thrown.
+%    \begin{macrocode}
+    ????\iso@isodash ??\iso@isodash ??%
+    \PackageError{isodate}{unrecognized date format}{Use one of
+      the following formats as macro argument:^^J%
+      \space\space dd.mm.yyyy^^J%
+      \space\space dd/mm/yyyy^^J%
+      \space\space yyyy-mm-dd^^J%
+      Don't use any spaces or commands like \protect\, or
+      \protect~ inside the argument.}%
+    }}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@input@TeX}
+% Converts a string with the format \verb|yyyy/mm/dd| to three
+% arguments \verb|{#1}{#2}{#3}| and calls \verb|\iso@printdate|.
+%    \begin{macrocode}
+\def\iso@input@TeX#1/#2/#3\@empty{\iso@printdate{#1}{#2}{#3}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printmonthday@int}
+% ??????
+%    \begin{macrocode}
+\def\iso@printmonthday@int#1#2{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}}{%
+    \iso@printmonth{#1}%
+    \ifiso@doprintday
+      \iso@isodash\iso@printday{#2}%
+    \fi
+  }{%
+    \ifthenelse{\equal{\iso@dateformat}{TeX}}{%
+      \iso@printmonth{#1}%
+      \ifiso@doprintday
+        /\iso@printday{#2}%
+      \fi
+    }{%
+      \PackageError{isodate.sty}{\csname iso@printmonthday\endcsname:
+        Invalid date format `\iso@dateformat'}{Internal error. Please
+        report to the package author.}
+    }%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printdate@int}
+% ??????
+%    \begin{macrocode}
+\def\iso@printdate@int#1#2#3{%
+  \ifiso@printyear
+    \ifthenelse{\equal{\iso@dateformat}{iso}}{%
+      \iso@yearfour{\number#1}\iso@isodash%
+    }{%
+      \ifthenelse{\equal{\iso@dateformat}{TeX}}{%
+        \iso@yearfour{\number#1}/%
+      }{%
+        \PackageError{isodate.sty}{\csname iso@printmonthday\endcsname:
+          Invalid date format `\iso@dateformat'}{Internal error. Please
+          report to the package author.}
+      }%
+    }%
+  \fi
+  \csname iso@printmonthday@int\endcsname{\number#2}{\number#3}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@int}
+% ??????
+%    \begin{macrocode}
+\def\iso@daterange@int#1#2#3#4#5#6{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+    \iso@rangesign%
+    \ifthenelse{\equal{\number#1}{\number#4}}{%
+      \ifthenelse{\equal{\number#2}{\number#5}}{%
+        \ifiso@doprintday
+          \iso@printday{#6}%
+        \else
+          \iso@printmonthday@int{#5}{#6}%
+        \fi
+      }{%
+        \iso@printmonthday@int{#5}{#6}%
+      }%
+    }{%
+      \iso@printdate@int{#4}{#5}{#6}%
+    }%
+  }{%
+    \PackageError{isodate.sty}{\csname iso@printmonthday\endcsname:
+      Invalid date format `\iso@dateformat'}{Internal error. Please
+      report to the package author.}
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\daterange}
+% Prints a date range.
+%    \begin{macrocode}
+\DeclareRobustCommand*\daterange[2]{%
+%    \end{macrocode}
+% Define \verb|\iso@date| and \verb|\iso@@date| commands to expand the
+% argument \verb|#1| and \verb|#2|. Define \verb|\iso@@@date| which
+% contains both arguments devided by a komma.
+%    \begin{macrocode}
+  \edef\iso@date{#1}%
+  \edef\iso@@date{#2}%
+  \edef\iso@@@date{\iso@date,\iso@@date}%
+%    \end{macrocode}
+% Count appearances of `/', `-', and `.' in the arguments.
+%    \begin{macrocode}
+  \SubStringsToCounter{iso@slash}{/}{\iso@date}%
+  \SubStringsToCounter{iso@minus}{-}{\iso@date}%
+  \SubStringsToCounter{iso@dot}{.}{\iso@date}%
+  \SubStringsToCounter{iso@@slash}{/}{\iso@@date}%
+  \SubStringsToCounter{iso@@minus}{-}{\iso@@date}%
+  \SubStringsToCounter{iso@@dot}{.}{\iso@@date}%
+%    \end{macrocode}
+% If number of `.' in both arguments is equal to 2 then the German
+% format \verb|dd.mm.yyyy| is used.
+%    \begin{macrocode}
+  \ifthenelse{\equal{\theiso@dot}{2}\AND\equal{\theiso@@dot}{2}}{%
+    \expandafter\iso@range@input@german\iso@@@date\@empty}{%
+%    \end{macrocode}
+% If number of `-' in both arguments is equal to 2 then the ISO
+% format \verb|yyyy-mm-dd| is used.
+%    \begin{macrocode}
+    \ifthenelse{\equal{\theiso@minus}{2}\AND\equal{\theiso@@minus}{2}}{%
+      \expandafter\iso@range@input@iso\iso@@@date\@empty}{%
+%    \end{macrocode}
+% If number of `/' in both arguments is equal to 2 then the British English
+% format \verb|dd/mm/yyyy| is used.
+%    \begin{macrocode}
+      \ifthenelse{\equal{\theiso@slash}{2}\AND
+                  \equal{\theiso@@slash}{2}}{%
+        \expandafter\iso@range@input@english\iso@@@date\@empty}{%
+%    \end{macrocode}
+% Else no of the formats above is used an thus an error message is thrown.
+%    \begin{macrocode}
+        ????\iso@isodash ??\iso@isodash ??%
+        \PackageError{isodate}{unrecognized date format}{Use one of
+          the following formats as macro argument:^^J%
+          \space\space dd.mm.yyyy^^J%
+          \space\space dd/mm/yyyy^^J%
+          \space\space yyyy-mm-dd^^J%
+          Don't use any spaces or commands like \protect\, or
+          \protect~ inside the argument.^^J
+          Use the same format for both arguments.}%
+        }}}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@range@input@iso}
+% \changes{2.21}{2003/12/06}{Support to print date without year}%
+% Converts a string with the format \verb|yyyy-mm-dd,yyyy-mm-dd| to six
+% arguments \verb|{#1}{#2}{#3}{#4}{#5}{#6}| and calls
+% \verb|\iso@daterange@|language. 
+%    \begin{macrocode}
+\def\iso@range@input@iso#1-#2-#3,#4-#5-#6\@empty{%
+  \begingroup
+%    \end{macrocode}
+% \changes{2.25}{2005/02/21}{Warning for unknown languages}%
+% Generate a warning if the active language is not known by |isodate|.
+%    \begin{macrocode}
+    \@ifundefined{iso@daterange@\iso@languagename}{%
+      \PackageWarning{isodate}{Language \iso@languagename\space unknown
+        to isodate.\MessageBreak
+        Using default date range\MessageBreak
+        with range sign --}%
+        \expandafter\def\csname iso@printdate@\iso@languagename\endcsname{}%
+%    \end{macrocode}
+% \changes{2.25}{2005/02/21}{Fall-back format for unknown languages}%
+% Print date range in fall-back format.
+%    \begin{macrocode}
+      \iso@printdate{#1}{#2}{#3}--\iso@printdate{#4}{#5}{#6}%
+    }{%
+%    \end{macrocode}
+% Print date range in the chosen |isodate| format.
+%    \begin{macrocode}
+      \ifthenelse{\equal{\number#1}{\number#4}}{}{\printyearon}%
+      \csname iso@daterange@\iso@languagename\endcsname{%
+        #1}{#2}{#3}{#4}{#5}{#6}%
+    }%
+  \endgroup
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@range@input@german}
+% \changes{2.21}{2003/12/06}{Support to print date without year}%
+% Converts a string with the format \verb|dd.mm.yyyy,dd.mm.yyyy| to six
+% arguments \verb|{#3}{#2}{#1}{#6}{#5}{#4}| and calls
+% \verb|\iso@daterange@|language. 
+%    \begin{macrocode}
+\def\iso@range@input@german#1.#2.#3,#4.#5.#6\@empty{%
+  \begingroup
+%    \end{macrocode}
+% \changes{2.25}{2005/02/21}{Warning for unknown languages}%
+% Generate a warning if the active language is not known by |isodate|.
+%    \begin{macrocode}
+    \@ifundefined{iso@daterange@\iso@languagename}{%
+      \PackageWarning{isodate}{Language \iso@languagename\space unknown
+        to isodate.\MessageBreak
+        Using default date range\MessageBreak
+        with range sign --}%
+        \expandafter\def\csname iso@printdate@\iso@languagename\endcsname{}%
+%    \end{macrocode}
+% \changes{2.25}{2005/02/21}{Fall-back format for unknown languages}%
+% Print date range in fall-back format.
+%    \begin{macrocode}
+      \iso@printdate{#3}{#2}{#1}--\iso@printdate{#6}{#5}{#4}%
+    }{%
+%    \end{macrocode}
+% Print date range in the chosen |isodate| format.
+%    \begin{macrocode}
+      \ifthenelse{\equal{\number#3}{\number#6}}{}{\printyearon}%
+      \csname iso@daterange@\iso@languagename\endcsname{%
+        #3}{#2}{#1}{#6}{#5}{#4}%
+    }%
+  \endgroup
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@range@input@english}
+% \changes{2.21}{2003/12/06}{Support to print date without year}%
+% Converts a string with the format \verb|dd/mm/yyyy,dd/mm/yyyy| to six
+% arguments \verb|{#3}{#2}{#1}{#6}{#5}{#4}| and calls
+% \verb|\iso@daterange@|language. 
+%    \begin{macrocode}
+\def\iso@range@input@english#1/#2/#3,#4/#5/#6\@empty{%
+  \begingroup
+%    \end{macrocode}
+% \changes{2.25}{2005/02/21}{Warning for unknown languages}%
+% Generate a warning if the active language is not known by |isodate|.
+%    \begin{macrocode}
+    \@ifundefined{iso@daterange@\iso@languagename}{%
+      \PackageWarning{isodate}{Language \iso@languagename\space unknown
+        to isodate.\MessageBreak
+        Using default date range\MessageBreak
+        with range sign --}%
+        \expandafter\def\csname iso@printdate@\iso@languagename\endcsname{}%
+%    \end{macrocode}
+% \changes{2.26}{2005/03/10}{Support different input formats
+%   containing slashes}%
+% \changes{2.25}{2005/02/21}{Fall-back format for unknown languages}%
+% Print date range in fall-back format.
+%    \begin{macrocode}
+        \ifthenelse{\equal{\iso@inputformat}{tex}}{%
+          \iso@printdate{#1}{#2}{#3}--\iso@printdate{#4}{#5}{#6}%
+        }{%
+          \ifthenelse{\equal{\iso@inputformat}{american}}{%
+            \iso@printdate{#3}{#1}{#2}--\iso@printdate{#6}{#4}{#5}%
+          }{%
+            \iso@printdate{#3}{#2}{#1}--\iso@printdate{#6}{#5}{#4}%
+          }%
+        }%
+    }{%
+%    \end{macrocode}
+% \changes{2.26}{2005/03/10}{Support different input formats
+%   containing slashes}%
+% Print date range in the chosen |isodate| format.
+%    \begin{macrocode}
+      \ifthenelse{\equal{\number#3}{\number#6}}{}{\printyearon}%
+      \ifthenelse{\equal{\iso@inputformat}{tex}}{%
+        \csname iso@daterange@\iso@languagename\endcsname{%
+          #1}{#2}{#3}{#4}{#5}{#6}%
+      }{%
+        \ifthenelse{\equal{\iso@inputformat}{american}}{%
+          \csname iso@daterange@\iso@languagename\endcsname{%
+            #3}{#1}{#2}{#6}{#4}{#5}%
+        }{%
+          \csname iso@daterange@\iso@languagename\endcsname{%
+            #3}{#2}{#1}{#6}{#5}{#4}%
+        }%
+      }%
+    }%
+  \endgroup
+}
+%    \end{macrocode}
+% \end{macro}
+% Define the counters for conting the appearances of `.', `-', and 
+% '/' in the arguments.
+%    \begin{macrocode}
+\newcounter{iso@slash}
+\newcounter{iso@minus}
+\newcounter{iso@dot}
+\newcounter{iso@@slash}
+\newcounter{iso@@minus}
+\newcounter{iso@@dot}
+%    \end{macrocode}
+% The command \verb|\iso@languagename| is defined to be able to use
+% this package without loading one of the language packages
+% babel.sty, german.sty, or ngerman.sty.
+%
+% If neither babel.sty nor german.sty nor ngerman.sty is loaded my
+% computer returns `nohyphenation' when using \verb|\languagename|.
+% So this is the indication that none of the above packages is loaded.
+% \changes{2.01}{2000/08/24}{Handle case of not loaded language
+%   package babel, german and ngerman}
+% \changes{2.12}{2003/10/14}{Test for babel improved}%
+% \changes{2.14}{2003/10/26}{Test on babel, german, and ngerman}%
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \@tempswafalse
+  \@ifpackageloaded{babel}{%
+    \@tempswatrue
+    \typeout{isodate: babel.sty has been loaded}%
+  }{}%
+  \@ifpackageloaded{german}{%
+    \@tempswatrue
+    \typeout{isodate: german.sty has been loaded}%
+  }{}%
+  \@ifpackageloaded{ngerman}{%
+    \@tempswatrue
+    \typeout{isodate: ngerman.sty has been loaded}%
+  }{}%
+%    \end{macrocode}
+% The language is not equal `nohyphenation'. So one of the language
+% packages is loaded. Replace the internal language name
+% \verb|\iso@languagename| by the global language name \verb|\languagename|.
+%    \begin{macrocode}
+  \if@tempswa
+    \gdef\iso@languagename{\languagename}%
+%    \end{macrocode}
+% Reload language to surely switch to new date format. The
+% languagename gets first expanded because of errors that would occur 
+% otherwise.
+%    \begin{macrocode}
+    \edef\iso@tmplang{\languagename}%
+    \expandafter\selectlanguage\expandafter{\iso@tmplang}%
+  \else
+%    \end{macrocode}
+% At the end of the preamble still none of the language packages are loaded.
+% So no language switching
+% is possible. Set the date language manually to the last language
+% that was loaded for isodate.
+%    \begin{macrocode}
+    \typeout{isodate: babel.sty, (n)german.sty have not been loaded}%
+    \csname date\iso@languagename\endcsname%
+  \fi
+}
+%</isodate>
+%    \end{macrocode}
+%
+% \subsection{Language definition file danish.idf}
+% \changes{2.26}{2005/03/10}{Force year in four digits for long formats}%
+%
+% \begin{macro}{\iso@languageloaded}
+% Define the command \verb|\iso@languageloaded| in order to enable
+% \verb|isodate.sty| to determine if at least one language is loaded.
+%    \begin{macrocode}
+%<*danish>
+\let\iso@languageloaded\active
+\typeout{Define commands for Danish date format}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\month@danish}
+% Prints the name of today's month in the long form for the original
+% date format.
+%    \begin{macrocode}
+\def\month@danish{\ifcase\month\or
+    januar\or februar\or marts\or april\or maj\or juni\or
+    juli\or august\or september\or oktober\or november\or december\fi}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printmonthday@danish}
+% Prints the month and the day given as two arguments
+% (\verb|{mm}{dd}|) in the current date format.
+%    \begin{macrocode}
+\def\iso@printmonthday@danish#1#2{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printmonthday@int{#1}{#2}%
+  }{%
+%    \end{macrocode}
+% Numeric and short date format: \verb|dd/mm/|
+%    \begin{macrocode}
+    \ifthenelse{\equal{\iso@dateformat}{numeric}\OR
+                \equal{\iso@dateformat}{short}}{%
+      \ifiso@doprintday
+        \iso@printday{#2}/%
+      \fi
+      \iso@printmonth{#1}%
+    }{%
+%    \end{macrocode}
+% Original date format: \verb|d. mmm|
+%    \begin{macrocode}
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+        \ifiso@doprintday
+          \iso@printday{#2}.\iso@monthsep
+        \fi
+        \begingroup
+        \edef\lmonth{#1}\def\month{\lmonth}%
+        \month@danish%
+        \endgroup
+      }{}%
+    }%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printdate@danish}
+% Prints the date given as three arguments (\verb|{yyyy}{mm}{dd}|) in
+% the actual date format
+%    \begin{macrocode}
+\def\iso@printdate@danish#1#2#3{%
+%    \end{macrocode}
+% ISO or \LaTeX date format: \verb|yyyy\iso@printmonthday@danish|
+%    \begin{macrocode}
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printdate@int{#1}{#2}{#3}%
+  }{%
+    \iso@printmonthday@danish{\number#2}{\number#3}%
+    \ifiso@printyear
+%    \end{macrocode}
+% ?????
+%    \begin{macrocode}
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+      }{%
+        /%
+      }%
+%    \end{macrocode}
+% numeric date format: \verb|\iso@printmonthday@danish yyyy|
+%    \begin{macrocode}
+      \ifthenelse{\equal{\iso@dateformat}{numeric}}{%
+        \iso@yearfour{\number#1}%
+      }{%
+%    \end{macrocode}
+% original date format: \verb|\iso@printmonthday@danish~yyyy|
+%    \begin{macrocode}
+        \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+          \iso@yearsep\iso@yearfour{\number#1}%
+        }{%
+%    \end{macrocode}
+% short original date format: \verb|\iso@printmonthday@danish~yy|
+%    \begin{macrocode}
+          \ifthenelse{\equal{\iso@dateformat}{shortorig}}{%
+            \iso@yearsep\iso@twodigitsign\iso@yeartwo{\number#1}%
+          }{%
+%    \end{macrocode}
+% short date format: \verb|\iso@printmonthday@danish yy|
+%    \begin{macrocode}
+            \ifthenelse{\equal{\iso@dateformat}{short}}{%
+              \iso@yeartwo{\number#1}%
+            }{}%
+          }%
+        }%
+      }%
+    \fi
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@datedanish}
+% This command redefines the \cs{today} command to print in the
+% actual date format.
+%    \begin{macrocode}
+\def\iso@datedanish{%
+  \def\today{\iso@printdate@danish{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@...}
+% Define date-range commands for dialects.
+%    \begin{macrocode}
+\expandafter\def\csname iso@daterange@\CurrentOption\endcsname{%
+  \iso@daterange@danish}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@danish}
+% This command takes six arguments
+% (\verb|{yyyy1}{mm1}{dd1}{yyyy2}{mm2}{dd2}|) and prints the corrosponding
+% date range in the actual date format.
+%    \begin{macrocode}
+\def\iso@daterange@danish#1#2#3#4#5#6{%
+%    \end{macrocode}
+% ISO or \LaTeX\ date format.
+%    \begin{macrocode}
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+%    \end{macrocode}
+% Call the appropriate international routine.
+%    \begin{macrocode}
+    \iso@daterange@int{#1}{#2}{#3}{#4}{#5}{#6}%
+  }{%
+%    \end{macrocode}
+% Numeric, short, or original date format.
+%
+% If year and month are equal, only print the day of the start date. If
+% only the year is equal, only print month and day of the start
+% date. Otherwise print the whole start date.
+%    \begin{macrocode}
+    \ifthenelse{\equal{\number#1}{\number#4}}{%
+      \ifthenelse{\equal{\number#2}{\number#5}}{%
+        \ifiso@doprintday
+          \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                      \equal{\iso@dateformat}{shortorig}}{%
+            \iso@printday{#3}.%
+          }{%
+            \iso@printday{#3}%
+          }%
+        \else
+          \iso@printmonthday@danish{#2}{#3}%
+        \fi
+      }{%
+        \iso@printmonthday@danish{#2}{#3}%
+      }%
+    }{%
+      \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+    }%
+%    \end{macrocode}
+% Print the end date.
+%    \begin{macrocode}
+    \iso@rangesign
+    \csname iso@printdate@\iso@languagename\endcsname{#4}{#5}{#6}%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@rangesign@danish}
+% Sets the word between start and end date in a date range to `~til~'.
+%    \begin{macrocode}
+\expandafter\def\csname iso@rangesign@\CurrentOption\endcsname{~til~}
+%    \end{macrocode}
+% \end{macro}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+\def\iso@languagename{danish}%
+%    \end{macrocode}
+% Redefine the command \verb|\datedanish| that is used by babel to
+% switch to the original Danish date format to enable the use of
+% different date formats.
+% This has to be done after the preamble in order to ensure to overwrite
+% the babel command.
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \ifx\undefined\iso@datedanish\else
+    \def\datedanish{\iso@datedanish}%
+  \fi
+}
+%</danish>
+%    \end{macrocode}
+%
+% \subsection{Language definition file english.idf}
+% \changes{2.26}{2005/03/10}{Force year in four digits for long formats}%
+%
+% \begin{macro}{\iso@languageloaded}
+% Define the command \verb|\iso@languageloaded| in order to enable
+% \verb|isodate.sty| to determine if at least one language is loaded.
+%    \begin{macrocode}
+%<*english>
+\let\iso@languageloaded\active
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\month@english}
+% Prints the name of today's month in the long form for the original
+% date format.
+%    \begin{macrocode}
+\def\month@english{\ifcase\month\or
+    January\or February\or March\or April\or May\or June\or
+    July\or August\or September\or October\or November\or December\fi}
+%    \end{macrocode}
+% \end{macro}
+% British and American English dates are very different. So handle
+% them seperately. It might have been easier to put them in different
+% files but I wanted to organize my files analogous to babel.
+%
+% First handle British English.
+%    \begin{macrocode}
+\ifthenelse{\equal{\CurrentOption}{english}\OR
+            \equal{\CurrentOption}{british}\OR
+            \equal{\CurrentOption}{UKenglish}}{%
+  \typeout{Define commands for English date format}
+%    \end{macrocode}
+% \begin{macro}{\day@english}
+% \changes{2.28}{2005/04/15}{Introduce option cleanlook for English
+%   date format}%
+% Prints today's day for the original date format.
+%    \begin{macrocode}
+  \def\day@english{%
+    \ifiso@cleanlook
+      \day
+    \else
+      \ifcase\day\or
+        1st\or 2nd\or 3rd\or 4th\or 5th\or
+        6th\or 7th\or 8th\or 9th\or 10th\or
+        11th\or 12th\or 13th\or 14th\or 15th\or
+        16th\or 17th\or 18th\or 19th\or 20th\or
+        21st\or 22nd\or 23rd\or 24th\or 25th\or
+        26th\or 27th\or 28th\or 29th\or 30th\or
+        31st%
+      \fi
+    \fi
+  }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printmonthday@english}
+% Prints the month and the day given as two arguments
+% (\verb|{mm}{dd}|) in the current date format.
+%    \begin{macrocode}
+  \def\iso@printmonthday@english#1#2{%
+%    \end{macrocode}
+% Numeric and short date format: \verb|dd/mm/|
+%    \begin{macrocode}
+    \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+                \equal{\iso@dateformat}{TeX}}{%
+      \iso@printmonthday@int{#1}{#2}%
+    }{%
+      \ifthenelse{\equal{\iso@dateformat}{numeric}\OR
+                  \equal{\iso@dateformat}{short}}{%
+        \ifiso@doprintday
+          \iso@printday{#2}/%
+        \fi
+        \iso@printmonth{#1}%
+      }{%
+%    \end{macrocode}
+% Original date format: \verb|ddd mmm|
+%    \begin{macrocode}
+        \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                    \equal{\iso@dateformat}{shortorig}}{%
+          \begingroup
+          \edef\lday{#2}\def\day{\lday}%
+          \edef\lmonth{#1}\def\month{\lmonth}%
+          \ifiso@doprintday
+            \day@english\iso@monthsep\@empty
+          \fi
+          \month@english
+          \endgroup
+        }{}%
+      }%
+    }%
+  }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printdate@english}
+% Prints the date given as three arguments (\verb|{yyyy}{mm}{dd}|) in
+% the actual date format.
+%    \begin{macrocode}
+  \def\iso@printdate@english#1#2#3{%
+    \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+                \equal{\iso@dateformat}{TeX}}{%
+      \iso@printdate@int{#1}{#2}{#3}%
+    }{%
+%    \end{macrocode}
+% ISO date format: \verb|yyyy-\iso@printmonthday@english|
+%    \begin{macrocode}
+      \iso@printmonthday@english{\number#2}{\number#3}%
+%    \end{macrocode}
+% Numeric date format: \verb|\iso@printmonthday@english yyyy|
+%    \begin{macrocode}
+      \ifiso@printyear
+        \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                    \equal{\iso@dateformat}{shortorig}}{%
+        }{%
+          /%
+        }%
+        \ifthenelse{\equal{\iso@dateformat}{numeric}}{%
+          \iso@yearfour{\number#1}%
+        }{%
+%    \end{macrocode}
+% Original date format: \verb|\iso@printmonthday@english~yyyy|
+%    \begin{macrocode}
+          \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+            \iso@yearsep\iso@yearfour{\number#1}%
+          }{%
+%    \end{macrocode}
+% Short original date format: \verb|\iso@printmonthday@english~yy|
+%    \begin{macrocode}
+            \ifthenelse{\equal{\iso@dateformat}{shortorig}}{%
+              \iso@yearsep\iso@twodigitsign\iso@yeartwo{\number#1}%
+            }{%
+%    \end{macrocode}
+% Short date format: \verb|\iso@printmonthday@english yy|
+%    \begin{macrocode}
+              \ifthenelse{\equal{\iso@dateformat}{short}}{%
+                \iso@yeartwo{\number#1}%
+              }{}%
+            }%
+          }%
+        }%
+      \fi
+    }%
+  }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printdate@UKenglish}
+% Just a second name for \verb|\iso@printdate@UKenglish|.
+%    \begin{macrocode}
+  \def\iso@printdate@UKenglish{\iso@printdate@english}
+  \def\iso@printdate@british{\iso@printdate@english}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@dateenglish}
+% This command redefines the \cs{today} command to print in the
+% actual date format.
+%    \begin{macrocode}
+  \def\iso@dateenglish{%
+    \def\today{\iso@printdate@english{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@...}
+% Define date-range commands for dialects of English.
+%    \begin{macrocode}
+  \expandafter\def\csname iso@daterange@\CurrentOption\endcsname{%
+    \iso@daterange@english}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@english}
+% This command takes six arguments
+% (\verb|{yyyy1}{mm1}{dd1}{yyyy2}{mm2}{dd2}|) and prints the corrosponding
+% date range in the actual date format.
+%    \begin{macrocode}
+  \def\iso@daterange@english#1#2#3#4#5#6{%
+%    \end{macrocode}
+% ISO or \LaTeX\ date format.
+%    \begin{macrocode}
+    \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+                \equal{\iso@dateformat}{TeX}}{%
+%    \end{macrocode}
+% Print the start date.
+%    \begin{macrocode}
+      \iso@daterange@int{#1}{#2}{#3}{#4}{#5}{#6}%
+    }{%
+%    \end{macrocode}
+% Numeric, short, or original date format.
+%
+% If year and month are equal, only print the day of the start date. If
+% only the year is equal, only print month and day of the start
+% date. Otherwise print the whole start date.
+%    \begin{macrocode}
+      \ifthenelse{\equal{\number#1}{\number#4}}{%
+        \ifthenelse{\equal{\number#2}{\number#5}}{%
+          \ifiso@doprintday
+            \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                        \equal{\iso@dateformat}{shortorig}}{%
+              \begingroup
+              \edef\lday{#3}\def\day{\lday}%
+              \day@english
+              \endgroup
+            }{%
+              \iso@printday{#3}%
+            }%
+          \else
+            \csname iso@printmonthday@\iso@languagename\endcsname{#2}{#3}%
+          \fi
+        }{%
+          \csname iso@printmonthday@\iso@languagename\endcsname{#2}{#3}%
+        }%
+      }{%
+        \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+      }%
+%    \end{macrocode}
+% Print the end date.
+%    \begin{macrocode}
+      \iso@rangesign
+      \csname iso@printdate@\iso@languagename\endcsname{#4}{#5}{#6}%
+    }%
+  }
+%    \end{macrocode}
+% \end{macro}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+  \def\iso@languagename{english}%
+%    \end{macrocode}
+% The end of the British section.
+%
+% \changes{2.20}{2003/12/06}{Add Australian and New Zealand}%
+% Second handle Australian and New Zealand.
+%    \begin{macrocode}
+}{%
+  \ifthenelse{\equal{\CurrentOption}{australian}\OR
+              \equal{\CurrentOption}{newzealand}}{%
+    \typeout{Define commands for Australian date format}
+%    \end{macrocode}
+% \begin{macro}{\iso@printmonthday@australian}
+% Prints the month and the day given as two arguments
+% (\verb|{mm}{dd}|) in the current date format.
+%    \begin{macrocode}
+    \def\iso@printmonthday@australian#1#2{%
+      \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+                  \equal{\iso@dateformat}{TeX}}{%
+        \iso@printmonthday@int{#1}{#2}%
+      }{%
+%    \end{macrocode}
+% Numeric and short date format: \verb|dd/mm/|
+%    \begin{macrocode}
+        \ifthenelse{\equal{\iso@dateformat}{numeric}\OR
+                    \equal{\iso@dateformat}{short}}{%
+          \ifiso@doprintday
+            \iso@printday{#2}/%
+          \fi
+          \iso@printmonth{#1}%
+        }{%
+%    \end{macrocode}
+% Original date format: \verb|ddd mmm|
+%    \begin{macrocode}
+          \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                      \equal{\iso@dateformat}{shortorig}}{%
+            \begingroup
+            \edef\lmonth{#1}\def\month{\lmonth}%
+            \ifiso@doprintday
+              \iso@printday{#2}\iso@monthsep\@empty
+            \fi
+            \month@english
+            \endgroup
+          }{}%
+        }%
+      }%
+    }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printdate@australian}
+% Prints the date given as three arguments (\verb|{yyyy}{mm}{dd}|) in
+% the actual date format.
+%    \begin{macrocode}
+    \def\iso@printdate@australian#1#2#3{%
+      \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+                  \equal{\iso@dateformat}{TeX}}{%
+        \iso@printdate@int{#1}{#2}{#3}%
+      }{%
+        \iso@printmonthday@australian{\number#2}{\number#3}%
+%    \end{macrocode}
+% Numeric date format: \verb|\iso@printmonthday@australian yyyy|
+%    \begin{macrocode}
+        \ifiso@printyear
+          \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                      \equal{\iso@dateformat}{shortorig}}{%
+          }{%
+            /%
+          }%
+          \ifthenelse{\equal{\iso@dateformat}{numeric}}{%
+            \iso@yearfour{\number#1}%
+          }{%
+%    \end{macrocode}
+% Original date format: \verb|\iso@printmonthday@australian~yyyy|
+%    \begin{macrocode}
+            \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+              \iso@yearsep\iso@yearfour{\number#1}%
+            }{%
+%    \end{macrocode}
+% Short original date format: \verb|\iso@printmonthday@australian~yy|
+%    \begin{macrocode}
+              \ifthenelse{\equal{\iso@dateformat}{shortorig}}{%
+                \iso@yearsep\iso@twodigitsign\iso@yeartwo{\number#1}%
+              }{%
+%    \end{macrocode}
+% Short date format: \verb|\iso@printmonthday@australian yy|
+%    \begin{macrocode}
+                \ifthenelse{\equal{\iso@dateformat}{short}}{%
+                  \iso@yeartwo{\number#1}%
+                }{}%
+              }%
+            }%
+          }%
+        \fi
+      }%
+    }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printdate@newzealand}
+% Just a second name for \verb|\iso@printdate@UKenglish|.
+%    \begin{macrocode}
+    \def\iso@printdate@newzealand{\iso@printdate@australian}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@dateaustralian}
+% This command redefines the \cs{today} command to print in the
+% actual date format.
+%    \begin{macrocode}
+    \def\iso@dateaustralian{%
+      \def\today{\iso@printdate@australian{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@...}
+% Define date-range commands for dialects of Australian.
+%    \begin{macrocode}
+    \expandafter\def\csname iso@daterange@\CurrentOption\endcsname{%
+      \iso@daterange@australian}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@australian}
+% This command takes six arguments
+% (\verb|{yyyy1}{mm1}{dd1}{yyyy2}{mm2}{dd2}|) and prints the corrosponding
+% date range in the actual date format.
+%    \begin{macrocode}
+    \def\iso@daterange@australian#1#2#3#4#5#6{%
+%    \end{macrocode}
+% ISO or \LaTeX\ date format.
+%    \begin{macrocode}
+      \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+                  \equal{\iso@dateformat}{TeX}}{%
+%    \end{macrocode}
+% Print the start date.
+%    \begin{macrocode}
+        \iso@daterange@int{#1}{#2}{#3}{#4}{#5}{#6}%
+      }{%
+%    \end{macrocode}
+% Numeric, short, or original date format.
+%
+% If year and month are equal, only print the day of the start date. If
+% only the year is equal, only print month and day of the start
+% date. Otherwise print the whole start date.
+%    \begin{macrocode}
+        \ifthenelse{\equal{\number#1}{\number#4}}{%
+          \ifthenelse{\equal{\number#2}{\number#5}}{%
+            \ifiso@doprintday
+              \iso@printday{#3}%
+            \else
+              \csname iso@printmonthday@\iso@languagename\endcsname{#2}{#3}%
+            \fi
+          }{%
+            \iso@printmonthday@australian{#2}{#3}%
+          }%
+        }{%
+          \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+        }%
+%    \end{macrocode}
+% Print the end date.
+%    \begin{macrocode}
+        \iso@rangesign
+        \csname iso@printdate@\iso@languagename\endcsname{#4}{#5}{#6}%
+      }%
+    }
+%    \end{macrocode}
+% \end{macro}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+    \def\iso@languagename{australian}%
+%    \end{macrocode}
+% The end of the Australian section.
+%
+% Third, handle American.
+%    \begin{macrocode}
+  }{%
+    \typeout{Define commands for American date format}
+%    \end{macrocode}
+% \begin{macro}{\iso@printmonthday@american}
+% Prints the month and the day given as two arguments
+% (\verb|{mm}{dd}|) in the current date format.
+%    \begin{macrocode}
+    \def\iso@printmonthday@american#1#2{%
+      \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+                  \equal{\iso@dateformat}{TeX}}{%
+        \iso@printmonthday@int{#1}{#2}%
+      }{%
+%    \end{macrocode}
+% Numeric and short date format: \verb|mm/dd/|
+%    \begin{macrocode}
+        \ifthenelse{\equal{\iso@dateformat}{numeric}\OR
+                    \equal{\iso@dateformat}{short}}{%
+          \iso@printmonth{#1}%
+          \ifiso@doprintday
+            /\iso@printday{#2}%
+          \fi
+        }{%
+%    \end{macrocode}
+% Original date format: \verb|mmm d|
+%    \begin{macrocode}
+          \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                      \equal{\iso@dateformat}{shortorig}}{%
+            \begingroup%
+            \edef\lmonth{#1}%
+            \def\month{\lmonth}%
+            \month@english%
+            \endgroup
+            \ifiso@doprintday
+              \iso@daysep\iso@printday{#2}%
+            \fi
+          }{}%
+        }%
+      }%
+    }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printdate@american}
+% Prints the date given as three arguments (\verb|{yyyy}{mm}{dd}|) in
+% the actual date format.
+%    \begin{macrocode}
+    \def\iso@printdate@american#1#2#3{%
+      \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+                  \equal{\iso@dateformat}{TeX}}{%
+        \iso@printdate@int{#1}{#2}{#3}%
+      }{%
+        \iso@printmonthday@american{\number#2}{\number#3}%
+%    \end{macrocode}
+% Numeric date format: \verb|\iso@printmonthday@american yyyy|
+%    \begin{macrocode}
+        \ifiso@printyear
+          \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                      \equal{\iso@dateformat}{shortorig}}{%
+          }{%
+            /%
+          }%
+          \ifthenelse{\equal{\iso@dateformat}{numeric}}{%
+            \iso@yearfour{\number#1}%
+          }{%
+%    \end{macrocode}
+% Original date format: \verb|\iso@printmonthday@american,~yyyy|
+%    \begin{macrocode}
+            \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+              \ifiso@doprintday,\fi
+              \iso@yearsep\iso@yearfour{\number#1}%
+            }{%
+%    \end{macrocode}
+% Short original date format: \verb|\iso@printmonthday@american,~yyyy|
+%    \begin{macrocode}
+              \ifthenelse{\equal{\iso@dateformat}{shortorig}}{%
+                \ifiso@doprintday,\fi
+                \iso@yearsep\iso@twodigitsign\iso@yeartwo{\number#1}%
+              }{%
+%    \end{macrocode}
+% Short date format: \verb|\iso@printmonthday@american yy|
+%    \begin{macrocode}
+                \ifthenelse{\equal{\iso@dateformat}{short}}{%
+                  \iso@yeartwo{\number#1}%
+                }{}%
+              }%
+            }%
+          }%
+        \fi
+      }%
+    }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printdate@USenglish}
+% Just a second name for \verb|\iso@printdate@UKamerican|.
+%    \begin{macrocode}
+    \def\iso@printdate@USenglish{\iso@printdate@american}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@dateamerican}
+% This command redefines the \cs{today} command to print in the
+% actual date format.
+%    \begin{macrocode}
+    \def\iso@dateamerican{%
+      \def\today{\iso@printdate@american{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@...}
+% Define date-range commands for dialects of American.
+%    \begin{macrocode}
+    \expandafter\def\csname iso@daterange@\CurrentOption\endcsname{%
+      \iso@daterange@american}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@american}
+% This command takes six arguments
+% (\verb|{yyyy1}{mm1}{dd1}{yyyy2}{mm2}{dd2}|) and prints the corrosponding
+% date range in the actual date format.
+%    \begin{macrocode}
+    \def\iso@daterange@american#1#2#3#4#5#6{%
+%    \end{macrocode}
+% ISO or \LaTeX\ date format.
+%    \begin{macrocode}
+      \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+                  \equal{\iso@dateformat}{TeX}}{%
+%    \end{macrocode}
+% Print the start date.
+%    \begin{macrocode}
+        \iso@daterange@int{#1}{#2}{#3}{#4}{#5}{#6}%
+      }{%
+%    \end{macrocode}
+% Original date format.
+%
+% If year and month are equal, print \verb|mmm d1 to d2, yyyy|. If
+% only the year is equal, print \verb|mmm1 d1 to mmm2 d2, yyyy|. 
+% Otherwise print the whole start and end date.
+%    \begin{macrocode}
+        \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                    \equal{\iso@dateformat}{shortorig}}{%
+          \ifthenelse{\equal{\number#1}{\number#4}}{%
+            \ifthenelse{\equal{\number#2}{\number#5}}{%
+              \iso@printmonthday@american{#2}{#3}%
+              \iso@rangesign
+              \ifiso@doprintday
+                \iso@printday{#6},\iso@yearsep\@empty
+              \else
+                \iso@printmonthday@american{#5}{#6}\iso@yearsep\@empty
+              \fi
+              \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+                \iso@yearfour{\number#4}%
+              }{%
+                \iso@twodigitsign\iso@yeartwo{\number#4}%
+              }%
+            }{%
+              \iso@printmonthday@american{#2}{#3}%
+              \iso@rangesign
+              \csname iso@printdate@\iso@languagename\endcsname{%
+                #4}{#5}{#6}%
+            }%
+          }{%
+            \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+            \iso@rangesign%
+            \csname iso@printdate@\iso@languagename\endcsname{#4}{#5}{#6}%
+          }%
+        }{%
+%    \end{macrocode}
+% Numeric or short date format.
+%
+% If year and month are equal, only print the day of the end date.
+% Otherwise print the whole end date.
+%    \begin{macrocode}
+          \ifthenelse{\equal{\number#1}{\number#4}}{%
+            \iso@printmonthday@american{#2}{#3}%
+          }{%
+            \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+          }%
+%    \end{macrocode}
+% Print the end date.
+%    \begin{macrocode}
+          \iso@rangesign
+          \csname iso@printdate@\iso@languagename\endcsname{#4}{#5}{#6}%
+        }%
+      }%
+    }
+%    \end{macrocode}
+% \end{macro}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+    \def\iso@languagename{american}%
+%    \end{macrocode}
+% The end of the American section.
+%    \begin{macrocode}
+  }
+}
+%    \end{macrocode}
+% \begin{macro}{\iso@rangesign@...}
+% Sets the word between start and end date in a date range to `~to'.
+%    \begin{macrocode}
+\expandafter\def\csname iso@rangesign@\CurrentOption\endcsname{~to~}
+%    \end{macrocode}
+% \end{macro}
+% Redefine the command \verb|date|language that is used by babel.sty,
+% german.sty, and ngerman.sty to switch to the original
+% English/American date format to enable the use of different date
+% formats.
+% This has to be done after the preamble in order to ensure to overwrite
+% the babel command.
+%
+% Do this only if \verb|\iso@date|language is defined.
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \ifx\undefined\iso@dateenglish\else
+    \def\dateenglish{\iso@dateenglish}%
+    \def\datebritish{\iso@dateenglish}%
+    \def\dateUKenglish{\iso@dateenglish}%
+  \fi
+  \ifx\undefined\iso@dateaustralian\else
+    \def\dateaustralian{\iso@dateaustralian}%
+    \def\datenewzealand{\iso@dateaustralian}%
+  \fi
+  \ifx\undefined\iso@dateamerican\else
+    \def\dateamerican{\iso@dateamerican}%
+    \def\dateUSenglish{\iso@dateamerican}%
+  \fi
+}
+%</english>
+%    \end{macrocode}
+%
+% \subsection{Language definition file french.idf}
+% \changes{2.26}{2005/03/10}{Force year in four digits for long formats}%
+%
+% \begin{macro}{\iso@languageloaded}
+% Define the command \verb|\iso@languageloaded| in order to enable
+% \verb|isodate.sty| to determine if at least one language is loaded.
+%    \begin{macrocode}
+%<*french>
+\let\iso@languageloaded\active
+\typeout{Define commands for French date format}
+%    \end{macrocode}
+% \end{macro}
+%    \begin{macrocode}
+\def\month@french{\ifcase\month\or
+  janvier\or f\'evrier\or mars\or avril\or mai\or juin\or
+  juillet\or ao\^ut\or septembre\or octobre\or novembre\or
+  d\'ecembre\fi}
+%    \end{macrocode}
+%    \begin{macrocode}
+\def\iso@printmonthday@french#1#2{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printmonthday@int{#1}{#2}%
+  }{%
+    \ifthenelse{\equal{\iso@dateformat}{numeric}\OR
+                \equal{\iso@dateformat}{short}}{%
+      \ifiso@doprintday
+        \iso@printday{#2}/%
+      \fi
+      \iso@printmonth{#1}%
+    }{%
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+        \begingroup
+        \edef\lday{#2}\edef\day{\lday}%
+        \edef\lmonth{#1}\def\month{\lmonth}%
+        \ifiso@doprintday
+          \number\day\ifnum1=\day \noexpand\ier\fi\iso@monthsep
+        \fi
+        \month@french
+        \endgroup
+      }{}%
+    }%
+  }%
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\def\iso@printdate@french#1#2#3{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printdate@int{#1}{#2}{#3}%
+  }{%
+    \iso@printmonthday@french{\number#2}{\number#3}%
+    \ifiso@printyear
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+      }{%
+        /%
+      }%
+      \ifthenelse{\equal{\iso@dateformat}{numeric}}{%
+        \iso@yearfour{\number#1}%
+      }{%
+        \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+          \iso@yearsep\iso@yearfour{\number#1}%
+        }{%
+          \ifthenelse{\equal{\iso@dateformat}{shortorig}}{%
+            \iso@yearsep\iso@twodigitsign\iso@yeartwo{\number#1}%
+          }{%
+            \ifthenelse{\equal{\iso@dateformat}{short}}{%
+              \iso@yeartwo{\number#1}%
+            }{}%
+          }%
+        }%
+      }%
+    \fi
+  }%
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\def\iso@datefrench{%
+  \def\today{\iso@printdate@french{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% \begin{macro}{\iso@daterange@...}
+% Define date-range commands for dialects.
+%    \begin{macrocode}
+\expandafter\def\csname iso@daterange@\CurrentOption\endcsname{%
+  \iso@daterange@french}%
+%    \end{macrocode}
+% \end{macro}
+%    \begin{macrocode}
+\def\iso@daterange@french#1#2#3#4#5#6{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@daterange@int{#1}{#2}{#3}{#4}{#5}{#6}%
+  }{%
+%    \end{macrocode}
+%    \begin{macrocode}
+    \ifthenelse{\equal{\number#1}{\number#4}}{%
+      \ifthenelse{\equal{\number#2}{\number#5}}{%
+        \ifiso@doprintday
+          \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+            \begingroup
+            \edef\lday{#3}\edef\day{\lday}%
+            \number\day\ifnum1=\day \noexpand\ier\fi
+            \endgroup
+          }{%
+            \iso@printday{#3}%
+          }%
+        \else
+          \csname iso@printmonthday@\iso@languagename\endcsname{#2}{#3}%
+        \fi
+      }{%
+        \iso@printmonthday@french{#2}{#3}%
+      }%
+    }{%
+      \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+    }%
+    \iso@rangesign
+    \csname iso@printdate@\iso@languagename\endcsname{#4}{#5}{#6}%
+  }%
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\expandafter\def\csname iso@rangesign@\CurrentOption\endcsname{~au~}
+%    \end{macrocode}
+% \changes{2.06}{2002/04/08}{Changed range sign for French language,
+% thanks to Felix P\"utsch}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+\def\iso@languagename{french}%
+%    \end{macrocode}
+% \changes{2.03}{2001/05/04}{Fixed a bug in the French language that caused
+%   not to switch to it correctly on startup.}
+% \verb|\datefrenchb| has to be defined additionally because babel starts
+% with language frenchb instead of french.
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \ifx\undefined\iso@datefrench\else
+    \def\datefrench{\iso@datefrench}%
+    \def\datefrenchb{\iso@datefrench}%
+  \fi
+}
+%</french>
+%    \end{macrocode}
+%
+% \subsection{Language definition file german.idf}
+% \changes{2.26}{2005/03/10}{Force year in four digits for long formats}%
+%
+% \begin{macro}{\iso@languageloaded}
+% Define the command \verb|\iso@languageloaded| in order to enable
+% \verb|isodate.sty| to determine if at least one language is loaded.
+%    \begin{macrocode}
+%<*german>
+\let\iso@languageloaded\active
+\typeout{Define commands for German date format (\CurrentOption)}
+%    \end{macrocode}
+% \end{macro}
+% \changes{2.03}{2001/05/04}{Allow change of spaces for German language}%
+% Define spaces between day and month resp. month and year. \verb|dm| 
+% stands for day-month and \verb|my| for month-year. The defaults are taken
+% from the Duden \cite{duden1996a}.
+%    \begin{macrocode}
+\def\iso@dmsepgerman{\,}%
+\def\iso@mylongsepgerman{~}%
+\def\iso@myshortsepgerman{\,}%
+\def\iso@mylongsepnodaygerman{}%
+\def\iso@myshortsepnodaygerman{}%
+%    \end{macrocode}
+% \begin{macro}{\daymonthsepgerman}
+% Change space between day and month in numeric date formats for the
+% German language. The only parameter is the new spacing.
+%    \begin{macrocode}
+\DeclareRobustCommand*\daymonthsepgerman[1]{\def\iso@dmsepgerman{#1}}
+%    \begin{macrocode}
+% \end{macro}
+% \begin{macro}{\monthyearsepgerman}
+% Change space between month and year in numeric date formats for the
+% German language. The first parameter is the new spacing for the long
+% format and the second for the short format.
+%    \begin{macrocode}
+\DeclareRobustCommand*\monthyearsepgerman[2]{%
+  \def\iso@mylongsepgerman{#1}%
+  \def\iso@myshortsepgerman{#2}}
+\DeclareRobustCommand*\monthyearsepnodaygerman[2]{%
+  \def\iso@mylongsepnodaygerman{#1}%
+  \def\iso@myshortsepnodaygerman{#2}}
+%    \end{macrocode}
+% \end{macro}
+% \changes{2.02}{2000/10/03}{Changed the umlauts to normal \TeX\ commands to
+% be able to use German dates without german.sty or babel.sty.}
+%    \begin{macrocode}
+\def\month@german{\ifcase\month\or
+  Januar\or Februar\or M\"arz\or April\or Mai\or Juni\or
+  Juli\or August\or September\or Oktober\or November\or Dezember\fi}
+\def\month@ngerman{\month@german}
+\def\month@austrian{\ifnum1=\month
+  J\"anner\else \month@german\fi}
+\def\month@naustrian{\month@austrian}
+%    \end{macrocode}
+%    \begin{macrocode}
+\@namedef{iso@printmonthday@\CurrentOption}#1#2{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printmonthday@int{#1}{#2}%
+  }{%
+    \ifthenelse{\equal{\iso@dateformat}{numeric}\OR
+                \equal{\iso@dateformat}{short}}{%
+      \ifiso@doprintday
+        \iso@printday{#2}.\iso@dmsepgerman
+      \fi
+      \iso@printmonth{#1}%
+    }{%
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+        \ifiso@doprintday
+          \iso@printday{#2}.\iso@monthsep\@empty
+        \fi
+        \begingroup
+        \edef\lmonth{#1}%
+        \def\month{\lmonth}\csname month@\iso@languagename\endcsname%
+        \endgroup
+      }{}%
+    }%
+  }%
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\@namedef{iso@printdate@\CurrentOption}#1#2#3{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printdate@int{#1}{#2}{#3}%
+  }{%
+    \csname iso@printmonthday@\iso@languagename\endcsname{%
+      \number#2}{\number#3}%
+    \ifiso@printyear
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+      }{%
+        \ifiso@doprintday.\else/\fi
+      }%
+      \ifthenelse{\equal{\iso@dateformat}{numeric}}{%
+        \ifiso@doprintday
+          \iso@mylongsepgerman\@empty
+        \else
+          \iso@mylongsepnodaygerman\@empty
+        \fi
+        \iso@yearfour{\number#1}%
+      }{%
+        \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+          \iso@yearsep\iso@yearfour{\number#1}%
+        }{%
+          \ifthenelse{\equal{\iso@dateformat}{shortorig}}{%
+            \iso@yearsep\iso@twodigitsign\iso@yeartwo{\number#1}%
+          }{%
+            \ifthenelse{\equal{\iso@dateformat}{short}}{%
+              \ifiso@doprintday
+                \iso@myshortsepgerman\@empty
+              \else
+                \iso@myshortsepnodaygerman\@empty
+              \fi
+              \iso@yeartwo{\number#1}%
+            }{}%
+          }%
+        }%
+      }%
+    \fi
+  }%
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\@namedef{iso@daterange@\CurrentOption}#1#2#3#4#5#6{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@daterange@int{#1}{#2}{#3}{#4}{#5}{#6}%
+  }{%
+%    \end{macrocode}
+%    \begin{macrocode}
+    \ifthenelse{\equal{\number#1}{\number#4}}{%
+      \ifthenelse{\equal{\number#2}{\number#5}}{%
+        \ifiso@doprintday
+          \iso@printday{#3}.%
+        \else
+          \csname iso@printmonthday@\iso@languagename\endcsname{#2}{#3}%
+        \fi
+      }{%
+          \csname iso@printmonthday@\iso@languagename\endcsname{#2}{#3}%
+        }%
+    }{%
+        \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+      }%
+    \iso@rangesign
+    \csname iso@printdate@\iso@languagename\endcsname{#4}{#5}{#6}%
+  }%
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\expandafter\def\csname iso@rangesign@\CurrentOption\endcsname{~bis~}
+%    \end{macrocode}
+%    \begin{macrocode}
+\ifthenelse{\equal{\CurrentOption}{german}}{%
+  \def\iso@dategerman{%
+    \def\today{\iso@printdate@german{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+  \def\iso@languagename{german}%
+}{%
+%    \end{macrocode}
+%    \begin{macrocode}
+\ifthenelse{\equal{\CurrentOption}{ngerman}}{%
+  \def\iso@datengerman{%
+    \def\today{\iso@printdate@ngerman{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+  \def\iso@languagename{ngerman}%
+}{%
+%    \end{macrocode}
+%    \begin{macrocode}
+\ifthenelse{\equal{\CurrentOption}{austrian}}{%
+  \def\iso@dateaustrian{%
+    \def\today{\iso@printdate@austrian{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+  \def\iso@languagename{austrian}%
+}{%
+%    \end{macrocode}
+%    \begin{macrocode}
+\ifthenelse{\equal{\CurrentOption}{naustrian}}{%
+  \def\iso@datenaustrian{%
+    \def\today{\iso@printdate@naustrian{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+  \def\iso@languagename{naustrian}%
+}{%
+}}}}
+%    \end{macrocode}
+% Redefine the command \verb|date|language that is used by babel.sty,
+% german.sty, and ngerman.sty to switch to the original
+% German date format to enable the use of different date
+% formats.
+% This has to be done after the preamble in order to ensure to overwrite
+% the babel command.
+%
+% Do this only if \verb|\iso@date|language is defined.
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \ifx\undefined\iso@dategerman\else
+    \def\dategerman{\iso@dategerman}%
+  \fi
+  \ifx\undefined\iso@datengerman\else
+    \def\datengerman{\iso@datengerman}%
+  \fi
+  \ifx\undefined\iso@dateaustrian\else
+    \def\dateaustrian{\iso@dateaustrian}%
+  \fi
+  \ifx\undefined\iso@datenaustrian\else
+    \def\datenaustrian{\iso@datenaustrian}%
+  \fi
+}
+%</german>
+%    \end{macrocode}
+%
+% \subsection{Language definition file italian.idf}
+% \changes{2.28}{2005/04/15}{Add Italian language by Philip Ratcliffe}%
+%
+% \begin{macro}{\iso@languageloaded}
+% Define the command \verb|\iso@languageloaded| in order to enable
+% \verb|isodate.sty| to determine if at least one language is loaded.
+%    \begin{macrocode}
+%<*italian>
+\let\iso@languageloaded\active
+\typeout{Define commands for Italian date format}
+%    \end{macrocode}
+% \end{macro}
+%    \begin{macrocode}
+\def\month@italian{\ifcase\month\or
+  gennaio\or febbraio\or marzo\or aprile\or maggio\or giugno\or
+  luglio\or agosto\or settembre\or ottobre\or novembre\or
+  dicembre\fi}
+%    \end{macrocode}
+%    \begin{macrocode}
+\def\iso@printmonthday@italian#1#2{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printmonthday@int{#1}{#2}%
+  }{%
+    \ifthenelse{\equal{\iso@dateformat}{numeric}\OR
+                \equal{\iso@dateformat}{short}}{%
+      \ifiso@doprintday
+        \iso@printday{#2}/%
+      \fi
+      \iso@printmonth{#1}%
+    }{%
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+        \begingroup
+        \edef\lday{#2}\edef\day{\lday}%
+        \edef\lmonth{#1}\def\month{\lmonth}%
+        \ifiso@doprintday
+          \number\day\ifnum1=\day \noexpand\textordmasculine\fi
+          \iso@monthsep
+        \fi
+        \month@italian
+        \endgroup
+      }{}%
+    }%
+  }%
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\def\iso@printdate@italian#1#2#3{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+    \equal{\iso@dateformat}{TeX}}{%
+    \iso@printdate@int{#1}{#2}{#3}%
+  }{%
+    \iso@printmonthday@italian{\number#2}{\number#3}%
+    \ifiso@printyear
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+      }{%
+        /%
+      }%
+      \ifthenelse{\equal{\iso@dateformat}{numeric}}{%
+        \iso@yearfour{\number#1}%
+      }{%
+        \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+          \iso@yearsep\iso@yearfour{\number#1}%
+        }{%
+          \ifthenelse{\equal{\iso@dateformat}{shortorig}}{%
+            \iso@yearsep\iso@twodigitsign\iso@yeartwo{\number#1}%
+          }{%
+            \ifthenelse{\equal{\iso@dateformat}{short}}{%
+              \iso@yeartwo{\number#1}%
+            }{}%
+          }%
+        }%
+      }%
+    \fi
+  }%
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\def\iso@dateitalian{%
+  \def\today{\iso@printdate@italian{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% \begin{macro}{\iso@daterange@...}
+% Define date-range commands for dialects.
+%    \begin{macrocode}
+\expandafter\def\csname iso@daterange@\CurrentOption\endcsname{%
+  \iso@daterange@italian}%
+%    \end{macrocode}
+% \end{macro}
+%    \begin{macrocode}
+\def\iso@daterange@italian#1#2#3#4#5#6{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@daterange@int{#1}{#2}{#3}{#4}{#5}{#6}%
+  }{%
+%    \end{macrocode}
+%    \begin{macrocode}
+    \ifthenelse{\equal{\number#1}{\number#4}}{%
+      \ifthenelse{\equal{\number#2}{\number#5}}{%
+        \ifiso@doprintday
+          \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+            \begingroup
+            \edef\lday{#3}\edef\day{\lday}%
+            \number\day\ifnum1=\day \noexpand\textordmasculine\fi
+            \endgroup
+          }{%
+            \iso@printday{#3}%
+          }%
+        \else
+          \iso@printmonthday@italian{#2}{#3}%
+        \fi
+      }{%
+        \iso@printmonthday@italian{#2}{#3}%
+      }%
+    }{%
+      \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+    }%
+    \iso@rangesign
+    \csname iso@printdate@\iso@languagename\endcsname{#4}{#5}{#6}%
+  }%
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\expandafter\def\csname iso@rangesign@\CurrentOption\endcsname{~al~}
+%    \end{macrocode}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+\def\iso@languagename{italian}%
+%    \end{macrocode}
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \ifx\undefined\iso@dateitalian\else
+    \def\dateitalian{\iso@dateitalian}%
+  \fi
+}
+%</italian>
+%    \end{macrocode}
+%
+% \changes{2.02}{2001/04/30}{Added Norwegian language by Svend Tollak
+% Munkejord}
+% \subsection{Language definition file norsk.idf}
+% \changes{2.26}{2005/03/10}{Force year in four digits for long formats}%
+% 
+% This file was provided by Svend Tollak Munkejord
+% (svend.t.munkejord@energy.sintef.no).
+%
+% \begin{macro}{\iso@languageloaded}
+% Define the command \verb|\iso@languageloaded| in order to enable
+% \verb|isodate.sty| to determine if at least one language is loaded.
+%    \begin{macrocode}
+%<*norsk>
+\let\iso@languageloaded\active
+\typeout{Define commands for Norwegian date format}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\month@norsk}
+% Prints the name of today's month in the long form for the original
+% date format.
+%    \begin{macrocode}
+\def\month@norsk{\ifcase\month\or
+    januar\or februar\or mars\or april\or mai\or juni\or
+    juli\or august\or september\or oktober\or november\or desember\fi}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printmonthday@norsk}
+% Prints the month and the day given as two arguments
+% (\verb|{mm}{dd}|) in the current date format.
+%    \begin{macrocode}
+\def\iso@printmonthday@norsk#1#2{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printmonthday@int{#1}{#2}%
+  }{%
+%    \end{macrocode}
+% Numeric and short date format: \verb|dd/mm/|
+%    \begin{macrocode}
+    \ifthenelse{\equal{\iso@dateformat}{numeric}\OR
+                \equal{\iso@dateformat}{short}}{%
+      \ifiso@doprintday
+        \iso@printday{#2}/%
+      \fi
+      \iso@printmonth{#1}%
+    }{%
+%    \end{macrocode}
+% Original date format: \verb|d. mmm|
+%    \begin{macrocode}
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+        \ifiso@doprintday
+          \iso@printday{#2}.\iso@monthsep
+        \fi
+        \begingroup
+        \edef\lmonth{#1}\def\month{\lmonth}%
+        \month@norsk%
+        \endgroup
+      }{}%
+    }%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printdate@norsk}
+% Prints the date given as three arguments (\verb|{yyyy}{mm}{dd}|) in
+% the actual date format
+%    \begin{macrocode}
+\def\iso@printdate@norsk#1#2#3{%
+%    \end{macrocode}
+% ISO or \LaTeX date format: \verb|yyyy\iso@printmonthday@norsk|
+%    \begin{macrocode}
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printdate@int{#1}{#2}{#3}%
+  }{%
+    \iso@printmonthday@norsk{\number#2}{\number#3}%
+%    \end{macrocode}
+% numeric date format: \verb|\iso@printmonthday@norsk yyyy|
+%    \begin{macrocode}
+    \ifiso@printyear
+       \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+      }{%
+        /%
+      }%
+      \ifthenelse{\equal{\iso@dateformat}{numeric}}{%
+        \iso@yearfour{\number#1}%
+      }{%
+%    \end{macrocode}
+% original date format: \verb|\iso@printmonthday@norsk~yyyy|
+%    \begin{macrocode}
+        \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+          \iso@yearsep\iso@yearfour{\number#1}%
+        }{%
+%    \end{macrocode}
+% short original date format: \verb|\iso@printmonthday@norsk~yyyy|
+%    \begin{macrocode}
+          \ifthenelse{\equal{\iso@dateformat}{shortorig}}{%
+            \iso@yearsep\iso@twodigitsign\iso@yeartwo{\number#1}%
+          }{%
+%    \end{macrocode}
+% short date format: \verb|\iso@printmonthday@norsk yy|
+%    \begin{macrocode}
+            \ifthenelse{\equal{\iso@dateformat}{short}}{%
+              \iso@yeartwo{\number#1}%
+            }{}%
+          }%
+        }%
+      }%
+    \fi
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@datenorsk}
+% This command redefines the \cs{today} command to print in the
+% actual date format.
+%    \begin{macrocode}
+\def\iso@datenorsk{%
+  \def\today{\iso@printdate@norsk{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@...}
+% Define date-range commands for dialects.
+%    \begin{macrocode}
+\expandafter\def\csname iso@daterange@\CurrentOption\endcsname{%
+  \iso@daterange@norsk}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@norsk}
+% This command takes six arguments
+% (\verb|{yyyy1}{mm1}{dd1}{yyyy2}{mm2}{dd2}|) and prints the corrosponding
+% date range in the actual date format.
+%    \begin{macrocode}
+\def\iso@daterange@norsk#1#2#3#4#5#6{%
+%    \end{macrocode}
+% ISO or \LaTeX\ date format.
+%    \begin{macrocode}
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@daterange@int{#1}{#2}{#3}{#4}{#5}{#6}%
+  }{%
+%    \end{macrocode}
+% Numeric, short, or original date format.
+%
+% If year and month are equal, only print the day of the start date. If
+% only the year is equal, only print month and day of the start
+% date. Otherwise print the whole start date.
+%    \begin{macrocode}
+    \ifthenelse{\equal{\number#1}{\number#4}}{%
+      \ifthenelse{\equal{\number#2}{\number#5}}{%
+        \ifiso@doprintday
+          \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                      \equal{\iso@dateformat}{shortorig}}{%
+            \iso@printday{#3}.%
+          }{%
+            \iso@printday{#3}%
+          }%
+        \else
+          \iso@printmonthday@norsk{#2}{#3}%
+        \fi
+      }{%
+        \iso@printmonthday@norsk{#2}{#3}%
+      }%
+    }{%
+      \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+    }%
+%    \end{macrocode}
+% Print the end date.
+%    \begin{macrocode}
+    \iso@rangesign
+    \csname iso@printdate@\iso@languagename\endcsname{#4}{#5}{#6}%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@rangesign@norsk}
+% Sets the word between start and end date in a date range to `~til~'.
+%    \begin{macrocode}
+\expandafter\def\csname iso@rangesign@\CurrentOption\endcsname{~til~}
+%    \end{macrocode}
+% \end{macro}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+\def\iso@languagename{norsk}%
+%    \end{macrocode}
+% Redefine the command \verb|\datenorsk| that is used by babel to
+% switch to the original Norsk date format to enable the use of
+% different date formats.
+% This has to be done after the preamble in order to ensure to overwrite
+% the babel command.
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \ifx\undefined\iso@datenorsk\else
+    \def\datenorsk{\iso@datenorsk}%
+  \fi
+}
+%</norsk>
+%    \end{macrocode}
+%
+% \changes{2.07}{2003/07/29}{Add Swedish language by Christian
+% Schlauer}
+% \subsection{Language definition file swedish.idf}
+% \changes{2.26}{2005/03/10}{Force year in four digits for long formats}%
+% 
+% This file was provided by Christian Schlauer
+% (christian.schlauer@web.de).
+%
+% \begin{macro}{\iso@languageloaded}
+% Define the command \verb|\iso@languageloaded| in order to enable
+% \verb|isodate.sty| to determine if at least one language is loaded.
+%    \begin{macrocode}
+%<*swedish>
+\let\iso@languageloaded\active
+\typeout{Define commands for Swedish date format}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\month@swedish}
+% Prints the name of today's month in the long form for the original
+% date format.
+%    \begin{macrocode}
+\def\month@swedish{\ifcase\month\or
+    januari\or februari\or mars\or april\or maj\or juni\or
+    juli\or augusti\or september\or oktober\or november\or december\fi}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printmonthday@swedish}
+% Prints the month and the day given as two arguments
+% (\verb|{mm}{dd}|) in the current date format.
+%    \begin{macrocode}
+\def\iso@printmonthday@swedish#1#2{%
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printmonthday@int{#1}{#2}%
+  }{%
+%    \end{macrocode}
+% Numeric and short date format: \verb|dd/mm/|
+%    \begin{macrocode}
+    \ifthenelse{\equal{\iso@dateformat}{numeric}\OR
+                \equal{\iso@dateformat}{short}}{%
+      \ifiso@doprintday
+        \iso@printday{#2}/%
+      \fi
+      \iso@printmonth{#1}%
+    }{%
+%    \end{macrocode}
+% Original date format: \verb|d. mmm|
+%    \begin{macrocode}
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+        \ifiso@doprintday
+          \iso@printday{#2}.\iso@monthsep
+        \fi
+        \begingroup
+        \edef\lmonth{#1}\def\month{\lmonth}%
+        \month@swedish%
+        \endgroup
+      }{}%
+    }%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@printdate@swedish}
+% Prints the date given as three arguments (\verb|{yyyy}{mm}{dd}|) in
+% the actual date format
+%    \begin{macrocode}
+\def\iso@printdate@swedish#1#2#3{%
+%    \end{macrocode}
+% ISO or \LaTeX date format: \verb|yyyy\iso@printmonthday@swedish|
+%    \begin{macrocode}
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@printdate@int{#1}{#2}{#3}%
+  }{%
+    \iso@printmonthday@swedish{\number#2}{\number#3}%
+%    \end{macrocode}
+% numeric date format: \verb|\iso@printmonthday@swedish yyyy|
+%    \begin{macrocode}
+    \ifiso@printyear
+      \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                  \equal{\iso@dateformat}{shortorig}}{%
+      }{%
+        /%
+      }%
+      \ifthenelse{\equal{\iso@dateformat}{numeric}}{%
+        \iso@yearfour{\number#1}%
+      }{%
+%    \end{macrocode}
+% original date format: \verb|\iso@printmonthday@swedish~yyyy|
+%    \begin{macrocode}
+        \ifthenelse{\equal{\iso@dateformat}{orig}}{%
+          \iso@yearsep\iso@yearfour{\number#1}%
+        }{%
+%    \end{macrocode}
+% short original date format: \verb|\iso@printmonthday@swedish~yy|
+%    \begin{macrocode}
+          \ifthenelse{\equal{\iso@dateformat}{shortorig}}{%
+            \iso@yearsep\iso@twodigitsign\iso@yeartwo{\number#1}%
+          }{%
+%    \end{macrocode}
+% short date format: \verb|\iso@printmonthday@swedish yy|
+%    \begin{macrocode}
+            \ifthenelse{\equal{\iso@dateformat}{short}}{%
+              \iso@yeartwo{\number#1}%
+            }{}%
+          }%
+        }%
+      }%
+    \fi
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@dateswedish}
+% This command redefines the \cs{today} command to print in the
+% actual date format.
+%    \begin{macrocode}
+\def\iso@dateswedish{%
+  \def\today{\iso@printdate@swedish{\year}{\month}{\day}}}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@...}
+% Define date-range commands for dialects.
+%    \begin{macrocode}
+\expandafter\def\csname iso@daterange@\CurrentOption\endcsname{%
+  \iso@daterange@swedish}%
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@daterange@swedish}
+% This command takes six arguments
+% (\verb|{yyyy1}{mm1}{dd1}{yyyy2}{mm2}{dd2}|) and prints the corrosponding
+% date range in the actual date format.
+%    \begin{macrocode}
+\def\iso@daterange@swedish#1#2#3#4#5#6{%
+%    \end{macrocode}
+% ISO or \LaTeX\ date format.
+%    \begin{macrocode}
+  \ifthenelse{\equal{\iso@dateformat}{iso}\OR
+              \equal{\iso@dateformat}{TeX}}{%
+    \iso@daterange@int{#1}{#2}{#3}{#4}{#5}{#6}%
+  }{%
+%    \end{macrocode}
+% Numeric, short, or original date format.
+%
+% If year and month are equal, only print the day of the start date. If
+% only the year is equal, only print month and day of the start
+% date. Otherwise print the whole start date.
+%    \begin{macrocode}
+    \ifthenelse{\equal{\number#1}{\number#4}}{%
+      \ifthenelse{\equal{\number#2}{\number#5}}{%
+        \ifiso@doprintday
+          \ifthenelse{\equal{\iso@dateformat}{orig}\OR
+                      \equal{\iso@dateformat}{shortorig}}{%
+            \iso@printday{#3}.%
+          }{%
+            \iso@printday{#3}%
+          }%
+        \else
+          \iso@printmonthday@swedish{#2}{#3}%
+        \fi
+      }{%
+        \iso@printmonthday@swedish{#2}{#3}%
+      }%
+    }{%
+      \csname iso@printdate@\iso@languagename\endcsname{#1}{#2}{#3}%
+    }%
+%    \end{macrocode}
+% Print the end date.
+%    \begin{macrocode}
+    \iso@rangesign
+    \csname iso@printdate@\iso@languagename\endcsname{#4}{#5}{#6}%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\iso@rangesign@swedish}
+% Sets the word between start and end date in a date range to `~till~'.
+%    \begin{macrocode}
+\expandafter\def\csname iso@rangesign@\CurrentOption\endcsname{~till~}
+%    \end{macrocode}
+% \end{macro}
+% Define the language name that will the active language for isodate
+% if none of the packages babel.sty, german.sty, and ngerman.sty is
+% loaded and if this is the last language that is used for isodate.
+% If one of the above packages is used this definition will be
+% overridden by the command \verb|\languagename| that will always
+% return the current used language.
+%    \begin{macrocode}
+\def\iso@languagename{swedish}%
+%    \end{macrocode}
+% Redefine the command \verb|\dateswedish| that is used by babel to
+% switch to the original Swedish date format to enable the use of
+% different date formats.
+% This has to be done after the preamble in order to ensure to overwrite
+% the babel command.
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \ifx\undefined\iso@dateswedish\else
+    \def\dateswedish{\iso@dateswedish}%
+  \fi
+}
+%</swedish>
+%    \end{macrocode}
+%
+% \Finale
