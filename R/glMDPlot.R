@@ -960,7 +960,7 @@ checkSideMainPresent <- function(side.main, anno, x) {
             stop(paste("column", quotify(side.main), "cannot be found in x$genes or anno."))
         }
     } else if (class(x) == "DESeqResults") {
-        if (side.main %!in% union(colnames(anno), names(listData))) {
+        if (side.main %!in% union(colnames(anno), names(x@listData))) {
             stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
         }
     } else {
