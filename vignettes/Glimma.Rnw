@@ -11,8 +11,7 @@
 \usepackage[usenames, dvipsnames]{xcolor}
 \usepackage{hyperref}
 \usepackage{graphicx}
-\usepackage[UKenglish]{babel}% http://ctan.org/pkg/babel
-\usepackage[UKenglish]{isodate}% http://ctan.org/pkg/isodate
+\usepackage{datetime}
 \topmargin 0in
 \headheight 0in
 \headsep 0in
@@ -29,6 +28,8 @@
 \newcommand{\Rfun}[1]{\textcolor{VioletRed}{{\sf{#1}}}}
 \newcommand{\Robj}[1]{\textcolor{Black}{{\sf{#1}}}}
 %\newcommand{\Rpkg}[1]{\textcolor{PineGreen}{{\sf{#1}}}}
+
+\newdateformat{mydate}{\THEDAY\ \monthname[\THEMONTH]\ \THEYEAR}
 
 \begin{document}
 \setkeys{Gin}{width=\textwidth}
@@ -47,7 +48,7 @@ BiocStyle::latex()
 Shian Su, Charity W. Law, Matthew E. Ritchie\\
 \vspace{14pt}
 First edition 28 January 2016\\
-Last revised \cleanlookdateon \today
+Last revised \mydate\today
 }
 \end{center}
 \newpage

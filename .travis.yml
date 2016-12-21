@@ -2,10 +2,6 @@ language: r
 
 cache: packages
 
-before_install:
-  - tlmgr install isodate
-  - tlmgr install babel
-
 sudo: false
 
 r:
