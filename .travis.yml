@@ -2,6 +2,10 @@ language: r
 
 cache: packages
 
+before_install:
+  - tlmgr install isodate
+  - tlmgr install babel
+
 sudo: false
 
 r:
@@ -13,10 +17,8 @@ bioc_packages:
   - testthat
   - DESeq2
   - limma
-  - testthat
 
 r_packages:
-  - statmod
   - covr
 
 after_success:
