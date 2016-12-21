@@ -201,7 +201,7 @@ glMDSPlot(lcpm, groups=groups.df)
 @
 
 \begin{figure}[!ht]
-  \centerline{\includegraphics[width=0.7\linewidth]{mdsgroups.png}}
+  \centerline{\includegraphics[width=0.7\linewidth]{MDSgroups.png}}
   \caption{Interactive MDS plots showing (A) dimensions 1 and 2 with samples colored by group (or genotype) and (B) dimensions 2 and 3 with sampled colored by sequencing lane.}
   \label{fig:mdsgroups}
 \end{figure}
@@ -273,7 +273,7 @@ glMDPlot(fit, status=dt, counts=vm, groups=groups.age,
 @
 
 \begin{figure}[!ht]
-  \centerline{\includegraphics[width=0.7\linewidth]{mdage.png}}
+  \centerline{\includegraphics[width=0.7\linewidth]{MDage.png}}
   \caption{Interactive MD plot (left) where sample expression (right) has been stratified by age. The table is not displayed here to highlight changes to MD and sample expression plots.}
   \label{fig:mdage}
 \end{figure}
@@ -314,7 +314,7 @@ glMDPlot(fit, counts=vm, groups=groups, side.main="ID",
 @
 
 \begin{figure}[!ht]
-  \centerline{\includegraphics[width=0.7\linewidth]{mdanno.png}}
+  \centerline{\includegraphics[width=0.7\linewidth]{MDanno.png}}
   \caption{Interactive MD plot with changes to default gene information displayed in the table.}
   \label{fig:mdanno}
 \end{figure}
@@ -351,7 +351,7 @@ glXYPlot(x=fit$coef, y=fit$lod, xlab="logFC", ylab="logodds",
 @
 
 \begin{figure}[!ht]
-  \centerline{\includegraphics[width=0.7\linewidth]{xyvolcano.png}}
+  \centerline{\includegraphics[width=0.7\linewidth]{XYvolcano.png}}
   \caption{Interactive volcano plot (top left) with DE genes highlighted, and samples in the sample expression plot (top right) separated into genotype.}
   \label{fig:volcano}
 \end{figure}
@@ -387,7 +387,7 @@ glMDSPlot(arrays, groups=targets[,c("Condition", "Chip", "Experiment")])
 @
 
 \begin{figure}[!ht]
-  \centerline{\includegraphics[width=0.7\linewidth]{mdsarray.png}}
+  \centerline{\includegraphics[width=0.7\linewidth]{MDSarray.png}}
   \caption{Interactive MDS plot with samples colored by condition (A), beadchip (B) and experiment (C). The plot showing the proportion of variation explained by each dimension (top right panel) has been hidden in panels B and C, to highlight the change in MDS Color Group.}
   \label{fig:mdsarray}
 \end{figure}
@@ -418,7 +418,7 @@ for (COEF in 1:2) {
 @
 
 \begin{figure}[!ht]
-  \centerline{\includegraphics[width=0.7\linewidth]{mdarray.png}}
+  \centerline{\includegraphics[width=0.7\linewidth]{MDarray.png}}
   \caption{Interactive MD plot for the comparison between Ezh2 knock-out and wildtype for A) mammary stem cell-enriched samples and B) luminal populations, where up-regulated genes are colored in red and down-regulated genes are colored in blue. Samples in the sample expression plot are grouped by condition and colored by experiment number. Both tables in A) and B) show the top DE genes are ranked by adjusted $p$-value. Probe 6940037 for gene Ltf is amongst the top DE genes in both comparisons.}
   \label{fig:mdarray}
 \end{figure}
@@ -438,7 +438,7 @@ glXYPlot(fit$coef[,1], y=fit$coef[,2], xlab="DP", ylab="Lum",
 @
 
 \begin{figure}[!ht]
-  \centerline{\includegraphics[width=0.7\linewidth]{xyarray.png}}
+  \centerline{\includegraphics[width=0.7\linewidth]{XYarray.png}}
   \caption{Interactive plot of logFCs for Ezh2 knock-out versus wildtype in DP (x-axis) and Lum (y-axis) in the top left panel. Probes that are DE in one comparison are highlighted in black, and probes that are DE in both comparisons are highlighted in red. Sample expression is separated into conditions and colored by experiment number. The table of results is restricted to those that match with ``Ltf".}
   \label{fig:xyarray}
 \end{figure}
