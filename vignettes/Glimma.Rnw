@@ -129,7 +129,6 @@ This allows users to see summarised results from all of the genes as a whole whi
 Using the \Rfun{glMDPlot} function, a MD plot is created using {\it fit} which is an \Robj{MArrayLM} object, and {\it dt} a \Robj{TestResults} object that is used to highlight differentially expressed (DE) genes. The \Robj{EList} object from voom contains log2-counts per million (logCPM) values which are used in the plot of sample expression. A screen-capture of the html output is shown in Figure~\ref{fig:quickstart_md}.
 
 <<Rmd>>=
-# BUG WITH SYMBOL
 glMDPlot(fit, status=dt, counts=vm, groups=groups, side.main="Symbols")
 @
 
@@ -265,7 +264,6 @@ Other arguments include \Rarg{jitter} which jitters points horizontally to minim
 Using the age of mice in the sample expression plot, we demonstrate the use of some of the options described above (Figure~\ref{fig:mdage}). Notice that the color of points in both the MD plot and sample expression plot has changed, and more informative labels have been specified.
 
 <<Rmdsamples>>=
-# BUG WITH SYMBOL
 cols <- c("yellow","blue","magenta")
 sample.cols <- c("limegreen", "purple")[groups]
 glMDPlot(fit, status=dt, counts=vm, groups=groups.age,
