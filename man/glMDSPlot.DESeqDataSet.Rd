@@ -5,9 +5,9 @@
 \title{Glimma MDS Plot}
 \usage{
 \method{glMDSPlot}{DESeqDataSet}(x, top = 500, labels = NULL,
-  groups = rep(1, ncol(x)), gene.selection = "pairwise",
-  main = "MDS Plot", path = getwd(), folder = "glimma-plots",
-  html = "MDS-Plot", launch = TRUE, ...)
+  groups = NULL, gene.selection = "pairwise", main = "MDS Plot",
+  path = getwd(), folder = "glimma-plots", html = "MDS-Plot",
+  launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DESeqDataSet containing the gene expressions.}
