@@ -1,3 +1,9 @@
+%\VignetteIndexEntry{Glimma Vignette}
+%\VignetteKeyword{RNA-Seq}
+%\VignetteKeyword{differential expression}
+%\VignetteKeyword{interactive graphics}
+%\VignettePackage{Glimma}
+%\usepackage[utf8]{inputenc}
 \documentclass[a4paper, 12pt]{article}
 \usepackage{Sweave}
 \usepackage{titling}
