@@ -1,0 +1,540 @@
+%\VignetteIndexEntry{Glimma Vignette}
+%\VignetteKeyword{RNA-Seq}
+%\VignetteKeyword{differential expression}
+%\VignetteKeyword{interactive graphics}
+%\VignettePackage{Glimma}
+%\usepackage[utf8]{inputenc}
+\documentclass[a4paper, 12pt]{article}
+\usepackage{Sweave}
+\usepackage{titling}
+\usepackage{url}
+\usepackage[usenames, dvipsnames]{xcolor}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{datetime}
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+\oddsidemargin 0in
+\evensidemargin 0in
+\textwidth 6.25in
+\textheight 9.6in
+\definecolor{darkgrey}{gray}{0.2}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontsize=\small, formatcom=\color{darkgrey}}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{fontsize=\small, formatcom=\color{darkgrey}}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{fontsize=\small}
+\newcommand{\Rarg}[1]{\textcolor{ProcessBlue}{{\sf{#1}}}}
+\newcommand{\Rfun}[1]{\textcolor{VioletRed}{{\sf{#1}}}}
+\newcommand{\Robj}[1]{\textcolor{Black}{{\sf{#1}}}}
+%\newcommand{\Rpkg}[1]{\textcolor{PineGreen}{{\sf{#1}}}}
+
+\newdateformat{mydate}{\THEDAY\ \monthname[\THEMONTH]\ \THEYEAR}
+
+\begin{document}
+\setkeys{Gin}{width=\textwidth}
+
+<<style-Sweave, eval=FALSE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\vspace*{100pt}
+\begin{center}
+{\Huge Glimma:\\ Interactive Graphics for RNA-seq Analyses\\}
+\vspace{14pt}
+{\Large User's Guide\\}
+\vspace{14pt}
+{\large
+Shian Su, Charity W. Law, Matthew E. Ritchie\\
+\vspace{14pt}
+First edition 28 January 2016\\
+Last revised \mydate\today
+}
+\end{center}
+\newpage
+\tableofcontents
+\newpage
+
+\section{Quick start}\label{sec:quickstart}
+Glimma is a Bioconductor \cite{bioc} package for interactive visualization of results from differential expression analyses of RNA-sequencing (RNA-seq) and microarray data. Its functionality is intended to enhance reporting capabilities so that results can be explored more conveniently by end-users. Glimma, which loosely stands for interactive {\bf G}raphics from {\bf limma}, extends some of the popular plotting capabilities in the limma \cite{limma} package such as multi-dimensional scaling (MDS) plots and mean-difference (MD) plots.
+For seamless integration between the analysis by external packages and Glimma's interactive plots, Glimma accepts differential expression results from limma, edgeR \cite{edgeR} or DESeq2 \cite{DESeq2} packages as input and creates an html page which presents the results interactively. Figure~\ref{fig:overview} gives an overview of the input data types and processing functions in Glimma.
+The displays within Glimma were inspired by visualisations from Degust software \cite{Degust}.
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.80\linewidth]{GlimmaWorkFlow.png}}
+  \caption{Overview of workflow showing the input and output types for functions in Glimma.}
+  \label{fig:overview}
+\end{figure}
+
+<<Rsetup, echo=FALSE>>=
+set.seed(20161000)
+options(digits=2)
+options(width=100)
+options(browser="false")
+@
+
+The main dataset used in this vignette is taken from an RNA-seq experiment examining lymphoma cell lines in mice with alterations to the Smchd1 gene \cite{Smchd1}.
+The count data is available as an edgeR \Robj{DGEList} object within Glimma for 4 wildtype samples and 3 samples that have a null allele of the Smchd1 gene (we call these samples {\it Smchd1-null}).
+
+<<Rgetstarted>>=
+library(Glimma)
+library(limma)
+library(edgeR)
+data(lymphomaRNAseq)
+rnaseq <- lymphomaRNAseq
+rnaseq$samples$group
+@
+
+Lowly expressed genes are removed from downstream analysis and TMM-normalisation \cite{tmm} is carried out.
+
+<<Rpreprocessing>>=
+rnaseq <- rnaseq[rowSums(cpm(rnaseq)>1)>=3,]
+rnaseq <- calcNormFactors(rnaseq)
+@
+
+Using the \Rfun{glMDSPlot} functon, an interactive MDS plot can be created to examine the clustering of samples in an unsupervised fashion.
+Distances in the plot represent similarities and dissimilarities between samples.
+Glimma's MDS plot allows users to interactively browse through different dimensions of the plot.
+A MDS plot is created here using a \Robj{DGEList} object of sample expression and vector specifying sample groups, a screen-capture of the html output is shown in Figure~\ref{fig:quickstart_mds}.
+
+<<Rmds>>=
+groups <- rnaseq$samples$group
+glMDSPlot(rnaseq, groups=groups)
+@
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.7\linewidth]{quickstart_mds.png}}
+  \caption{Interactive MDS plot where the dimensions displayed in the MDS plot (left) can be changed by clicking on the associated bars in the barplot (right). Samples, or points, in the MDS plot are colored by genotype.}
+  \label{fig:quickstart_mds}
+\end{figure}
+
+We demonstrate the usage of Glimma by carrying out a limma-style analysis and using the corresponding output as input to Glimma functions.
+The same functions would work just as easily on output from edgeR or DESeq2 analyses, where examples of these are shown explicitly in the Appendix in Section~\ref{sec:appendix}.
+Here, differential expression of genes between Smchd1-null and wildtype samples is carried out using limma's voom with quality weights method \cite{voom, voomqwts}.
+An adjusted p-value cutoff of 5\% detects 882 genes as down-regulated in the Smchd1-null group relative to wildtypes, and 634 genes as up-regulated.
+
+<<Rvoomqw>>=
+design <- model.matrix(~0+groups)
+contrasts <- cbind(Smchd1null.vs.WT=c(-1,1))
+vm <- voomWithQualityWeights(rnaseq, design=design)
+fit <- lmFit(vm, design=design)
+fit <- contrasts.fit(fit, contrasts)
+fit <- eBayes(fit)
+dt <- decideTests(fit)
+summary(dt)
+@
+
+Glimma's interactive MD plot displays gene-wise log$_2$-fold changes (logFCs) against average expression values together with a plot of sample expression.
+This allows users to see summarised results from all of the genes as a whole whilst being able to scrutinise the expression of individual genes at the same time.
+Using the \Rfun{glMDPlot} function, a MD plot is created using {\it fit} which is an \Robj{MArrayLM} object, and {\it dt} a \Robj{TestResults} object that is used to highlight differentially expressed (DE) genes. The \Robj{EList} object from voom contains log2-counts per million (logCPM) values which are used in the plot of sample expression. A screen-capture of the html output is shown in Figure~\ref{fig:quickstart_md}.
+
+<<Rmd>>=
+glMDPlot(fit, status=dt, counts=vm, groups=groups, side.main="Symbols")
+@
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.7\linewidth]{quickstart_md.png}}
+  \caption{Interactive MD plot where gene-wise logFCs are plotted against mean expression values (top left). Significantly up- and down-regulated genes are highlighted in red and blue respectively. A table of associated gene information is displayed (bottom). Sample expression is displayed for an given gene (top right) by selecting a point in the main plot or a row in the table.}
+  \label{fig:quickstart_md}
+\end{figure}
+
+For a general plot of any two gene-wise summarised statistics, the \Rfun{glXYPlot} allows one to plot any two vectors of equal length against each other and associate these with sample expression.
+We display below the R-code for creating a volcano plot using logFC values and log-odds. It is important to ensure that ordering of genes is the same for the two vectors and the expression matrix!
+
+<<Rxy>>=
+glXYPlot(x=fit$coef, y=fit$lod, xlab="logFC", ylab="logodds",
+  status=dt, counts=vm, groups=groups, anno=fit$genes)
+@
+
+
+
+
+
+\clearpage
+\section{Output settings}
+All interactive plots are automatically saved as html files in a ``glimma-plots" folder that is created in the current working directory, unless specified otherwise using the \Rarg{path} and \Rarg{folder} arguments. By default MDS plots are saved as ``MDS-Plot.html", MD plots as ``MD-Plot.html", and XY plots ``XY-Plot.html". Alternate file names can be specified using the \Rarg{html} argument. As each plot is created and saved, an html page is also launched automatically in your default web browser; \Rarg{launch} can be set to {\sf FALSE} if this is not desired.
+Glimma's interactive plots can be distributed to others by sharing the ``glimma-plots" folder and its contents, and linked to in Rmarkdown analysis reports.
+
+
+
+
+\clearpage
+\section{Multi-dimensional scaling plots}
+Interactive MDS plots show similarities between the transcriptional profile of samples via unsupervised clustering.
+Glimma's MDS plot can be created on expression data in the form of a numeric matrix, \Robj{DGEList}, \Robj{Elist}, or \Robj{DESeqDataSet} object.
+Raw counts in an \Robj{DGEList} are automatically converted by \Rfun{glMDSPlot} into logCPM values using normalisation factors within the object.
+For an equivalent plot using an expression matrix, raw counts need to be manually converted to logCPM values.
+An example is shown below using the {\sf cpm} function in edgeR which takes into account the normalisation factors stored within the \Robj{DGEList}.
+
+<<Rmdsmatrix, eval=TRUE>>=
+lcpm <- cpm(rnaseq, log=TRUE, normalized.lib.sizes=TRUE)
+glMDSPlot(lcpm, groups=groups)
+@
+
+
+<<Rmdscheckinput, eval=FALSE, echo=FALSE>>=
+# Check that MDS plot runs on EList object: PASS
+glMDSPlot(vm, groups=groups)
+# Check that MDS plot runs on DESeqDataSet object: FAIL regarding groups
+library(DESeq2)
+rnaseq.deseq2 <- DESeqDataSetFromMatrix(rnaseq$counts, colData=rnaseq$samples, design=~group)
+glMDSPlot(rnaseq.deseq2, groups=groups)
+@
+
+The output contains two key components. On the left is an MDS plot showing two consecutive dimensions plotted against each other with each sample represented by a point in the plot. The distance between two samples reflect the {\it leading logFC} or typical logFC of genes separating the samples. By default the top 500 genes are used to calculate distances unless specified otherwise using the \Rarg{top} argument. For more information on MDS plots, see {\sf ?limma::plotMDS}.
+
+On the right, a barplot is displayed representing the proportion of variation in the data that is explained by the dimensions or eigenvectors in the MDS plot.
+Dimension 1 which explains the largest proportion of variation is associated with the first, left-most bar. The second bar is associated with dimensions 2, the third bar is for dimensions 3, and so on. Clicking on a bar on the page will highlight two consecutive bars and display the associated dimensions in the MDS plot.
+
+Hovering your cursor over each of the points in the MDS plot brings up sample information such as sample labels and groups which can be specified using the \Rarg{labels} and \Rarg{groups} arguments. The coloring of points in the plot are associated with each unique group label. Typically \Rarg{groups} would be a vector specifying the main condition by which samples are separated, but for more complex experimental designs a dataframe can also be used to represent multiple categorical variables.
+
+To demonstrate this, a dataframe is created using genotype and sequencing lane information (all samples were sequenced on {\it lane 4} except for the last sample which was sequenced on {\it lane 3}).
+An interactive MDS plot is created by using the dataframe to define \Rarg{groups}.
+The screen-captures in Figure~\ref{fig:mdsgroups} from the html output shows the switching of sample colors by genotype to sequencing lane, and a change in the displayed dimensions.
+
+<<Rmdsgroups>>=
+groups.df <- as.data.frame(cbind(
+  genotype=as.character(groups),
+  lane=c(rep(4,6),3)))
+groups.df
+glMDSPlot(lcpm, groups=groups.df)
+@
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.7\linewidth]{MDSgroups.png}}
+  \caption{Interactive MDS plots showing (A) dimensions 1 and 2 with samples colored by group (or genotype) and (B) dimensions 2 and 3 with sampled colored by sequencing lane.}
+  \label{fig:mdsgroups}
+\end{figure}
+
+
+
+
+\clearpage
+\section{Mean-difference plots}
+
+\subsection{General}
+Mean-difference plots provide a visual summary of the results and are useful for highlighting genes with unusually large absolute logFCs amongst all of the genes that are tested.
+When ``stand out" genes are spotted in the MD plot it is often of interest to see the expression of individual samples for that gene to check the consistency of expression within groups and for the potential of outliers.
+Glimma's MD plot makes that connection between summarised results (across all genes) and individual sample expression (for any selected gene) so that the data can be interrogated more thoroughly by having the two plots side-by-side.
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.5\linewidth]{Glimma_plotlayout.png}}
+  \caption{Layout of MD plots with three key components -- two plots on top and a table below. Green arrows represent the direction of interaction between components.}
+  \label{fig:layout}
+\end{figure}
+
+The interactive MD plot contains three key components which interact with each other to show multiple aspects of the data in the one display. The layout of such a plot is shown in Figure~\ref{fig:layout}.
+The main component is a plot of gene-wise summarised statistics which takes the top-left panel of the html page. Gene-wise logFCs are plotted against gene-wise average logCPM values where each point on the plot represents a single gene. Hovering your cursor over or clicking on a gene (or point) within the main plot brings the expression of each sample for the selected gene in a plot in the top-right panel At the same time, associated gene information is displayed in the table below.
+
+Users can simply scroll through the table looking for any gene that is of interest, or hone into specific genes or groups of genes using the search function in the table. Clicking on a gene (or row) in the table interacts with both of the plots simultaneously -- the selected gene is highlighted in the MD plot and next to it, the expression each sample is displayed.
+
+The order of genes displayed in the table can be re-ordered in an increasing or decreasing fashion by clicking on the header of a column.
+This is useful to see which genes have the smallest raw or adjusted p-value, or for sorting genes into those that are most up- or down-regulated in terms of logFC.
+The ordering function in the table used in conjunction with the search function can be especially powerful as an exploratory tool, for example, one can search by a keyword of interest, say ``structural maintanence" and then order the reduced table of genes by adjusted p-value.
+
+When working with limma output, average expression values, logFCs and associated gene information are automatically extracted from \Robj{MArrayLM} objects. By default the last coefficient in the object is used unless specifed otherwise using the \Rarg{coef} argument. In it's simplest form, \Rfun{glMDSPlot} can take an \Robj{MArrayLM} object alone with \Rarg{counts} unspecified, as shown in the R-code below. In this way, only the main plot and table will be displayed.
+
+<<Rmdsimple>>=
+glMDPlot(fit)
+@
+
+When it is used, \Rarg{counts} can be raw or transformed counts (e.g. cpm or logCPM) that must have the same ordering of genes as in the main argument \Rarg{x}. If raw counts are given, they can be transformed into logCPM values by setting \Rarg{transform} to {\sf TRUE}.
+
+
+
+
+\subsection{Plotting options}
+
+Sample expression can be sorted into groups using the \Rarg{groups} argument, where \Rarg{groups} is a vector matching in length and order to the samples (or columns) in \Rarg{counts}.
+Typically \Rarg{groups} will be a character or factor vector separating samples into different conditions, as demonstrated in Section~\ref{sec:quickstart}. However, \Rarg{groups} can also be a numeric vector associating expression values with a covariate of interest, for example, the age of mice at the time of RNA extraction.
+
+<<Rmdage>>=
+groups.age <- runif(ncol(rnaseq), min=3, max=12)
+groups.age
+@
+
+In the main plot, up- and down-regulated genes can be highlighted using the \Rarg{status} argument which is a vector containing integer values of -1 to represent down-regulated genes, 0 for no differential expression, and 1 for up-regulated genes. These values can be given in the form of a numeric vector that is of the same length and ordering of genes in \Rarg{x}. Alternatively, if a matrix or a \Robj{TestResults} object is supplied, then the column specified by \Rarg{coef} will be used to highlight genes.
+By default, down-regulated genes are colored in blue and up-regulated genes are in red.
+Alternatively, your own colors can be specified using the \Rarg{cols} argument which accepts both R-defined colors such as ``blue", and numeric values which references your current color palette.
+
+In the side sample expression plot, \Rarg{side.main} specifies the column from table which is used as the main title, for example,  \Rarg{side.main}$=``GeneName"$. \Rarg{side.xlab} and \Rarg{side.ylab} is used to specify the labels for x- and y- axes.
+Sample labels which appear when clicking on or hovering over a point can be changed using the \Rarg{samples} argument; and colors of points can be specified using the \Rarg{sample.cols} argument.
+Other arguments include \Rarg{jitter} which jitters points horizontally to minimise the amount of overlap (does not apply when \Rarg{groups} is numeric), \Rarg{side.log} which re-scales the y-axis to a log-scale (but does not transform the data), and \Rarg{side.gridstep} which adds horizontal grid lines to the plot.
+
+Using the age of mice in the sample expression plot, we demonstrate the use of some of the options described above (Figure~\ref{fig:mdage}). Notice that the color of points in both the MD plot and sample expression plot has changed, and more informative labels have been specified.
+
+<<Rmdsamples>>=
+cols <- c("yellow","blue","magenta")
+sample.cols <- c("limegreen", "purple")[groups]
+glMDPlot(fit, status=dt, counts=vm, groups=groups.age,
+  sample.cols=sample.cols, cols=cols,
+  side.ylab="logCPM", side.xlab="Age (in months)",
+  side.main="Symbols", main=colnames(dt))
+@
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.7\linewidth]{MDage.png}}
+  \caption{Interactive MD plot (left) where sample expression (right) has been stratified by age. The table is not displayed here to highlight changes to MD and sample expression plots.}
+  \label{fig:mdage}
+\end{figure}
+
+
+
+\subsection{Table options}
+
+<<Rmdcheckinput, eval=FALSE, echo=FALSE>>=
+# limma - PASS
+glMDPlot(fit)
+# edgeR - PASS
+rnaseq.edger <- estimateDisp(rnaseq, design=design)
+fit.edger <- exactTest(rnaseq.edger)
+glMDPlot(fit.edger)
+# DESeq2 - FAIL regarding annotation
+library(DESeq2)
+rnaseq.deseq2 <- DESeqDataSetFromMatrix(rnaseq$counts, colData=rnaseq$samples, design=~group)
+mcols(rnaseq.deseq2) <- DataFrame(mcols(rnaseq.deseq2), rnaseq$genes)
+fit.deseq2 <- DESeq(rnaseq.deseq2)
+glMDPlot(fit.deseq2)
+@
+
+Gene information is automatically extracted from \Robj{MArrayLM} and \Robj{DGEList} objects and displayed within the table, along with the values for average gene expression, logFC and adjusted $p$-value. \Rfun{glMDPlot} does this by looking under the {\it \$genes} slot of \Rarg{x}.
+
+Extra gene annotation can be added to the table using the \Rarg{anno} argument. This would combine and display both the gene information from \Robj{x} and \Rarg{anno}, where \Rarg{anno} is a dataframe with the same ordering and number of genes as in \Rarg{x}. To display specific columns in the table use the \Rarg{display.columns} argument.
+
+In the example below, we create extra gene annotation, where {\it ID} combines gene symbol with Entrez gene ID and {\it DE} specifies whether genes are downregulated, upregulated or not differentially expressed (notDE).
+Using \Rarg{display.columns}, we display only {\it ID} and {\it DE}, and full gene names from {\it fit\$genes}.
+
+<<Rmdanno>>=
+ID <- paste(fit$genes$Symbols, fit$genes$GeneID)
+DE <- c("downregulated", "notDE", "upregulated")[as.factor(dt)]
+anno <- as.data.frame(cbind(ID, DE))
+head(anno)
+glMDPlot(fit, counts=vm, groups=groups, side.main="ID",
+  anno=anno, display.columns=c("ID", "GeneName", "DE"))
+@
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.7\linewidth]{MDanno.png}}
+  \caption{Interactive MD plot with changes to default gene information displayed in the table.}
+  \label{fig:mdanno}
+\end{figure}
+
+Adjusted $p$-values that are included in the table are automatically calculated using the Benjamini and Hochberg method \cite{bh} on raw $p$-values stored within \Rarg{x}. Other multiple-testing correction methods that are available in {\sf stats::p.adjust} can be specified to the \Rarg{p.adj.method} argument.
+
+When performing differential expression analyses using edgeR, the examples in this section would work by simply replacing limma's \Robj{MArrayLM} object with either of edgeR's \Robj{DGEExact} or \Robj{DGELRT} object; the same goes for \Robj{DESeqDataSet} objects from a DESeq2-style analysis. LogFC values, average expression values and raw $p$-values are automatically extracted from all objects. Gene information, however, is only automatically extracted from the limma and edgeR objects but not for DESeq2. See Subsection~\ref{sec:mdedgeret} and ~\ref{sec:mddeseq2} for examples using output from edgeR and DESeq2.
+
+
+\clearpage
+\section{XY plots}
+
+Glimma's XY plots have the same layout as MD plots (Figure~\ref{fig:layout}) but can be used to display any gene-wise summary statistic against any other gene-wise summary statistic as the main plot in the top left panel. The MD plot is essentially the XY plot with the x-component specified as average logCPM values and the y-component specified as logFC values.
+Since the XY plot is for general usage it works with basic R objects such as vectors, matrices and dataframes, rather than \Robj{MArrayLM}, \Robj{DGEExact}, \Robj{DGELRT} or \Robj{DESeqDataSet} objects where gene information or raw $p$-values could otherwise be automatically extracted. The two main arguments in \Rfun{glXYPlot} are \Rarg{x} and \Rarg{y}, both of which are numeric vectors of equal length. To create a volcano plot, we specify \Rarg{x} as the logFC between Smchd1-null versus wildtype, and \Rarg{y} as the log-odds that the gene is DE.
+<<Rxyvolcanosimple>>=
+glXYPlot(x=fit$coef, y=fit$lod)
+@
+
+Since no other information is given to the function, genes are automatically assigned gene identifiers (GeneID) and labels remain as `x' and `y'. The labels can be specified as something more meaningful, such as `logFC' and `logodds' using the \Rarg{xlab} and \Rarg{ylab} arguments.
+
+Other arguments in XY plot are analogous to those that are in the MD plot.
+In brief,
+\Rarg{status} and \Rarg{cols} are used to highlight DE genes in the main plot;
+\Rarg{anno} adds gene information to the table where \Rarg{display.columns} specifies the columns that are display;
+\Rarg{counts} is used to add a plot of sample expression with \Rarg{groups} separating observations into different conditions;
+\Rarg{samples} and \Rarg{sample.cols} labels and colors points in the sample expression plot, where \Rarg{jitter} is applied to points avoid overlapping, and \Rarg{side.main} is used as the title label.
+
+Using some of the options mentioned, an enhanced version of the volcano plot is created using the R-code below (Figure~\ref{fig:volcano}).
+
+<<Rxyvolcanomore>>=
+glXYPlot(x=fit$coef, y=fit$lod, xlab="logFC", ylab="logodds",
+  status=dt, anno=anno, side.main="ID",
+  counts=vm, groups=groups, sample.cols=sample.cols)
+@
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.7\linewidth]{XYvolcano.png}}
+  \caption{Interactive volcano plot (top left) with DE genes highlighted, and samples in the sample expression plot (top right) separated into genotype.}
+  \label{fig:volcano}
+\end{figure}
+
+The XY plot allows users to come up with an unlimited number of plotting combinations between any two gene-wise statistcs for a dataset and relate these to sample-specific expression.
+It can also be used to compare results between datasets, for example the logFC from one experiment could be plotted against the logFC from a second experiment, with the corresponding sample expression presented in the left-hand panel as before.
+
+
+
+\clearpage
+\section{Using microarray data}
+
+Although Glimma was developed with RNA-sequencing data analyses in mind and designed to interact specifically with the limma, edgeR and DESeq2, it can be just as easily applied to microarray data especially when the data is processed with limma.
+
+In this section, we demonstrate the usage of Glimma on an Illumina microarray dataset taken from a study on the Ezh2 gene in mouse mammary epithelium \cite{pal}. The study includes two cell populations, one that is enriched for mammary stem cells (labeled as {\it DP}) and another that is enriched for luminal progenitor cells (labeled as {\it Lum}). In each population, there are three samples where the Ezh2 gene has been knocked-out (labeled as {\it cre Ezh2}) and three wildtype samples (labeled as {\it ev}).
+
+For this dataset, normexp \cite{normexp} background correction and normalisation was carried out, and probes are removed from downstream analysis if they were not detected in any of the samples or are of low quality.
+Probes are considered as ``detected" if they have a detection score of greater than 0.95, and are considered to have reasonable quality if it is graded as "Good" or better.
+The pre-processed expression data is available within Glimma as an \Robj{EListRaw} object and a targets file of associated sample information is included.
+
+<<Rarraydata>>=
+data(arraydata)
+arrays <- arraydata$arrays
+targets <- arraydata$targets
+dim(arrays)
+targets
+@
+
+An MDS plot is created on the \Robj{Elist} object with samples colored by sample condition, the Illumina beadchip on which samples were processed on, and experiment number. The plot shows that samples separate first by cell population (DP and Lum) over Dimension 1 (Figure~\ref{fig:mdsarray}A), and then separate by the beadchip and experiment over Dimension 2 (Figure~\ref{fig:mdsarray}B,C). Variations in the experimental design are easily explored using the interactive plot.
+
+<<Rmds.arrays>>=
+glMDSPlot(arrays, groups=targets[,c("Condition", "Chip", "Experiment")])
+@
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.7\linewidth]{MDSarray.png}}
+  \caption{Interactive MDS plot with samples colored by condition (A), beadchip (B) and experiment (C). The plot showing the proportion of variation explained by each dimension (top right panel) has been hidden in panels B and C, to highlight the change in MDS Color Group.}
+  \label{fig:mdsarray}
+\end{figure}
+
+Within each cell population we test for the probes that are DE for Ezh2 knock-out versus wildtype using a limma-style analysis. Sample conditions and experiment number is included as parameters used in linear modelling. Using an adjusted $p$-value of 0.1, 131 probes are detected as DE in the mammary stem cell-enriched population, and 85 probes are detected in the luminal population.
+
+<<Rarraysfit>>=
+design <- model.matrix(~0+targets$Condition+as.factor(targets$Experiment))
+contrasts <- cbind(
+  DP_Ezh2KO.vs.WT=c(1,-1,0,0,0,0),
+  Lum_Ezh2KO.vs.WT=c(0,0,1,-1,0,0))
+fit <- lmFit(arrays, design)
+fit <- contrasts.fit(fit, contrasts)
+fit <- eBayes(fit)
+dt <- decideTests(fit, p.value=0.1)
+summary(dt)
+@
+
+A MD plot is created for each of the comparisons, with sample expression grouped by condition and colored by experiment number. Since gene identifiers are non-unique in microarray data, probe identifiers are used to label sample expression plots. Amongst the DE top genes that are displayed (as ranked by adjusted $p$-value), probe 6940037 is up-regulated in the comparison of Ezh2 knock-out versus wildtype in both cell populations (Figure~\ref{fig{mdarray}}).
+
+<<Rarraysmd>>=
+sample.cols <- c("purple", "magenta", "green")[targets$Experiment]
+for (COEF in 1:2) {
+  glMDPlot(fit, status=dt, coef=COEF, main=colnames(fit)[COEF],
+    counts=arrays, groups=targets$Condition, sample.cols=sample.cols,
+    side.ylab="Log-expression", side.main="ProbeID")
+}
+@
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.7\linewidth]{MDarray.png}}
+  \caption{Interactive MD plot for the comparison between Ezh2 knock-out and wildtype for A) mammary stem cell-enriched samples and B) luminal populations, where up-regulated genes are colored in red and down-regulated genes are colored in blue. Samples in the sample expression plot are grouped by condition and colored by experiment number. Both tables in A) and B) show the top DE genes are ranked by adjusted $p$-value. Probe 6940037 for gene Ltf is amongst the top DE genes in both comparisons.}
+  \label{fig:mdarray}
+\end{figure}
+
+To take a look at both comparisons at the same time, the logFC for DP Ezh2 knock-out versus wildtype is plotted against the logFC for Lum Ezh2 knock-out versus wildtype (Figure~\ref{fig:xyarray}). Probes that are DE in either one of the comparisons are highlighted in the plot in black, and probes that are DE in both comparisons are highlighted in the plot in red. We search specifically for ``Ltf'' to find probe 6940037 using the table's search bar. Probe 6940037 has the largest positive logFC in both comparisons. In general, logFCs in the two cell populations are postively correlated for the comparison between Ezh2 knock-out versus wildtype.
+
+<<Rarraysxy>>=
+dt2 <- rep(0, nrow(dt))
+dt2[rowSums(dt!=0)==1] <- -1
+dt2[rowSums(dt!=0)==2] <- 1
+table(dt2)
+cols <- c("black", "grey", "red")
+glXYPlot(fit$coef[,1], y=fit$coef[,2], xlab="DP", ylab="Lum",
+  status=dt2, cols=cols, anno=fit$genes, side.main="ProbeID",
+  counts=arrays, groups=targets$Condition, sample.cols=sample.cols,
+  side.ylab="Log-expression", main="logFCs")
+@
+
+\begin{figure}[!ht]
+  \centerline{\includegraphics[width=0.7\linewidth]{XYarray.png}}
+  \caption{Interactive plot of logFCs for Ezh2 knock-out versus wildtype in DP (x-axis) and Lum (y-axis) in the top left panel. Probes that are DE in one comparison are highlighted in black, and probes that are DE in both comparisons are highlighted in red. Sample expression is separated into conditions and colored by experiment number. The table of results is restricted to those that match with ``Ltf".}
+  \label{fig:xyarray}
+\end{figure}
+
+
+%\section{Single-cell RNA-seq data}
+
+%\section{Methylation data}
+
+
+
+
+\clearpage
+\section{Appendix}
+\label{sec:appendix}
+
+\subsection{Extra mean-difference plots}
+\subsubsection{edgeR-style analysis}
+In the R code below, DE analysis is carried out using edgeR's exact test method. A MD plot is created using a \Robj{DGEExact} object, and {\it dt.edger} which is limma's \Robj{TestResults} object is used to highlight genes that are detected as differentially expressed. Since raw counts are given to the \Rfun{glMDPlot} function, a logCPM transformation is carried out using the \Rarg{transform} argument. For an analysis using edgeR's likelihood ratio tests, one can easily replace the \Robj{DGEExact} object below with a \Robj{DGELRT} object.
+
+<<Rmdedgeret, eval=FALSE>>=
+groups <- rnaseq$samples$group
+design <- model.matrix(~groups)
+colnames(design) <- c("WT", "Smchd1null.vs.WT")
+rnaseq.edger <- estimateDisp(rnaseq, design=design)
+fit.edger <- exactTest(rnaseq.edger)
+dt.edger <- decideTestsDGE(fit.edger)
+glMDPlot(fit.edger, status=dt.edger, counts=rnaseq, groups=groups, transform=TRUE)
+@
+
+<<Rmdedgerlrt, eval=FALSE, echo=FALSE>>=
+fit.edger <- glmFit(rnaseq.edger, design)
+fit.edger <- glmLRT(fit.edger)
+dt.edger <- decideTestsDGE(fit.edger)
+glMDPlot(fit.edger, status=dt.edger, counts=rnaseq, groups=groups, transform=TRUE)
+@
+
+
+
+
+\subsubsection{DESeq2-style analysis}
+Differential expression analysis is carried out here using DESeq2. A MD plot is created using a \Robj{DESeqResults} object. Genes are highlighted (without distinction between up- or down-regulation) using the numeric vector {\it dt.deseq2}.
+<<Rmddeseq2, eval=FALSE>>=
+# BUG regarding highlight colors in MD plot
+# BUG regarding not being able to work properly without anno or samples
+# BUG regarding the scale of sample expression
+library(DESeq2)
+rnaseq.deseq2 <- DESeqDataSetFromMatrix(
+  rnaseq$counts, colData=rnaseq$samples, design=~group)
+mcols(rnaseq.deseq2) <- DataFrame(mcols(rnaseq.deseq2), rnaseq$genes)
+rnaseq.deseq2 <- DESeq(rnaseq.deseq2)
+fit.deseq2 <- results(rnaseq.deseq2, contrast=c("group", "Smchd1-null", "WT"))
+dt.deseq2 <- as.numeric(fit.deseq2$padj<0.05)
+glMDPlot(fit.deseq2, status=dt.deseq2, counts=rnaseq, groups=groups, transform=FALSE,
+  samples=colnames(rnaseq), anno=rnaseq$genes)
+@
+
+
+
+
+\subsection{R session information}
+<<Rsessinfo>>=
+sessionInfo()
+@
+
+
+
+
+\clearpage
+
+\begin{thebibliography}{}
+\bibitem[1]{limma} Ritchie ME, Phipson B, Wu D, Hu Y, Law CW, Shi W, Smyth GK. (2015) limma powers differential
+expression analyses for RNA-sequencing and microarray studies, {\it Nucleic Acids Research}, {\bf 43}(7):e47.
+\bibitem[2]{Degust} Powell DR. (2015) Degust: Visualize, explore and appreciate RNA-seq differential gene-expression
+data, \url{http://victorian-bioinformatics-consortium.github.io/degust/}.
+\bibitem[3]{edgeR} Robinson MD, McCarthy DJ, Smyth GK. (2010) edgeR: a Bioconductor package for differential
+expression analysis of digital gene expression data, {\it Bioinformatics}, {\bf 26}(1):139--40.
+\bibitem[4]{DESeq2} Love MI, Huber W, Anders S. (2014) Moderated estimation of fold change and dispersion for
+RNA-seq data with DESeq2, {\it Genome Biology}, {\bf 15}(12):550.
+\bibitem[5]{Smchd1} Liu R, Chen K, Jansz N, Blewitt ME, Ritchie, ME (2016) Transcriptional profiling of the epigenetic
+regulator Smchd1, {\it Genomics Data}, {\bf 7}:144--7.
+\bibitem[6]{voom} Law CW, Chen Y, Shi W, Smyth GK (2014) Voom: precision weights unlock linear model analysis
+  tools for RNA-seq read counts, {\it Genome Biology}, {\bf 15}:R29.
+\bibitem[7]{voomqwts} Liu R, Holik AZ, Su S, Jansz N, Chen K, Leong HS, Blewitt ME, Asselin-Labat ML, Smyth GK,
+  Ritchie ME (2015) Why weight? Combining voom with estimates of sample quality improves power in RNA-seq analyses,
+  {\it Nucleic Acids Research}, {\bf 43}(15):e97.
+\bibitem[8]{treat} McCarthy DJ, Smyth GK (2009) Testing significance relative to a fold-change threshold is a TREAT,
+  {\it Bioinformatics}, {\bf 25}(6):765-71.
+\bibitem[9]{tmm} Robinson MD, Oshlack A (2010) A scaling normalization method for differential expression analysis of RNA-seq data, {\it Genome Biology}, {\bf 11}:R25.
+\bibitem[10]{bh} Benjamini Y, Hochberg Y (1995) Controlling the false discovery rate: a practical and powerful approach to multiple testing, {\it Journal of the Royal Statistical Society Series B} {\bf 57}, 289-300.
+\bibitem[11]{bioc} Huber W, Carey V, Gentleman R, Anders S, Carlson M, Carvalho BS, Bravo HC, Davis S, Gatto L, Girke T, Gottardo R, Hahne F, Hansen KD, Irizarry RA, Lawrence M, Love MI, MacDonald J, Obenchain V, Ole\'s AK, Pag\`es H, Reyes A, Shannon P, Smyth GK, Tenenbaum D, Waldron L, Morgan M (2015) Orchestrating high-throughput genomic analysis with Bioconductor, {\it Nature Methods} {\bf 12}(2):151--121.
+\bibitem[12]{normexp} Shi W, Oshlack A, Smyth GK (2010) Optimizing the noise versus bias trade-off for Illumina Whole Genome Expression BeadChips, {\it Nucleic Acids Research} {\bf 38}e204.
+\bibitem[13]{pal} Pal B, Bouras T, Shi W, Vaillant F, Sheridan JM, Fu N, Breslin K, Jiang K, Ritchie ME, Young M, Lindeman GJ, Smyth GK, Visvader JE (2013) Global changes in the mammary epigenome are induced by hormonal cues and coordinated by Ezh2, {\it Cell Reports} {\bf 3}:411-426.
+\end{thebibliography}
+
+
+\end{document}
+
+
