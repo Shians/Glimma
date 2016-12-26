@@ -216,10 +216,12 @@ getLabels <- function(x, labels) {
             }
         }
     } else if (class(x) == "DESeqDataSet") {
-        if (not.null(x$sampleTable)) {
-            labels <- rownames(x$samples$group)
-        } else {
-            labels <- 1:ncol(x)
+        if (is.null(labels)) {
+            if (not.null(x@colData)) {
+                labels <- rownames(x@colData)
+            } else {
+                labels <- 1:ncol(x)
+            }
         }
     }
 
