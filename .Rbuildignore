@@ -7,3 +7,4 @@ glimma.sublime-workspace
 inst/tests
 ^.*\.Rproj$
 ^\.Rproj\.user$
+images-doc
