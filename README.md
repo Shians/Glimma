@@ -1,6 +1,8 @@
 # Glimma
 Welcome to Glimma, a R package for creating interactive plots for differential expression analysis.
 
+User suggestions are very welcome, please start an issue for usability improvements or features you'd like to see!
+
 # Installation
 
 ### Using BioConductor
