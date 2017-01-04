@@ -18,3 +18,16 @@ source("https://bioconductor.org/biocLite.R")
 useDevel()
 biocLite("Glimma")
 ```
+
+# Features
+## MDS Plots
+### Changing dimensions to plots
+
+### Changing conditions to colour by
+
+## MD Plot
+### Hovering over points
+
+### Clicking points
+
+### Clicking on table entries
