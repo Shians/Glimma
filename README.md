@@ -18,3 +18,21 @@ source("https://bioconductor.org/biocLite.R")
 useDevel()
 biocLite("Glimma")
 ```
+
+# Features
+## MDS Plots
+### Changing dimensions to plots
+![bar-click](https://raw.githubusercontent.com/shians/glimma/master/images-doc/MDS-click.gif)
+
+### Changing conditions to colour by
+![groups](https://raw.githubusercontent.com/shians/glimma/master/images-doc/MDS-groups.gif)
+
+## MD Plot
+### Hovering over points
+![points-hover](https://raw.githubusercontent.com/shians/glimma/master/images-doc/point-hover.gif)
+
+### Clicking points
+![points-click](https://raw.githubusercontent.com/shians/glimma/master/images-doc/point-click.gif)
+
+### Clicking on table entries
+![table-click](https://raw.githubusercontent.com/shians/glimma/master/images-doc/table-search.gif)
