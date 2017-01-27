@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Shians/Glimma.svg?branch=master)](https://travis-ci.org/Shians/Glimma)
+
 # Glimma
 Welcome to Glimma, a R package for creating interactive plots for differential expression analysis.
 
