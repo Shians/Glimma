@@ -120,7 +120,11 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     checkThat(length(status), sameAs(nrow(x)))
     checkObjAnnoCountsShapes(anno, counts, x)
-    if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
+    if (not.null(counts)) {
+        checkSideMainPresent(side.main, anno, x)
+    } else {
+        side.main <- NULL
+    }
 
     #
     ##
@@ -314,7 +318,11 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
         }
     }
 
-    if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
+    if (not.null(counts)) {
+        checkSideMainPresent(side.main, anno, x)
+    } else {
+        side.main <- NULL
+    }
 
     #
     ##
@@ -501,7 +509,11 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         }
     }
 
-    if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
+    if (not.null(counts)) {
+        checkSideMainPresent(side.main, anno, x)
+    } else {
+        side.main <- NULL
+    }
 
     #
     ##
@@ -663,7 +675,11 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
     checkObjAnnoCountsShapes(anno, counts, x)
     checkCountsAndSamples(counts, samples, side.log)
 
-    if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
+    if (not.null(counts)) {
+        checkSideMainPresent(side.main, anno, x)
+    } else {
+        side.main <- NULL
+    }
 
     #
     ##
@@ -764,7 +780,11 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
 
     checkObjAnnoCountsShapes(anno, counts, x)
     checkCountsAndSamples(counts, samples, side.log)
-    if (not.null(counts)) checkSideMainPresent(side.main, anno, x)
+    if (not.null(counts)) {
+        checkSideMainPresent(side.main, anno, x)
+    } else {
+        side.main <- NULL
+    }
 
     #
     ##
