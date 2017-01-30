@@ -36,6 +36,8 @@ test_that("MD Plot runs for DGELRT", {
 
     expect_silent(glMDPlot(qlf, anno=geneanno, main="MDPlot", launch=FALSE))
 
+    expect_silent(glMDPlot(qlf, anno=geneanno, main="MDPlot", launch=FALSE))
+
     expect_silent(glMDPlot(qlf, counts=counts, main="MDPlot", launch=FALSE))
 
     expect_silent(glMDPlot(qlf, counts=counts, anno=geneanno,
@@ -46,6 +48,11 @@ test_that("MD Plot runs for DGELRT", {
 
     expect_silent(glMDPlot(qlf, counts=counts, anno=geneanno, groups=genotypes,
             samples=1:6, display.columns=display.columns, status=is.de, main="MDPlot", launch=FALSE))
+
+    load("little_mait_DGELRT.RData")
+
+    expect_silent(glMDPlot(little_mait, launch=FALSE))
+    expect_silent(glMDPlot(little_mait, anno=little_mait$genes, launch=FALSE))
 })
 
 test_that("MD Plot runs for DGEExact", {
