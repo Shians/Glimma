@@ -58,11 +58,11 @@ as.hexcol <- function(x) {
 
 #' Hexcode colours
 #'
-#' Check if string(s) are valid hex colour reprsentations
+#' Check if string(s) are valid hex colour representation
 #'
 #' @param x the colour value(s) to check.
 #'
-#' @return Logical vector indicating if strings(s) are valid hex reprsentations
+#' @return Logical vector indicating if strings(s) are valid hex representations
 
 is.hex <- function(x) {
     isHex <- grepl("^#[[:xdigit:]]{6}$", x)
