@@ -27,10 +27,13 @@ Suggests:
     BiocStyle,
     DESeq2,
     limma,
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 License: GPL-3 | file LICENSE
 URL: https://github.com/Shians/Glimma
 BugReports: https://github.com/Shians/Glimma/issues
 RoxygenNote: 5.0.1
 NeedsCompilation: no
 LazyData: true
+VignetteBuilder: knitr
