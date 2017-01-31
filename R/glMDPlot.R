@@ -132,10 +132,12 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     ##
     # Value initialisation
 
-    if (side.main %in% colnames(x)) {
-        x[[side.main]] <- makeUnique(x[[side.main]])
-    } else if (side.main %in% colnames(anno)) {
-        anno[[side.main]] <- makeUnique(anno[[side.main]])
+    if (not.null(side.main)) {
+        if (side.main %in% colnames(x)) {
+            x[[side.main]] <- makeUnique(x[[side.main]])
+        } else if (side.main %in% colnames(anno)) {
+            anno[[side.main]] <- makeUnique(anno[[side.main]])
+        }
     }
 
     cols <- as.hexcol(cols)

@@ -4,8 +4,6 @@ glimma.sublime-project
 .Rproj.user
 
 *.Rproj
-
 *.tex
-
-*.Rproj
 DESCRIPTION.bak
+inst/doc
