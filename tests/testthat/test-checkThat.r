@@ -47,6 +47,4 @@ test_that("Checking functions are correct", {
     expect_equal(checkThat(c(1, 2), notNull), TRUE)
     expect_equal(checkThat("NULL", notNull), TRUE)
     expect_equal(checkThat(c("NULL", "b"), notNull), TRUE)
-
-    expect
 })
