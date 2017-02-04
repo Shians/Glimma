@@ -916,7 +916,7 @@ setDisplayColumns <- function(display.columns, anno, xval, yval) {
         display.columns <- display.columns[display.columns != yval]
     }
 
-    output <- display.columns
+    output <- make.names(display.columns)
 
     output
 }
