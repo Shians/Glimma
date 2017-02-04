@@ -9,7 +9,7 @@ test_that("Helper functions run as expected", {
     expect_equal(initialiseGroups(NULL), NULL)
 })
 
-test_that("MD Plot runs for voom", {
+test_that("MD Plot runs for MArrayLM", {
     load("test_data_voom.RData")
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
@@ -27,6 +27,10 @@ test_that("MD Plot runs for voom", {
             samples=1:6, status=is.de, display.columns=display.columns, launch=FALSE))
 
     expect_error(glMDPlot(fit, counts=counts, samples=1:2, anno=geneanno, launch=FALSE))
+
+    load("invalid_names_glMDPlot.RData")
+
+    expect_silent(glMDPlot(invalid_names_fit, anno=invalid_names_anno, id.column="ENTREZID", launch=FALSE))
 })
 
 test_that("MD Plot runs for DGELRT", {
