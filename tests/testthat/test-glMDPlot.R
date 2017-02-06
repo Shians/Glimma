@@ -79,10 +79,10 @@ test_that("MD Plot runs for DESeqDataSet", {
     expect_silent(glMDPlot(lymphoma_dds, anno=lymphoma_anno, groups=lymphoma_genotypes, samples=1:7,
                     status=lymphoma_status, launch=FALSE))
 
-    expect_silent(glMDPlot(results(lymphoma_dds), counts(lymphoma_dds), anno=lymphoma_anno, groups=lymphoma_genotypes,
-                    launch=FALSE))
-    expect_silent(glMDPlot(results(lymphoma_dds), counts(lymphoma_dds), anno=lymphoma_anno, groups=lymphoma_genotypes,
-                    samples=1:7, status=lymphoma_status, launch=FALSE))
+    expect_silent(glMDPlot(DESeq2::results(lymphoma_dds), DESeq2::counts(lymphoma_dds), anno=lymphoma_anno,
+                    groups=lymphoma_genotypes, launch=FALSE))
+    expect_silent(glMDPlot(DESeq2::results(lymphoma_dds), DESeq2::counts(lymphoma_dds), anno=lymphoma_anno,
+                    groups=lymphoma_genotypes, samples=1:7, status=lymphoma_status, launch=FALSE))
 
 })
 
