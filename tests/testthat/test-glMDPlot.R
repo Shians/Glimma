@@ -73,4 +73,19 @@ test_that("MD Plot runs for DGEExact", {
         samples=1:6, display.columns=display.columns, status=is.de, main="MDPlot", launch=FALSE))
 })
 
+test_that("MD Plot runs for DESeqDataSet", {
+    load("test_data_DESeqDataSet.RData")
+    expect_silent(glMDPlot(lymphoma_dds, anno=lymphoma_anno, groups=lymphoma_genotypes, launch=FALSE))
+    expect_silent(glMDPlot(lymphoma_dds, anno=lymphoma_anno, groups=lymphoma_genotypes, samples=1:7,
+                    status=lymphoma_status, launch=FALSE))
+
+    expect_silent(glMDPlot(results(lymphoma_dds), counts(lymphoma_dds), anno=lymphoma_anno, groups=lymphoma_genotypes,
+                    launch=FALSE))
+    expect_silent(glMDPlot(results(lymphoma_dds), counts(lymphoma_dds), anno=lymphoma_anno, groups=lymphoma_genotypes,
+                    launch=FALSE))
+    expect_silent(glMDPlot(results(lymphoma_dds), counts(lymphoma_dds), anno=lymphoma_anno, groups=lymphoma_genotypes,
+                    samples=1:7, status=lymphoma_status, launch=FALSE))
+
+})
+
 unlink("glimma-plots", recursive=TRUE)
