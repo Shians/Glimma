@@ -156,9 +156,9 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
     cols <- convertStatusToCols(status, cols)
 
     if (is.null(anno)) {
-        plotting.data <- data.frame(x, cols = cols)
+        plotting.data <- data.frame(x, cols=cols)
     } else {
-        plotting.data <- data.frame(anno, x, cols = cols)
+        plotting.data <- data.frame(anno, x, cols=cols)
     }
 
     if (not.null(counts)) {
@@ -166,16 +166,16 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
         if (is(groups, "numeric")) {
 
-            sample.exp <- data.frame(Sample = samples,
-                                 cols = as.hexcol(sample.cols),
-                                 Group = groups,
+            sample.exp <- data.frame(Sample=samples,
+                                 cols=as.hexcol(sample.cols),
+                                 Group=groups,
                                  tr.counts)
 
         } else {
 
-            sample.exp <- data.frame(Sample = samples,
-                                 cols = as.hexcol(sample.cols),
-                                 Group = factor(groups),
+            sample.exp <- data.frame(Sample=samples,
+                                 cols=as.hexcol(sample.cols),
+                                 Group=factor(groups),
                                  tr.counts)
 
         }
@@ -203,7 +203,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
                                 colval="cols",
                                 annot=c("Sample", colnames(sample.exp)[4]),
                                 annot.lab=c("Sample", "logCPM"),
-                                x.jitter = jitter,
+                                x.jitter=jitter,
                                 ndigits=4, hide=TRUE,
                                 ystep=side.gridstep, ygrid=TRUE)
         } else {
@@ -214,7 +214,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
                                 colval="cols",
                                 annot=c("Sample", colnames(sample.exp)[4]),
                                 annot.lab=c("Sample", "logCPM"),
-                                x.jitter = jitter,
+                                x.jitter=jitter,
                                 ndigits=4, hide=TRUE, ygrid=FALSE)
         }
     } else {
@@ -360,31 +360,29 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     cols <- convertStatusToCols(status, cols)
 
     if (is.null(anno)) {
-
-        plotting.data <- data.frame(x$table, cols = cols,
-                                    Adj.PValue = stats::p.adjust(x$table$PValue,
-                                    method = p.adj.method))
-
+        plotting.data <- data.frame(x$table, 
+                                    cols=cols,
+                                    Adj.PValue=stats::p.adjust(x$table$PValue,
+                                    method=p.adj.method))
     } else {
-
-        plotting.data <- data.frame(anno, x$table, cols = cols,
-                                    Adj.PValue = stats::p.adjust(x$table$PValue,
-                                    method = p.adj.method))
-
+        plotting.data <- data.frame(anno, x$table, 
+                                    cols=cols,
+                                    Adj.PValue=stats::p.adjust(x$table$PValue,
+                                    method=p.adj.method))
     }
 
     if (not.null(counts)) {
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         if (is(groups, "numeric")) {
-            sample.exp <- data.frame(Sample = samples,
-                                     cols = as.hexcol(sample.cols),
-                                     Group = groups,
+            sample.exp <- data.frame(Sample=samples,
+                                     cols=as.hexcol(sample.cols),
+                                     Group=groups,
                                      tr.counts)
         } else {
-            sample.exp <- data.frame(Sample = samples,
-                                     cols = as.hexcol(sample.cols),
-                                     Group = factor(groups),
+            sample.exp <- data.frame(Sample=samples,
+                                     cols=as.hexcol(sample.cols),
+                                     Group=factor(groups),
                                      tr.counts)
         }
     } else {
@@ -559,19 +557,19 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     Adj.PValue <- stats::p.adjust(x$p.value[, coef], method=p.adj.method)
     if (is.null(anno)) {
 
-        plotting.data <- data.frame(logFC = x$coefficients[, coef],
-                                     logCPM = x$Amean,
-                                     cols = cols,
-                                     PValue = x$p.value[, coef],
-                                     Adj.PValue = Adj.PValue)
+        plotting.data <- data.frame(logFC=x$coefficients[, coef],
+                                     logCPM=x$Amean,
+                                     cols=cols,
+                                     PValue=x$p.value[, coef],
+                                     Adj.PValue=Adj.PValue)
 
     } else {
 
-        plotting.data <- data.frame(logFC = x$coefficients[, coef],
-                                     logCPM = x$Amean,
-                                     cols = cols,
-                                     PValue = x$p.value[, coef],
-                                     Adj.PValue = Adj.PValue,
+        plotting.data <- data.frame(logFC=x$coefficients[, coef],
+                                     logCPM=x$Amean,
+                                     cols=cols,
+                                     PValue=x$p.value[, coef],
+                                     Adj.PValue=Adj.PValue,
                                      anno)
 
     }
@@ -580,14 +578,14 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
         if (is(groups, "numeric")) {
-            sample.exp <- data.frame(Sample = samples,
-                                     cols = as.hexcol(sample.cols),
-                                     Group = groups,
+            sample.exp <- data.frame(Sample=samples,
+                                     cols=as.hexcol(sample.cols),
+                                     Group=groups,
                                      tr.counts)
         } else {
-            sample.exp <- data.frame(Sample = samples,
-                                     cols = as.hexcol(sample.cols),
-                                     Group = factor(groups),
+            sample.exp <- data.frame(Sample=samples,
+                                     cols=as.hexcol(sample.cols),
+                                     Group=factor(groups),
                                      tr.counts)
         }
     } else {
@@ -713,11 +711,11 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
 
     cols <- convertStatusToCols(status, cols)
 
-    plotting.data <- data.frame(logFC = res.df$log2FoldChange,
-                                 logMean = log(res.df$baseMean + 0.5),
-                                 cols = cols,
-                                 PValue = res.df$pvalue,
-                                 Adj.PValue = res.df$padj,
+    plotting.data <- data.frame(logFC=res.df$log2FoldChange,
+                                 logMean=log(res.df$baseMean + 0.5),
+                                 cols=cols,
+                                 PValue=res.df$pvalue,
+                                 Adj.PValue=res.df$padj,
                                  anno)
 
     bg.col <- cols[2]
@@ -726,9 +724,9 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
 
     plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
-    sample.exp <- data.frame(Sample = samples,
-                             cols = as.hexcol(sample.cols),
-                             Group = factor(groups),
+    sample.exp <- data.frame(Sample=samples,
+                             cols=as.hexcol(sample.cols),
+                             Group=factor(groups),
                              tr.counts)
 
     plotWithTable(plotting.data, sample.exp, display.columns,
@@ -818,11 +816,11 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
 
     cols <- convertStatusToCols(status, cols)
 
-    plotting.data <- data.frame(logFC = res.df$log2FoldChange,
-                                 logMean = log(res.df$baseMean + 0.5),
-                                 cols = cols,
-                                 PValue = res.df$pvalue,
-                                 Adj.PValue = res.df$padj,
+    plotting.data <- data.frame(logFC=res.df$log2FoldChange,
+                                 logMean=log(res.df$baseMean + 0.5),
+                                 cols=cols,
+                                 PValue=res.df$pvalue,
+                                 Adj.PValue=res.df$padj,
                                  anno)
 
     bg.col <- cols[2]
@@ -831,9 +829,9 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
 
         tr.counts <- transformCounts(counts, transform, plotting.data[[side.main]])
 
-        sample.exp <- data.frame(Sample = samples,
-                                 cols = as.hexcol(sample.cols),
-                                 Group = factor(groups),
+        sample.exp <- data.frame(Sample=samples,
+                                 cols=as.hexcol(sample.cols),
+                                 Group=factor(groups),
                                  tr.counts)
 
     } else {
