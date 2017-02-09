@@ -20,4 +20,3 @@ as.hexcol(c(1, 2, 3))
 as.hexcol(c("red", "black", "green"))
 
 }
-

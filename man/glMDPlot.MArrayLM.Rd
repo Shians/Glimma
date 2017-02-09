@@ -113,4 +113,3 @@ glMDPlot(vfit, counts=x$counts, anno=x$genes, groups=genotype, samples=1:7,
 \author{
 Shian Su
 }
-

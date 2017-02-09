@@ -80,4 +80,3 @@ Draw an interactive MD plot from a DGELRT objet
 \author{
 Shian Su
 }
-

@@ -58,4 +58,3 @@ glimma(plot1, layout=c(1,1), launch=TRUE)
 \author{
 Shian Su
 }
-

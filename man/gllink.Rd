@@ -38,4 +38,3 @@ link1 <- gllink(1, 2, src="hover", dest="hover", both=TRUE)
 glimma(plot1, plot2, link1, layout=c(1,2))
 }
 }
-

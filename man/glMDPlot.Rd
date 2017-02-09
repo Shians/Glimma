@@ -54,12 +54,11 @@ glMDPlot(vfit, counts=x$counts, anno=x$genes, groups=genotype, samples=1:7,
 }
 
 }
-\author{
-Shian Su
-}
 \seealso{
 \code{\link{glMDPlot.default}}, \code{\link{glMDPlot.DGELRT}},
   \code{\link{glMDPlot.DGEExact}}, \code{\link{glMDPlot.MArrayLM}},
   \code{\link{glMDPlot.DESeqDataSet}}
 }
-
+\author{
+Shian Su
+}

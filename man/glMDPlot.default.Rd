@@ -87,4 +87,3 @@ Draw an interactive MD plot from a data.frame
 \author{
 Shian Su
 }
-

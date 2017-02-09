@@ -78,4 +78,3 @@ Draw an interactive MD plot from a DESeqResults object
 \author{
 Shian Su
 }
-

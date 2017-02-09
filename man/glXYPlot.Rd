@@ -77,4 +77,3 @@ glXYPlot(iris$Sepal.Width, iris$Sepal.Length, xlab="Sepal.Width", ylab="Sepal.Le
 \author{
 Charity Law and Shian Su
 }
-
