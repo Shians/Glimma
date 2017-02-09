@@ -308,6 +308,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     checkObjAnnoCountsShapes(anno, counts, x$table)
     checkCountsAndSamples(counts, samples, side.log)
 
+    anno <- makeAnno(x, anno)
     # Assign side.main column from rowname of counts if required
     if (not.null(counts) && side.main %!in% union(names(x$table), names(anno))) {
         geneIds <- rownames(counts)
@@ -334,7 +335,6 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     xval <- "logCPM"
     yval <- "logFC"
-    anno <- makeAnno(x, anno)
     cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
@@ -497,6 +497,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     checkObjAnnoCountsShapes(anno, counts, x)
     checkCountsAndSamples(counts, samples, side.log)
 
+    anno <- makeAnno(x, anno)
     # Assign side.main column from rowname of counts if required
     if (not.null(counts) && side.main %!in% union(names(x$genes), names(anno))) {
         geneIds <- rownames(counts)
@@ -523,7 +524,6 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 
     xval <- "logCPM"
     yval <- "logFC"
-    anno <- makeAnno(x, anno)
     cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 

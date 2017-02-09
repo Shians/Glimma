@@ -32,10 +32,9 @@ glMDSPlot(lymphomaRNAseq, labels=1:7, groups=genotype)
 }
 
 }
-\author{
-Shian Su, Gordon Smyth
-}
 \seealso{
 \code{\link{glMDSPlot.default}}, \code{\link{glMDSPlot.DGEList}}
 }
-
+\author{
+Shian Su, Gordon Smyth
+}

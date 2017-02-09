@@ -26,10 +26,9 @@ plot1 <- glBar(data, "Count", "nGears", ylab="Number of Gears")
 glimma(plot1, layout=c(1,1), launch=TRUE)
 }
 }
-\author{
-Shian Su
-}
 \seealso{
 \code{\link{glBar.default}}
 }
-
+\author{
+Shian Su
+}

@@ -15,4 +15,3 @@ Logical vector indicating if strings(s) are valid hex representations
 \description{
 Check if string(s) are valid hex colour representation
 }
-
