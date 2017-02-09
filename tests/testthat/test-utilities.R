@@ -17,3 +17,12 @@ test_that("Row and column extractions work", {
     expect_equal(getCols(x, 1:2), matrix(1:6, ncol=2))
     expect_equal(getRows(x, 1), matrix(c(1, 4, 7), nrow=1))
 })
+
+test_that("path maker works", {
+    expect_error(pathMaker("path"))
+
+    p_maker <- pathMaker("path/")
+
+    expect_equal(p_maker("to"), "path/to")
+    expect_equal(p_maker("to/elsewhere"), "path/to/elsewhere")
+})
