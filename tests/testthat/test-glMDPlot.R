@@ -9,7 +9,7 @@ test_that("Helper functions run as expected", {
     expect_equal(initialiseGroups(NULL), NULL)
 })
 
-test_that("MD Plot runs for voom", {
+test_that("MD Plot runs for MArrayLM", {
     load("test_data_voom.RData")
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
@@ -27,6 +27,10 @@ test_that("MD Plot runs for voom", {
             samples=1:6, status=is.de, display.columns=display.columns, launch=FALSE))
 
     expect_error(glMDPlot(fit, counts=counts, samples=1:2, anno=geneanno, launch=FALSE))
+
+    load("invalid_names_glMDPlot.RData")
+
+    expect_silent(glMDPlot(invalid_names_fit, anno=invalid_names_anno, id.column="ENTREZID", launch=FALSE))
 })
 
 test_that("MD Plot runs for DGELRT", {
@@ -67,6 +71,19 @@ test_that("MD Plot runs for DGEExact", {
 
     expect_silent(glMDPlot(et, counts=counts, anno=geneanno, groups=genotypes,
         samples=1:6, display.columns=display.columns, status=is.de, main="MDPlot", launch=FALSE))
+})
+
+test_that("MD Plot runs for DESeqDataSet", {
+    load("test_data_DESeqDataSet.RData")
+    expect_silent(glMDPlot(lymphoma_dds, anno=lymphoma_anno, groups=lymphoma_genotypes, launch=FALSE))
+    expect_silent(glMDPlot(lymphoma_dds, anno=lymphoma_anno, groups=lymphoma_genotypes, samples=1:7,
+                    status=lymphoma_status, launch=FALSE))
+
+    expect_silent(glMDPlot(DESeq2::results(lymphoma_dds), DESeq2::counts(lymphoma_dds), anno=lymphoma_anno,
+                    groups=lymphoma_genotypes, launch=FALSE))
+    expect_silent(glMDPlot(DESeq2::results(lymphoma_dds), DESeq2::counts(lymphoma_dds), anno=lymphoma_anno,
+                    groups=lymphoma_genotypes, samples=1:7, status=lymphoma_status, launch=FALSE))
+
 })
 
 unlink("glimma-plots", recursive=TRUE)
