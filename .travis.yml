@@ -2,6 +2,10 @@ warnings_are_errors: false
 
 language: r
 
+os:
+  - linux
+  - osx
+
 cache: packages
 
 sudo: false
