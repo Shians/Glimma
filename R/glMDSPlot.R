@@ -138,7 +138,6 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
                     height=300, width=300, info=list(dims=ndim))
 
     link1 <- gllink(2, 1, flag="mds")
-
     link2 <- gltablink(1,1, action = "highlightById")
     table1 <- glTable(1, c("label", intersect(plot1$anno, colnames(groups))))
 
@@ -208,12 +207,11 @@ glMDSPlot.DESeqDataSet <- function(x, top=500, labels=NULL,
                     folder=folder, html=html, launch=launch, ...)
 }
 
-
 #' Glimma MDS Plot
 #'
 #' @template desc_glMDSPlot
 #'
-#' @author Shian Su, Gordon Smyth
+#' @author Shian Su, Gordon Smyth, Stuart Lee
 #'
 #' @inheritParams glMDSPlot.default
 #' @param x the SCESet containing the gene expressions.
@@ -224,21 +222,21 @@ glMDSPlot.DESeqDataSet <- function(x, top=500, labels=NULL,
 #'
 #' @export
 glMDSPlot.SCESet <- function (x, top=500, labels=NULL,
-									groups=NULL, gene.selection="pairwise",
-									main="MDS Plot", path=getwd(),
-									folder="glimma-plots", html="MDS-Plot",
-									launch=TRUE, ...) {
+								groups=NULL, gene.selection="pairwise",
+								main="MDS Plot", path=getwd(),
+								folder="glimma-plots", html="MDS-Plot",
+								launch=TRUE, ...) {
 
 	transformedCounts <- edgeR::cpm(scater::counts(x), log=TRUE)
 
-	if (!is.null(Biobase::sampleNames(x))) {
+	if (not.null(Biobase::sampleNames(x))) {
 		labels <- Biobase::sampleNames(x)
 	} else {
 		labels <- 1:ncol(transformedCounts)
 	}
 
 	if (is.null(groups)) {
-		if (!is.null(Biobase::pData(x))) {
+		if (not.null(Biobase::pData(x))) {
 			groups <- Biobase::pData(x)
 		} else {
 			groups <- rep(1, ncol(transformedCounts))
@@ -249,7 +247,6 @@ glMDSPlot.SCESet <- function (x, top=500, labels=NULL,
 					  gene.selection="pairwise", main=main, path=path,
 					  folder=folder, html=html, launch=launch, ...)
 }
-
 
 getLabels <- function(x, labels) {
     if (class(x) == "DGEList") {
