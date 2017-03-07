@@ -16,10 +16,12 @@ biocViews:
     Visualization
 Depends: R (>= 3.3.0)
 Imports:
+	Biobase,
     edgeR,
     grDevices,
     jsonlite,
     methods,
+    scater,
     stats,
     S4Vectors,
     utils

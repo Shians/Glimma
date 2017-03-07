@@ -360,12 +360,12 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     cols <- convertStatusToCols(status, cols)
 
     if (is.null(anno)) {
-        plotting.data <- data.frame(x$table, 
+        plotting.data <- data.frame(x$table,
                                     cols=cols,
                                     Adj.PValue=stats::p.adjust(x$table$PValue,
                                     method=p.adj.method))
     } else {
-        plotting.data <- data.frame(anno, x$table, 
+        plotting.data <- data.frame(anno, x$table,
                                     cols=cols,
                                     Adj.PValue=stats::p.adjust(x$table$PValue,
                                     method=p.adj.method))

@@ -139,7 +139,10 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
 
     link1 <- gllink(2, 1, flag="mds")
 
-    glimma(plot1, plot2, link1, layout=c(1, 2), overwrite=TRUE,
+    link2 <- gltablink(1,1, action = "highlightById")
+    table1 <- glTable(1, c("label", intersect(plot1$anno, colnames(groups))))
+
+    glimma(plot1, plot2, link1, table1, link2, layout=c(1, 2), overwrite=TRUE,
             path=path, folder=folder, html=html, launch=launch)
 }
 
@@ -184,7 +187,7 @@ glMDSPlot.DGEList <- function (x, top=500, labels=NULL,
 #' @method glMDSPlot DESeqDataSet
 #'
 #' @export
-glMDSPlot.DESeqDataSet <- function (x, top=500, labels=NULL,
+glMDSPlot.DESeqDataSet <- function(x, top=500, labels=NULL,
                             groups=NULL, gene.selection="pairwise",
                             main="MDS Plot", path=getwd(),
                             folder="glimma-plots", html="MDS-Plot",
@@ -203,6 +206,48 @@ glMDSPlot.DESeqDataSet <- function (x, top=500, labels=NULL,
     glMDSPlot.default(transformedCounts, top=500, labels=labels, groups=groups,
                     gene.selection="pairwise", main=main, path=path,
                     folder=folder, html=html, launch=launch, ...)
+}
+
+
+#' Glimma MDS Plot
+#'
+#' @template desc_glMDSPlot
+#'
+#' @author Shian Su, Gordon Smyth
+#'
+#' @inheritParams glMDSPlot.default
+#' @param x the SCESet containing the gene expressions.
+#'
+#' @template return_glMDSPlot
+#'
+#' @method glMDSPlot DESeqDataSet
+#'
+#' @export
+glMDSPlot.SCESet <- function (x, top=500, labels=NULL,
+									groups=NULL, gene.selection="pairwise",
+									main="MDS Plot", path=getwd(),
+									folder="glimma-plots", html="MDS-Plot",
+									launch=TRUE, ...) {
+
+	transformedCounts <- edgeR::cpm(scater::counts(x), log=TRUE)
+
+	if (!is.null(Biobase::sampleNames(x))) {
+		labels <- Biobase::sampleNames(x)
+	} else {
+		labels <- 1:ncol(transformedCounts)
+	}
+
+	if (is.null(groups)) {
+		if (!is.null(Biobase::pData(x))) {
+			groups <- Biobase::pData(x)
+		} else {
+			groups <- rep(1, ncol(transformedCounts))
+		}
+	}
+
+	glMDSPlot.default(transformedCounts, top=500, labels=labels, groups=groups,
+					  gene.selection="pairwise", main=main, path=path,
+					  folder=folder, html=html, launch=launch, ...)
 }
 
 

@@ -15,6 +15,7 @@ bioc_packages:
   - testthat
   - DESeq2
   - limma
+  - scater
 
 r_packages:
   - covr
