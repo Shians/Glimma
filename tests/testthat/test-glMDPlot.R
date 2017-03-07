@@ -76,6 +76,7 @@ test_that("MD Plot runs for DGEExact", {
 })
 
 test_that("MD Plot runs for DESeqDataSet", {
+    library(DESeq2)
     load("test_data_DESeqDataSet.RData")
     expect_silent(glMDPlot(lymphoma_dds, anno=lymphoma_anno, groups=lymphoma_genotypes, launch=FALSE))
     expect_silent(glMDPlot(lymphoma_dds, anno=lymphoma_anno, groups=lymphoma_genotypes, samples=1:7,

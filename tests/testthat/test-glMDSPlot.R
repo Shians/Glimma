@@ -32,4 +32,15 @@ test_that("MDS Plot runs for DESeqDataSet", {
     expect_silent(glMDSPlot(dds, launch=FALSE))
 })
 
+test_that("MDS Plot runs for SCEset", {
+	library(scater)
+	data("sc_example_cell_info")
+	data("sc_example_counts")
+	pd <- new("AnnotatedDataFrame", data = sc_example_cell_info)
+	example_sceset <- newSCESet(countData = sc_example_counts, phenoData = pd)
+
+	expect_silent(glMDSPlot(example_sceset, launch = FALSE))
+
+})
+
 unlink("glimma-plots", recursive=TRUE)
