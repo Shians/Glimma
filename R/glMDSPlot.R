@@ -218,7 +218,7 @@ glMDSPlot.DESeqDataSet <- function(x, top=500, labels=NULL,
 #'
 #' @template return_glMDSPlot
 #'
-#' @method glMDSPlot DESeqDataSet
+#' @method glMDSPlot SCESet
 #'
 #' @export
 glMDSPlot.SCESet <- function (x, top=500, labels=NULL,
