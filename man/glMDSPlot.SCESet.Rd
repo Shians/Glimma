@@ -4,10 +4,9 @@
 \alias{glMDSPlot.SCESet}
 \title{Glimma MDS Plot}
 \usage{
-\method{glMDSPlot}{DESeqDataSet}(x, top = 500, labels = NULL,
-  groups = NULL, gene.selection = "pairwise", main = "MDS Plot",
-  path = getwd(), folder = "glimma-plots", html = "MDS-Plot",
-  launch = TRUE, ...)
+\method{glMDSPlot}{SCESet}(x, top = 500, labels = NULL, groups = NULL,
+  gene.selection = "pairwise", main = "MDS Plot", path = getwd(),
+  folder = "glimma-plots", html = "MDS-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the SCESet containing the gene expressions.}
