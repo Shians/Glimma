@@ -20,6 +20,11 @@ test_that("MD Plot runs for MArrayLM", {
 
     expect_silent(glMDPlot(fit, counts=counts, anno=geneanno, launch=FALSE))
 
+    expect_silent(glMDPlot(fit, counts=counts, anno=geneanno,
+    					   xlab="foo", ylab="bar", launch=FALSE))
+    expect_silent(glMDPlot(fit, counts=counts, anno=geneanno,
+    					   side.xlab="foo", side.ylab="bar", launch=FALSE))
+
     expect_silent(
         glMDPlot(fit, counts=counts, anno=geneanno, groups=genotypes,
             display.columns=display.columns, launch=FALSE))
@@ -42,9 +47,12 @@ test_that("MD Plot runs for DGELRT", {
 
     expect_silent(glMDPlot(qlf, anno=geneanno, main="MDPlot", launch=FALSE))
 
-    expect_silent(glMDPlot(qlf, anno=geneanno, main="MDPlot", launch=FALSE))
-
     expect_warning(glMDPlot(qlf, counts=counts, main="MDPlot", launch=FALSE))
+
+    expect_silent(glMDPlot(qlf, anno=geneanno, main="MDPlot",
+    					   xlab="foo", ylab="bar", launch=FALSE))
+    expect_silent(glMDPlot(qlf, anno=geneanno, main="MDPlot",
+    					   side.xlab="foo", side.ylab="bar", launch=FALSE))
 
     expect_silent(glMDPlot(qlf, counts=counts, anno=geneanno,
             samples=1:6, status=is.de, main="MDPlot", launch=FALSE))
@@ -67,6 +75,10 @@ test_that("MD Plot runs for DGEExact", {
     display.columns <- c("Symbols", "GeneID")
 
     expect_silent(glMDPlot(et, main="MDPlot", launch=FALSE))
+    expect_silent(glMDPlot(et, main="MDPlot",
+    					   xlab="foo", ylab="bar", launch=FALSE))
+    expect_silent(glMDPlot(et, main="MDPlot",
+    					   side.xlab="foo", side.ylab="bar", launch=FALSE))
 
     expect_silent(glMDPlot(et, counts=counts,
         samples=1:6, status=is.de, main="MDPlot", launch=FALSE))
