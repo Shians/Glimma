@@ -6,7 +6,8 @@
 \usage{
 \method{glMDPlot}{DGELRT}(x, counts = NULL, anno = NULL, groups = NULL,
   samples = NULL, status = rep(0, nrow(x)), transform = FALSE,
-  side.xlab = "Group", side.ylab = "Expression", side.log = FALSE,
+  xlab = "Average log CPM", ylab = "log-fold-change", side.xlab = "Group",
+  side.ylab = "Expression", side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
   p.adj.method = "BH", jitter = 30, side.main = "GeneID",
   display.columns = NULL, cols = c("#00bfff", "#858585", "#ff3030"),
@@ -29,6 +30,10 @@ as the number of rows of object. If NULL, then all points are plotted in
 the default colour.}
 
 \item{transform}{TRUE if counts cpm transformed.}
+
+\item{xlab}{label for x axis on left plot.}
+
+\item{ylab}{label for y axis on left plot.}
 
 \item{side.xlab}{label for x axis on right plot.}
 

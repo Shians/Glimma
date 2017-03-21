@@ -252,6 +252,8 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 #'   as the number of rows of object. If NULL, then all points are plotted in
 #'   the default colour.
 #' @param transform TRUE if counts cpm transformed.
+#' @param xlab label for x axis on left plot.
+#' @param ylab label for y axis on left plot.
 #' @param side.main the column containing mains for right plot.
 #' @param side.xlab label for x axis on right plot.
 #' @param side.ylab label for y axis on right plot.
@@ -286,6 +288,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
                             groups=NULL, samples=NULL,
                             status=rep(0, nrow(x)), transform=FALSE,
+							xlab="Average log CPM", ylab="log-fold-change",
                             side.xlab="Group", side.ylab="Expression",
                             side.log=FALSE,
                             side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
@@ -393,7 +396,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
                 side.main=side.main, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
                 xval=xval, yval=yval,
-                xlab="Average log CPM", ylab="log-fold-change",
+                xlab=xlab, ylab=ylab,
                 side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                 side.gridstep=side.gridstep,
                 ...)
@@ -473,6 +476,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
                             groups=NULL, samples=NULL,
                             status=rep(0, nrow(x)), transform=FALSE,
+					    	xlab="Average log CPM", ylab="log-fold-change",
                             side.main="GeneID",
                             side.xlab="Group", side.ylab="Expression",
                             side.log=FALSE,
@@ -596,7 +600,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
                 side.main=side.main, default.col=cols[2], jitter=jitter,
                 path=path, folder=folder, html=html, launch=launch,
                 xval=xval, yval=yval,
-                xlab="Average log CPM", ylab="log-fold-change",
+                xlab=xlab, ylab=ylab,
                 side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                 side.gridstep=side.gridstep,
                 ...)
@@ -617,6 +621,8 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 #'   as the number of rows of object. If NULL, then all points are plotted in
 #'   the default colour.
 #' @param transform TRUE if counts cpm transformed.
+#' @param xlab label for x axis on left plot.
+#' @param ylab label for y axis on left plot.
 #' @param side.main the column containing mains for right plot.
 #' @param side.xlab label for x axis on right plot.
 #' @param side.ylab label for y axis on right plot.
@@ -649,6 +655,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
 
 glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
                                 status=rep(0, nrow(x)), transform=FALSE,
+						    	xlab="Mean Expression", ylab="log-fold-change",
                                 side.xlab="Group", side.ylab="logMean",
                                 side.log=FALSE,
                                 side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
@@ -733,7 +740,7 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
                     side.main=side.main, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
                     xval=xval, yval=yval,
-                    xlab="Mean Expression", ylab="log-fold-change",
+                    xlab=xlab, ylab=ylab,
                     side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                     side.gridstep=side.gridstep,
                     ...)
@@ -759,6 +766,7 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
 
 glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
                                 status=rep(0, nrow(x)), transform=FALSE,
+							  	xlab="Mean Expression", ylab="log-fold-change",
                                 side.xlab="Group", side.ylab="Expression",
                                 side.log=FALSE,
                                 side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
@@ -844,7 +852,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
                     side.main=side.main, default.col=cols[2], jitter=jitter,
                     path=path, folder=folder, html=html, launch=launch,
                     xval=xval, yval=yval,
-                    xlab="Mean Expression", ylab="log-fold-change",
+                    xlab=xlab, ylab=ylab,
                     side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
                     side.gridstep=side.gridstep,
                     ...)
