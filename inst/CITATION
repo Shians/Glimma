@@ -1,0 +1,8 @@
+citEntry(
+   entry = "article",
+   title = "Glimma: interactive graphics for gene expression analysis",
+   author = "Shian Su and Charity W. Law and Casey Ah-Cann and Marie-Liesse Asselin-Labat Marnie E. Blewitt and Matthew E. Ritchie",
+   journal = "Bioinformatics",
+   year = 2017,
+   textVersion = "Shian Su, Charity W. Law, Casey Ah-Cann, Marie-Liesse Asselin-Labat, Marnie E. Blewitt, Matthew E. Ritchie; Glimma: interactive graphics for gene expression analysis. Bioinformatics 2017 btx094. doi: 10.1093/bioinformatics/btx094"
+)
