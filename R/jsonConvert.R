@@ -47,7 +47,7 @@ makeJson.factor <- function(sample.groups) {
 # Function to make json object out of a lists
 makeJson.list <- function(x, ...) {
     list_names <- names(x)
-    vals <- sapply(x, function(d) { toJSON(d, auto_unbox=TRUE, na="string") })
+    vals <- sapply(x, function(d) { toJSON(d, auto_unbox=TRUE, na="string", use_signif=TRUE) })
     output <- paste(paste(quotify(list_names), vals, sep=":"), collapse=",")
 
     paste("{", output, "}", sep="")
@@ -74,7 +74,7 @@ makeJson.data.frame <- function(df, convert.logical=TRUE) {
         }
     }
 
-    output <- toJSON(df, auto_unbox=TRUE, na="string")
+    output <- toJSON(df, auto_unbox=TRUE, na="string", use_signif=TRUE)
     class(output) <- "json"
 
     # Outputs [{"col1": val1.1, "col2": val1.2,...},
@@ -87,16 +87,8 @@ convertLogical <- function(x) {
     as.character(x)
 }
 
-makeJson.character <- function(x, ...) {
-    toJSON(x, auto_unbox=TRUE, na="string")
-}
-
-makeJson.numeric <- function(x, ...) {
-    toJSON(x, auto_unbox=TRUE, na="string")
-}
-
-makeJson.logical <- function(x, ...) {
-    toJSON(x, auto_unbox=TRUE, na="string")
+makeJson.default <- function(x, ...) {
+  toJSON(x, auto_unbox=TRUE, na="string", use_signif=TRUE)
 }
 
 makeJson.NULL <- function(x, ...) {
