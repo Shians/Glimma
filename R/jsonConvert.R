@@ -24,7 +24,7 @@ makeJson <- function(x, ...) {
 
 makeJson.jschart <- function(chart) {
     makeEntry <- function(d) {
-        return(paste(quotify(d), makeJson(chart[[d]]), sep=":"))
+        return(paste(quotify(d), Glimma::makeJson(chart[[d]]), sep=":"))
     }
 
     chart$json <- NULL
@@ -71,7 +71,7 @@ makeJson.data.frame <- function(df, convert.logical=TRUE) {
         logicalCols <- getLogicalCols(df)
 
         for (i in which(logicalCols)) {
-            df[, i] <- convertLogical(df[, i])
+            df[, i] <- as.character(df[, i])
         }
     }
 
@@ -84,12 +84,9 @@ makeJson.data.frame <- function(df, convert.logical=TRUE) {
     output
 }
 
-convertLogical <- function(x) {
-    as.character(x)
-}
-
 makeJson.default <- function(x, ...) {
     jsonlite::toJSON(x, auto_unbox=TRUE, use_signif=TRUE, na="string")
+}
 
 makeJson.character <- function(x, ...) {
     jsonlite::toJSON(x, auto_unbox=TRUE, na="string")
