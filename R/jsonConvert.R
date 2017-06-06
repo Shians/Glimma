@@ -24,7 +24,7 @@ makeJson <- function(x, ...) {
 
 makeJson.jschart <- function(chart) {
     makeEntry <- function(d) {
-        return(paste(quotify(d), Glimma::makeJson(chart[[d]]), sep=":"))
+        return(paste(quotify(d), makeJson(chart[[d]]), sep=":"))
     }
 
     chart$json <- NULL
