@@ -50,7 +50,7 @@ test_that("data.frame conversion is correct", {
 })
 
 test_that("Numeric conversion does not round to 0", {
-  plotdata = data.frame(x=exp(log(10)*seq(log10(1e-100),log10(1),length.out=10000)), y=1:10000)
+  plotdata = data.frame(x=exp(log(10) * seq(log10(1e-100), log10(1), length.out=10000)), y=1:10000)
   plot = Glimma:::glScatter.default(plotdata, xval="x", yval="y")
   jsondf = jsonlite::fromJSON(plot$json)
   expect_false(any(jsondf$x == 0))
