@@ -48,3 +48,10 @@ test_that("data.frame conversion is correct", {
     expect_that(as.character(makeJson(df5)),
             equals("[{\"a\":\"foo\",\"b\":\"4\"},{\"a\":\"bar\",\"b\":\"NA\"},{\"a\":\"NA\",\"b\":\"6\"}]"))
 })
+
+test_that("Numeric conversion does not round to 0", {
+  plotdata = data.frame(x=exp(log(10) * seq(log10(1e-100), log10(1), length.out=10000)), y=1:10000)
+  plot = Glimma:::glScatter.default(plotdata, xval="x", yval="y")
+  jsondf = jsonlite::fromJSON(plot$json)
+  expect_false(any(jsondf$x == 0))
+})
