@@ -37,7 +37,7 @@ test_that("MD Plot runs for MArrayLM", {
 
     load("invalid_names_glMDPlot.RData")
 
-    expect_silent(glMDPlot(invalid_names_fit, anno=invalid_names_anno, id.column="ENTREZID", launch=FALSE))
+    expect_silent(glMDPlot(invalid_names_fit, anno=invalid_names_anno, side.name="ENTREZID", launch=FALSE))
 })
 
 test_that("MD Plot runs for DGELRT", {
