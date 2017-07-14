@@ -163,11 +163,11 @@ glMDSPlot.DGEList <- function (x, top=500, labels=NULL,
                             groups=rep(1, ncol(x)), gene.selection="pairwise",
                             main="MDS Plot", path=getwd(),
                             folder="glimma-plots", html="MDS-Plot",
-                            launch=TRUE, ...) {
+                            launch=TRUE, prior.prob = 0.25, ...) {
     labels <- getLabels(x, labels)
-    transformedCounts <- edgeR::cpm(x, log=TRUE)
+    transformedCounts <- edgeR::cpm(x, log=TRUE, prior.prob = prior.prob)
 
-    glMDSPlot.default(transformedCounts, top=500, labels=labels, groups=groups,
+    glMDSPlot.default(transformedCounts, top=top, labels=labels, groups=groups,
                     gene.selection="pairwise", main=main, path=path,
                     folder=folder, html=html, launch=launch, ...)
 }
@@ -202,7 +202,7 @@ glMDSPlot.DESeqDataSet <- function(x, top=500, labels=NULL,
         }
     }
 
-    glMDSPlot.default(transformedCounts, top=500, labels=labels, groups=groups,
+    glMDSPlot.default(transformedCounts, top=top, labels=labels, groups=groups,
                     gene.selection="pairwise", main=main, path=path,
                     folder=folder, html=html, launch=launch, ...)
 }
@@ -243,7 +243,7 @@ glMDSPlot.SCESet <- function (x, top=500, labels=NULL,
 		}
 	}
 
-	glMDSPlot.default(transformedCounts, top=500, labels=labels, groups=groups,
+	glMDSPlot.default(transformedCounts, top=top, labels=labels, groups=groups,
 					  gene.selection="pairwise", main=main, path=path,
 					  folder=folder, html=html, launch=launch, ...)
 }
