@@ -183,9 +183,19 @@ glMDSPlot.DGEList <- function (
     labels <- getLabels(x, labels)
     transformedCounts <- edgeR::cpm(x, log=TRUE)
 
-    glMDSPlot.default(transformedCounts, top=500, labels=labels, groups=groups,
-                    gene.selection="pairwise", main=main, path=path,
-                    folder=folder, html=html, launch=launch, ...)
+    glMDSPlot.default(
+        transformedCounts,
+        top=500,
+        labels=labels,
+        groups=groups,
+        gene.selection="pairwise",
+        main=main,
+        path=path,
+        folder=folder,
+        html=html,
+        launch=launch,
+        ...
+    )
 }
 
 #' Glimma MDS Plot
