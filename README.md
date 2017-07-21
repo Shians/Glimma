@@ -26,9 +26,6 @@ useDevel()
 biocLite("Glimma")
 ```
 
-# Bug reports
-If you find bugs please let me know by submitting an issue to this project. If possible please provide a small runnable example demonstrating the bug, operating system and R version.
-
 # Features
 ## MDS Plots
 ### Changing dimensions to plots
