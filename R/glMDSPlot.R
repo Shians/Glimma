@@ -95,22 +95,22 @@ glMDSPlot.default <- function(
         topindex <- nprobes - top + 1L
         for (i in 2L:(nsamples)) {
             for (j in 1L:(i - 1L)) {
-                dist <- (getCols(x, i) - getCols(x, j))^2
-                dist <- sort.int(dist, partial = topindex )
-                topdist <- dist[topindex:nprobes]
+                dists <- (getCols(x, i) - getCols(x, j))^2
+                dists <- sort.int(dists, partial = topindex )
+                topdist <- dists[topindex:nprobes]
                 dd[i, j] <- sqrt(mean(topdist))
             }
         }
     } else {
     # Same genes used for all comparisons
         if (nprobes > top) {
-            s <- rowMeans((x-rowMeans(x))^2)
-            o <- order(s, decreasing=TRUE)
+            o <- order(rowMeans( (x-rowMeans(x))^2 ), decreasing=TRUE)
             x <- getRows(x, o[1L:top])
         }
-        for (i in 2L:(nsamples))
-            dist <- sqrt(colMeans( (x[, i]-x[, 1:(i-1), drop=FALSE])^2 ))
-            dd[i, 1L:(i-1L)] <- dist
+        for (i in 2L:(nsamples)) {
+            dists <- (x[, i] - x[, 1:(i-1), drop=FALSE]) ^ 2
+            dd[i, 1L:(i-1L)] <- sqrt(colMeans(dists))
+        }
     }
 
     # Multi-dimensional scaling
@@ -136,13 +136,13 @@ glMDSPlot.default <- function(
 
     plot1 <- glScatter(
         points,
-        xval = "dim1", 
-        yval = "dim2", 
+        xval = "dim1",
+        yval = "dim2",
         point.size = 4,
         xlab = "Dimension 1",
         ylab = "Dimension 2",
         annot = c("label", all.col.names, "dim1", "dim2"),
-        colval = first.col.name, 
+        colval = first.col.name,
         main = main,
         info = list(groupsNames=colnames(groups))
     )
@@ -237,7 +237,11 @@ glMDSPlot.DESeqDataSet <- function(
     ...
 ) {
     labels <- getLabels(x, labels)
-    transformedCounts <- edgeR::cpm(DESeq2::counts(x), log=TRUE, prior.count=prior.count)
+    transformedCounts <- edgeR::cpm(
+        DESeq2::counts(x),
+        log = TRUE,
+        prior.count = prior.count
+    )
 
     if (is.null(groups)) {
         if (not.null(x@colData)) {
@@ -291,7 +295,11 @@ glMDSPlot.SCESet <- function (
     launch = TRUE,
     ...
 ) {
-    transformedCounts <- edgeR::cpm(scater::counts(x), log=TRUE, prior.count=prior.count)
+    transformedCounts <- edgeR::cpm(
+        scater::counts(x),
+        log=TRUE,
+        prior.count=prior.count
+    )
 
     if (not.null(Biobase::sampleNames(x))) {
         labels <- Biobase::sampleNames(x)

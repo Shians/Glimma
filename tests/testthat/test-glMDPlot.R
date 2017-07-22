@@ -1,5 +1,13 @@
 context("Test MD Plot")
 
+test_that("id.column deprecation warning works", {
+    load("test_data_voom.RData")
+    counts <- counts$counts
+    display.columns <- c("Symbols", "GeneID")
+
+    expect_warning(glMDPlot(fit, counts=counts, id.column="ENTREZID", launch=FALSE))
+})
+
 test_that("Helper functions run as expected", {
     status <- c(0, 1, -1)
     cols <- c("blue", "black", "red")
@@ -21,9 +29,9 @@ test_that("MD Plot runs for MArrayLM", {
     expect_silent(glMDPlot(fit, counts=counts, anno=geneanno, launch=FALSE))
 
     expect_silent(glMDPlot(fit, counts=counts, anno=geneanno,
-    					   xlab="foo", ylab="bar", launch=FALSE))
+                           xlab="foo", ylab="bar", launch=FALSE))
     expect_silent(glMDPlot(fit, counts=counts, anno=geneanno,
-    					   side.xlab="foo", side.ylab="bar", launch=FALSE))
+                           side.xlab="foo", side.ylab="bar", launch=FALSE))
 
     expect_silent(
         glMDPlot(fit, counts=counts, anno=geneanno, groups=genotypes,
@@ -50,9 +58,9 @@ test_that("MD Plot runs for DGELRT", {
     expect_warning(glMDPlot(qlf, counts=counts, main="MDPlot", launch=FALSE))
 
     expect_silent(glMDPlot(qlf, anno=geneanno, main="MDPlot",
-    					   xlab="foo", ylab="bar", launch=FALSE))
+                           xlab="foo", ylab="bar", launch=FALSE))
     expect_silent(glMDPlot(qlf, anno=geneanno, main="MDPlot",
-    					   side.xlab="foo", side.ylab="bar", launch=FALSE))
+                           side.xlab="foo", side.ylab="bar", launch=FALSE))
 
     expect_silent(glMDPlot(qlf, counts=counts, anno=geneanno,
             samples=1:6, status=is.de, main="MDPlot", launch=FALSE))
@@ -76,9 +84,9 @@ test_that("MD Plot runs for DGEExact", {
 
     expect_silent(glMDPlot(et, main="MDPlot", launch=FALSE))
     expect_silent(glMDPlot(et, main="MDPlot",
-    					   xlab="foo", ylab="bar", launch=FALSE))
+                           xlab="foo", ylab="bar", launch=FALSE))
     expect_silent(glMDPlot(et, main="MDPlot",
-    					   side.xlab="foo", side.ylab="bar", launch=FALSE))
+                           side.xlab="foo", side.ylab="bar", launch=FALSE))
 
     expect_silent(glMDPlot(et, counts=counts,
         samples=1:6, status=is.de, main="MDPlot", launch=FALSE))

@@ -66,7 +66,13 @@ makeJson.list <- function(x, ...) {
 #'
 #' @importFrom methods is
 
-makeJson.data.frame <- function(df, convert.logical=TRUE) {
+makeJson.data.frame <- function(
+    df,
+    convert.logical = TRUE,
+    dataframe = c("rows", "columns")
+) {
+    dataframe <- match.arg(dataframe)
+
     if (convert.logical) {
         logicalCols <- getLogicalCols(df)
 
@@ -75,12 +81,17 @@ makeJson.data.frame <- function(df, convert.logical=TRUE) {
         }
     }
 
-    output <- jsonlite::toJSON(df, auto_unbox=TRUE, na="string", use_signif=TRUE)
+    # don't need rownames in our JSON object
+    rownames(df) <- NULL
+    output <- jsonlite::toJSON(
+        df,
+        auto_unbox = TRUE,
+        na = "string",
+        use_signif = TRUE,
+        dataframe = dataframe
+    )
     class(output) <- "json"
 
-    # Outputs [{"col1": val1.1, "col2": val1.2,...},
-    #          {"col1": val2.1, "col2": val2.2,...},
-    #          ...]
     output
 }
 
