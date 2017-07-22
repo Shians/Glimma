@@ -4,7 +4,8 @@
 \alias{makeJson.data.frame}
 \title{JSON converter for data frames}
 \usage{
-\method{makeJson}{data.frame}(df, convert.logical = TRUE)
+\method{makeJson}{data.frame}(df, convert.logical = TRUE,
+  dataframe = c("rows", "columns"))
 }
 \arguments{
 \item{df}{the data.frame to be converted into JSON}

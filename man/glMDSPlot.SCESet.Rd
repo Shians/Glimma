@@ -5,8 +5,9 @@
 \title{Glimma MDS Plot}
 \usage{
 \method{glMDSPlot}{SCESet}(x, top = 500, labels = NULL, groups = NULL,
-  gene.selection = "pairwise", main = "MDS Plot", path = getwd(),
-  folder = "glimma-plots", html = "MDS-Plot", launch = TRUE, ...)
+  gene.selection = c("pairwise", "common"), prior.count = 0.25,
+  main = "MDS Plot", path = getwd(), folder = "glimma-plots",
+  html = "MDS-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the SCESet containing the gene expressions.}
@@ -20,6 +21,8 @@
 \item{gene.selection}{"pairwise" if most variable genes are to be chosen for
 each pair of samples or "common" to select the same genes for all
 comparisons.}
+
+\item{prior.count}{average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE.}
 
 \item{main}{the title of the plot.}
 
