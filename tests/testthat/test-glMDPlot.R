@@ -5,7 +5,7 @@ test_that("id.column deprecation warning works", {
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
 
-    expect_warning(glMDPlot(fit, counts=counts, id.column="ENTREZID", launch=FALSE))
+    expect_error(glMDPlot(fit, counts=counts, id.column="ENTREZID", launch=FALSE))
 })
 
 test_that("Helper functions run as expected", {
