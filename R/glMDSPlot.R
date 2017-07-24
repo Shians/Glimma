@@ -195,6 +195,7 @@ glMDSPlot.default <- function(
 #' @method glMDSPlot DGEList
 #'
 #' @export
+
 glMDSPlot.DGEList <- function (
     x,
     top = 500,
@@ -270,6 +271,7 @@ glMDSPlot.DESeqDataSet <- function(
             groups <- rep(1, ncol(x))
         }
     }
+
 
     glMDSPlot.default(
         transformedCounts,
