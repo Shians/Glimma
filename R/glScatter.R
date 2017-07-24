@@ -100,7 +100,7 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
     x <- data.frame(x)
 
     # Make json out of data
-    json <- makeJson(x, convert.logical=FALSE, data.frame="column")
+    json <- makeJson(x, convert.logical=FALSE, dataframe="column")
 
     x.ord <- is.factor(x[[xval]])
     y.ord <- is.factor(x[[yval]])

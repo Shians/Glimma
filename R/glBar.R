@@ -80,11 +80,12 @@ glBar.default <- function(x, yval, names.arg=rownames(x),
             stop(paste(colval, "does not correspond to a column"))
         }
     }
+    #
+    ##
 
-    # TODO: Consider using rjson package?
     # Make json out of data
     x <- data.frame(x)
-    json <- makeJson(x)
+    json <- makeJson(x, dataframe = "columns")
 
     out <- list(
                 names = names.arg,
