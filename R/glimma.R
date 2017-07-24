@@ -180,7 +180,15 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 # Helper function for parsing the information in a plot object
 processPlot <- function(write.data, type, chart, index) {
     # Write json data
-    write.data(paste0("glimma.storage.chartData.push(", chart$json, ");\n"))
+    write.data(
+        jsCall(
+            jsMethod("glimma", "storage", "chartData", "push"),
+            jsCall(
+                jsMethod("glimma", "transform", "toRowMajor"),
+                chart$json
+            )
+        )
+    )
 
     # Write plot information
     chart$json <- NULL
