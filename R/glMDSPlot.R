@@ -215,15 +215,15 @@ glMDSPlot.DGEList <- function (
 
     glMDSPlot.default(
         transformedCounts,
-        top=top,
-        labels=labels,
-        groups=groups,
-        gene.selection=gene.selection,
-        main=main,
-        path=path,
-        folder=folder,
-        html=html,
-        launch=launch,
+        top = top,
+        labels = labels,
+        groups = groups,
+        gene.selection = gene.selection,
+        main = main,
+        path = path,
+        folder = folder,
+        html = html,
+        launch = launch,
         ...
     )
 }
@@ -319,8 +319,8 @@ glMDSPlot.SCESet <- function (
 ) {
     transformedCounts <- edgeR::cpm(
         scater::counts(x),
-        log=TRUE,
-        prior.count=prior.count
+        log = TRUE,
+        prior.count = prior.count
     )
 
     if (not.null(Biobase::sampleNames(x))) {
