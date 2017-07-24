@@ -1,5 +1,11 @@
 Glimma News
 
+Changes IN Glimma 1.6.0
+
+  * Added table to MDS plot.
+  * Changed encoding of javascript data to be more compact
+  * Fixed handling of top and gene.selection parameters in glMDSPlot
+
 CHANGES IN Glimma 1.3.0
 
   * Added highlighting to bars in MDS plot.
