@@ -131,8 +131,10 @@ glMDSPlot.default <- function(
     names(points) <- paste0("dim", 1:ncol(points))
     points <- data.frame(points, label=labels, groups)
 
-    eigen <- data.frame(name = 1:min(ndim, 8),
-                        eigen = round(a1$eig[1:min(ndim, 8)]/sum(a1$eig), 2))
+    eigen <- data.frame(
+        name = 1:min(ndim, 8),
+        eigen = round(a1$eig[1:min(ndim, 8)]/sum(a1$eig), 2)
+    )
 
     plot1 <- glScatter(
         points,
@@ -147,17 +149,35 @@ glMDSPlot.default <- function(
         info = list(groupsNames=colnames(groups))
     )
 
-    plot2 <- glBar(eigen, names.arg="name", yval="eigen",
-                    main="Variance Explained",
-                    xlab="Dimension", ylab="Proportion",
-                    height=300, width=300, info=list(dims=ndim))
+    plot2 <- glBar(
+        eigen,
+        names.arg = "name",
+        yval = "eigen",
+        main = "Variance Explained",
+        xlab = "Dimension",
+        ylab = "Proportion",
+        height = 300,
+        width = 300,
+        info = list(dims = ndim)
+    )
 
     link1 <- gllink(2, 1, flag="mds")
-    link2 <- gltablink(1,1, action = "highlightById")
+    link2 <- gltablink(1,1, action="highlightById")
     table1 <- glTable(1, c("label", intersect(plot1$anno, colnames(groups))))
 
-    glimma(plot1, plot2, link1, table1, link2, layout=c(1, 2), overwrite=TRUE,
-            path=path, folder=folder, html=html, launch=launch)
+    glimma(
+        plot1,
+        plot2,
+        link1,
+        table1,
+        link2,
+        layout = c(1, 2),
+        overwrite = TRUE,
+        path = path,
+        folder = folder,
+        html = html,
+        launch = launch
+    )
 }
 
 #' Glimma MDS Plot
