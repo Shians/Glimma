@@ -38,7 +38,7 @@ jsMethod <- function(...) {
         stop("all arguments must be singular strings")
     }
 
-    # Output arg1.arg2.arg3...
+    # Output func1.func2.func3...
     out <- paste(unlist(args), collapse=".")
     class(out) <- "jsMethod"
 
@@ -85,6 +85,7 @@ jsChain <- function(...) {
     trimmed <- gsub(";\n", "", as.character(unlist(args)))
     chained <- paste(trimmed, collapse=".")
 
+    # func1(); func2(); -> func1().func2()
     out <- paste0(chained, ";\n")
     class(out) <- "jsCall"
 

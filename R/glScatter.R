@@ -89,8 +89,6 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
     if (not.null(idval)) {
         checkThat(idval, isIn(names(x)))
     }
-    # TODO: Ensure uniqueness of identifiers
-    # TODO: Generate default identifiers if not present
 
     if (any(is.na(match(annot, names(x))))) {
         stop(paste("not all values in annot correspond to a column"))
@@ -101,9 +99,8 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
     # Normalise input
     x <- data.frame(x)
 
-    # TODO: Consider using rjson or jsonlite packages?
     # Make json out of data
-    json <- makeJson(x, convert.logical=FALSE)
+    json <- makeJson(x, convert.logical=FALSE, dataframe="column")
 
     x.ord <- is.factor(x[[xval]])
     y.ord <- is.factor(x[[yval]])
@@ -121,40 +118,40 @@ glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
     }
 
     out <- list(
-                x = xval,
-                y = yval,
-                id = idval,
-                ndigits = ndigits,
-                signif = signif,
-                pntsize = point.size,
-                xlab = xlab,
-                xjitter = x.jitter,
-                ylab = ylab,
-                yjitter = y.jitter,
-                xord = x.ord,
-                yord = y.ord,
-                xlog = x.log,
-                ylog = y.log,
-                xgrid = xgrid,
-                ygrid = ygrid,
-                xstep = xstep,
-                ystep = ystep,
-                col = colval,
-                cfixed = cfixed,
-                anno = annot,
-                annoLabels = annot.lab,
-                height = height,
-                width = width,
-                json = json,
-                type = "scatter",
-                title = main,
-                flag = flag,
-                info = info,
-                hide = hide,
-                disableClick = "click" %in% disable,
-                disableHover = "hover" %in% disable,
-                disableZoom = "zoom" %in% disable
-            )
+        x = xval,
+        y = yval,
+        id = idval,
+        ndigits = ndigits,
+        signif = signif,
+        pntsize = point.size,
+        xlab = xlab,
+        xjitter = x.jitter,
+        ylab = ylab,
+        yjitter = y.jitter,
+        xord = x.ord,
+        yord = y.ord,
+        xlog = x.log,
+        ylog = y.log,
+        xgrid = xgrid,
+        ygrid = ygrid,
+        xstep = xstep,
+        ystep = ystep,
+        col = colval,
+        cfixed = cfixed,
+        anno = annot,
+        annoLabels = annot.lab,
+        height = height,
+        width = width,
+        json = json,
+        type = "scatter",
+        title = main,
+        flag = flag,
+        info = info,
+        hide = hide,
+        disableClick = "click" %in% disable,
+        disableHover = "hover" %in% disable,
+        disableZoom = "zoom" %in% disable
+    )
 
     class(out) <- "jschart"
 

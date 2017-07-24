@@ -75,21 +75,34 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     css.path <- system.file(package="Glimma", "css")
 
     # Renaming the data.js in html file
-    temp <- gsub("data.js", paste0(html, ".js"),
-            read.delim(index.path, header=FALSE, as.is=TRUE, sep="\n")[, 1])
+    temp <- gsub(
+        "data.js",
+        paste0(html, ".js"),
+        read.delim(index.path, header=FALSE, as.is=TRUE, sep="\n")[, 1]
+    )
 
-    write.table(temp, file=file.path(path, folder, paste0(html, ".html")),
-                quote=FALSE, sep="\n", row.names=FALSE, col.names=FALSE)
+    write.table(
+        temp, 
+        file = file.path(path, folder, paste0(html, ".html")),
+        quote = FALSE, 
+        sep = "\n", 
+        row.names = FALSE, 
+        col.names = FALSE
+    )
 
-    file.copy(js.path,
-            file.path(path, folder),
-            recursive=TRUE,
-            overwrite=overwrite)
+    file.copy(
+        js.path,
+        file.path(path, folder),
+        recursive = TRUE,
+        overwrite = overwrite
+    )
 
-    file.copy(css.path,
-            file.path(path, folder),
-            recursive=TRUE,
-            overwrite=overwrite)
+    file.copy(
+        css.path,
+        file.path(path, folder),
+        recursive = TRUE,
+        overwrite = overwrite
+    )
 
     data.path <- file.path(path, folder, "js", paste0(html, ".js"))
     cat("", file=data.path, sep="")
@@ -97,25 +110,30 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 
     # Generate layout
     layout.method <- jsMethod("glimma", "layout", "setupGrid")
-    layout.args <- jsArgs("d3.select(\".container\")",
-                          quotify("md"),
-                          arrayify(layout)
-                          )
+    layout.args <- jsArgs(
+        "d3.select(\".container\")",
+        quotify("md"),
+        arrayify(layout)
+    )
     layout <- jsCall(layout.method, layout.args)
     write.data(layout)
 
     # Initialise data variables
-    actions <- data.frame(from=0,
-                        to=0,
-                        src="none",
-                        dest="none",
-                        flag="none",
-                        info="none") # Dummy row
+    actions <- data.frame(
+        from=0,
+        to=0,
+        src="none",
+        dest="none",
+        flag="none",
+        info="none"
+    ) # Dummy row
 
-    inputs <- data.frame(target=0,
-                        action="none",
-                        idval="none",
-                        flag="none") # Dummy row
+    inputs <- data.frame(
+        target=0,
+        action="none",
+        idval="none",
+        flag="none"
+    ) # Dummy row
     data.list <- list()
 
     accepted.types <- c("jslink", "jschart", "jsinput", "jstable")
@@ -162,7 +180,15 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 # Helper function for parsing the information in a plot object
 processPlot <- function(write.data, type, chart, index) {
     # Write json data
-    write.data(paste0("glimma.storage.chartData.push(", chart$json, ");\n"))
+    write.data(
+        jsCall(
+            jsMethod("glimma", "storage", "chartData", "push"),
+            jsCall(
+                jsMethod("glimma", "transform", "toRowMajor"),
+                chart$json
+            )
+        )
+    )
 
     # Write plot information
     chart$json <- NULL

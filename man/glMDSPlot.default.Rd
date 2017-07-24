@@ -5,7 +5,7 @@
 \title{Glimma MDS Plot}
 \usage{
 \method{glMDSPlot}{default}(x, top = 500, labels = 1:ncol(x),
-  groups = rep(1, ncol(x)), gene.selection = "pairwise",
+  groups = rep(1, ncol(x)), gene.selection = c("pairwise", "common"),
   main = "MDS Plot", path = getwd(), folder = "glimma-plots",
   html = "MDS-Plot", launch = TRUE, ...)
 }

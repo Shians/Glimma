@@ -47,6 +47,7 @@
 #' @export
 
 glMDPlot <- function(x, ...) {
+    if ("id.column" %in% names(list(...))) stop("argument 'id.column' has been deprecated, please use 'side.main' instead")
     UseMethod("glMDPlot")
 }
 

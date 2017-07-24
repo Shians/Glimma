@@ -95,14 +95,13 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
     } else {
     # Same genes used for all comparisons
         if (nprobes > top) {
-            s <- rowMeans((x-rowMeans(x))^2)
-            o <- order(s, decreasing=TRUE)
+            o <- order(rowMeans( (x-rowMeans(x))^2 ), decreasing=TRUE)
             x <- getRows(x, o[1L:top])
         }
-        for (i in 2L:(nsamples))
-            dist <- sqrt(colMeans( (x[, i]-x[, 1:(i-1), drop=FALSE])^2 ))
-            dd[i, 1L:(i-1L)] <- dist
-        axislabel <- "Principal Component"
+        for (i in 2L:(nsamples)) {
+            dists <- (x[, i] - x[, 1:(i-1), drop=FALSE]) ^ 2
+            dd[i, 1L:(i-1L)] <- sqrt(colMeans(dists))
+        }
     }
 
     # Multi-dimensional scaling
@@ -123,26 +122,53 @@ glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
     names(points) <- paste0("dim", 1:ncol(points))
     points <- data.frame(points, label=labels, groups)
 
-    eigen <- data.frame(name = 1:min(ndim, 8),
-                        eigen = round(a1$eig[1:min(ndim, 8)]/sum(a1$eig), 2))
+    eigen <- data.frame(
+        name = 1:min(ndim, 8),
+        eigen = round(a1$eig[1:min(ndim, 8)]/sum(a1$eig), 2)
+    )
 
-    plot1 <- glScatter(points, xval="dim1", yval="dim2", point.size=4,
-                        xlab="Dimension 1", ylab="Dimension 2",
-                        annot=c("label", all.col.names, "dim1", "dim2"),
-                        colval=first.col.name, main=main,
-                        info=list(groupsNames=colnames(groups)))
+    plot1 <- glScatter(
+        points,
+        xval = "dim1",
+        yval = "dim2",
+        point.size = 4,
+        xlab = "Dimension 1",
+        ylab = "Dimension 2",
+        annot = c("label", all.col.names, "dim1", "dim2"),
+        colval = first.col.name,
+        main = main,
+        info = list(groupsNames=colnames(groups))
+    )
 
-    plot2 <- glBar(eigen, names.arg="name", yval="eigen",
-                    main="Variance Explained",
-                    xlab="Dimension", ylab="Proportion",
-                    height=300, width=300, info=list(dims=ndim))
+    plot2 <- glBar(
+        eigen,
+        names.arg = "name",
+        yval = "eigen",
+        main = "Variance Explained",
+        xlab = "Dimension",
+        ylab = "Proportion",
+        height = 300,
+        width = 300,
+        info = list(dims = ndim)
+    )
 
     link1 <- gllink(2, 1, flag="mds")
-    link2 <- gltablink(1,1, action = "highlightById")
+    link2 <- gltablink(1,1, action="highlightById")
     table1 <- glTable(1, c("label", intersect(plot1$anno, colnames(groups))))
 
-    glimma(plot1, plot2, link1, table1, link2, layout=c(1, 2), overwrite=TRUE,
-            path=path, folder=folder, html=html, launch=launch)
+    glimma(
+        plot1,
+        plot2,
+        link1,
+        table1,
+        link2,
+        layout = c(1, 2),
+        overwrite = TRUE,
+        path = path,
+        folder = folder,
+        html = html,
+        launch = launch
+    )
 }
 
 #' Glimma MDS Plot
@@ -192,7 +218,11 @@ glMDSPlot.DESeqDataSet <- function(x, top=500, labels=NULL,
                             folder="glimma-plots", html="MDS-Plot",
                             launch=TRUE, ...) {
     labels <- getLabels(x, labels)
-    transformedCounts <- edgeR::cpm(DESeq2::counts(x), log=TRUE)
+    transformedCounts <- edgeR::cpm(
+        DESeq2::counts(x),
+        log = TRUE,
+        prior.count = prior.count
+    )
 
     if (is.null(groups)) {
         if (not.null(x@colData)) {
@@ -221,31 +251,53 @@ glMDSPlot.DESeqDataSet <- function(x, top=500, labels=NULL,
 #' @method glMDSPlot SCESet
 #'
 #' @export
-glMDSPlot.SCESet <- function (x, top=500, labels=NULL,
-								groups=NULL, gene.selection="pairwise",
-								main="MDS Plot", path=getwd(),
-								folder="glimma-plots", html="MDS-Plot",
-								launch=TRUE, ...) {
+glMDSPlot.SCESet <- function (
+    x,
+    top = 500,
+    labels = NULL,
+    groups = NULL,
+    gene.selection = c("pairwise", "common"),
+    prior.count = 0.25,
+    main = "MDS Plot",
+    path = getwd(),
+    folder = "glimma-plots",
+    html = "MDS-Plot",
+    launch = TRUE,
+    ...
+) {
+    transformedCounts <- edgeR::cpm(
+        scater::counts(x),
+        log=TRUE,
+        prior.count=prior.count
+    )
 
-	transformedCounts <- edgeR::cpm(scater::counts(x), log=TRUE)
+    if (not.null(Biobase::sampleNames(x))) {
+        labels <- Biobase::sampleNames(x)
+    } else {
+        labels <- 1:ncol(transformedCounts)
+    }
 
-	if (not.null(Biobase::sampleNames(x))) {
-		labels <- Biobase::sampleNames(x)
-	} else {
-		labels <- 1:ncol(transformedCounts)
-	}
+    if (is.null(groups)) {
+        if (not.null(Biobase::pData(x))) {
+            groups <- Biobase::pData(x)
+        } else {
+            groups <- rep(1, ncol(transformedCounts))
+        }
+    }
 
-	if (is.null(groups)) {
-		if (not.null(Biobase::pData(x))) {
-			groups <- Biobase::pData(x)
-		} else {
-			groups <- rep(1, ncol(transformedCounts))
-		}
-	}
-
-	glMDSPlot.default(transformedCounts, top=top, labels=labels, groups=groups,
-					  gene.selection="pairwise", main=main, path=path,
-					  folder=folder, html=html, launch=launch, ...)
+    glMDSPlot.default(
+        transformedCounts,
+        top = top,
+        labels = labels,
+        groups = groups,
+        gene.selection = gene.selection,
+        main = main,
+        path = path,
+        folder = folder,
+        html = html,
+        launch = launch,
+        ...
+    )
 }
 
 getLabels <- function(x, labels) {
