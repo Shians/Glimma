@@ -42,19 +42,11 @@ glMDSPlot <- function(x, ...) {
 #' @export
 
 # Code taken from plotMDS of limma bioConductor package with alterations
-glMDSPlot.default <- function(
-    x,
-    top = 500,
-    labels = 1:ncol(x),
-    groups = rep(1, ncol(x)),
-    gene.selection = c("pairwise", "common"),
-    main  ="MDS Plot",
-    path = getwd(),
-    folder = "glimma-plots",
-    html = "MDS-Plot",
-    launch = TRUE,
-    ...
-) {
+glMDSPlot.default <- function(x, top=500, labels=1:ncol(x),
+                            groups=rep(1, ncol(x)), gene.selection="pairwise",
+                            main="MDS Plot", path=getwd(),
+                            folder="glimma-plots", html="MDS-Plot",
+                            launch=TRUE, ...) {
     #   Multi-dimensional scaling with top-distance
     #   Di Wu and Gordon Smyth
     #   19 March 2009.  Last modified 14 Jan 2015
@@ -95,9 +87,8 @@ glMDSPlot.default <- function(
         topindex <- nprobes - top + 1L
         for (i in 2L:(nsamples)) {
             for (j in 1L:(i - 1L)) {
-                dists <- (getCols(x, i) - getCols(x, j))^2
-                dists <- sort.int(dists, partial = topindex )
-                topdist <- dists[topindex:nprobes]
+                dist <- sort.int((getCols(x, i) - getCols(x, j))^2, partial=topindex)
+                topdist <- dist[topindex:nprobes]
                 dd[i, j] <- sqrt(mean(topdist))
             }
         }
@@ -188,44 +179,23 @@ glMDSPlot.default <- function(
 #'
 #' @inheritParams glMDSPlot.default
 #' @param x the DGEList containing the gene expressions.
-#' @param prior.count average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE.
 #'
 #' @template return_glMDSPlot
 #'
 #' @method glMDSPlot DGEList
 #'
 #' @export
-
-glMDSPlot.DGEList <- function (
-    x,
-    top = 500,
-    labels = NULL,
-    groups = rep(1, ncol(x)),
-    gene.selection = c("pairwise", "common"),
-    prior.count = 0.25,
-    main = "MDS Plot",
-    path = getwd(),
-    folder = "glimma-plots",
-    html = "MDS-Plot",
-    launch = TRUE,
-    ...
-) {
+glMDSPlot.DGEList <- function (x, top=500, labels=NULL,
+                            groups=rep(1, ncol(x)), gene.selection="pairwise",
+                            main="MDS Plot", path=getwd(),
+                            folder="glimma-plots", html="MDS-Plot",
+                            launch=TRUE, prior.prob = 0.25, ...) {
     labels <- getLabels(x, labels)
-    transformedCounts <- edgeR::cpm(x, log=TRUE, prior.count = prior.count)
+    transformedCounts <- edgeR::cpm(x, log=TRUE, prior.prob = prior.prob)
 
-    glMDSPlot.default(
-        transformedCounts,
-        top=top,
-        labels=labels,
-        groups=groups,
-        gene.selection=gene.selection,
-        main=main,
-        path=path,
-        folder=folder,
-        html=html,
-        launch=launch,
-        ...
-    )
+    glMDSPlot.default(transformedCounts, top=top, labels=labels, groups=groups,
+                    gene.selection="pairwise", main=main, path=path,
+                    folder=folder, html=html, launch=launch, ...)
 }
 
 #' Glimma MDS Plot
@@ -236,27 +206,17 @@ glMDSPlot.DGEList <- function (
 #'
 #' @inheritParams glMDSPlot.default
 #' @param x the DESeqDataSet containing the gene expressions.
-#' @param prior.count average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE.
 #'
 #' @template return_glMDSPlot
 #'
 #' @method glMDSPlot DESeqDataSet
 #'
 #' @export
-glMDSPlot.DESeqDataSet <- function(
-    x,
-    top = 500,
-    labels = NULL,
-    groups = NULL,
-    gene.selection = c("pairwise", "common"),
-    prior.count = 0.25,
-    main = "MDS Plot",
-    path = getwd(),
-    folder = "glimma-plots",
-    html = "MDS-Plot",
-    launch = TRUE,
-    ...
-) {
+glMDSPlot.DESeqDataSet <- function(x, top=500, labels=NULL,
+                            groups=NULL, gene.selection="pairwise",
+                            main="MDS Plot", path=getwd(),
+                            folder="glimma-plots", html="MDS-Plot",
+                            launch=TRUE, ...) {
     labels <- getLabels(x, labels)
     transformedCounts <- edgeR::cpm(
         DESeq2::counts(x),
@@ -272,20 +232,9 @@ glMDSPlot.DESeqDataSet <- function(
         }
     }
 
-
-    glMDSPlot.default(
-        transformedCounts,
-        top = top,
-        labels = labels,
-        groups = groups,
-        gene.selection = gene.selection,
-        main = main,
-        path = path,
-        folder = folder,
-        html = html,
-        launch = launch,
-        ...
-    )
+    glMDSPlot.default(transformedCounts, top=top, labels=labels, groups=groups,
+                    gene.selection="pairwise", main=main, path=path,
+                    folder=folder, html=html, launch=launch, ...)
 }
 
 #' Glimma MDS Plot
@@ -296,7 +245,6 @@ glMDSPlot.DESeqDataSet <- function(
 #'
 #' @inheritParams glMDSPlot.default
 #' @param x the SCESet containing the gene expressions.
-#' @param prior.count average count to be added to each observation to avoid taking log of zero. Used only if log=TRUE.
 #'
 #' @template return_glMDSPlot
 #'
