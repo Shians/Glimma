@@ -1025,3 +1025,25 @@ checkSideMainPresent <- function(side.main, anno, x) {
         }
     }
 }
+
+#' glMDPlot Rmarkdown link and instructions
+#'
+#' When run inside of a text-block of Rmarkdown document using `r ...` this
+#' produces a link and instructions about the usage of the interactive plots.
+#'
+#' @param html_name name of the HTML page containing plots from glMDPlot.
+#'
+#' @seealso \code{\link{glMDPlot}}
+#'
+#' @return None
+#' @export
+glMDRmd <- function(html = "MD-Plot") {
+    paste(c(
+		paste0("[Click here for interactive version]",
+              "(", "glimma-plots/", html_name , ".html", ")"),
+        "",
+        "* Hover over points to see sample-wise expression",
+        "* Click on column names to sort by column",
+        "* Click rows on tables to highlight gene"
+    ), collapse = "\n")
+}
