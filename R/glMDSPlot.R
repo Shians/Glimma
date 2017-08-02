@@ -122,8 +122,8 @@ glMDSPlot.default <- function(
         groups <- data.frame(groups)
     }
 
-    all.col.names <- colnames(groups)
-    first.col.name <- all.col.names[1]
+    all_col_names <- colnames(groups)
+    first_col_name <- all_col_names[1]
 
     points <- data.frame(points)
     names(points) <- paste0("dim", 1:ncol(points))
@@ -141,8 +141,8 @@ glMDSPlot.default <- function(
         point.size = 4,
         xlab = "Dimension 1",
         ylab = "Dimension 2",
-        annot = c("label", all.col.names, "dim1", "dim2"),
-        colval = first.col.name,
+        annot = c("label", all_col_names, "dim1", "dim2"),
+        colval = first_col_name,
         main = main,
         info = list(groupsNames=colnames(groups))
     )
@@ -160,7 +160,7 @@ glMDSPlot.default <- function(
     )
 
     link1 <- gllink(2, 1, flag="mds")
-    link2 <- gltablink(1,1, action="highlightById")
+    link2 <- gltablink(1, 1, action="highlightById")
     table1 <- glTable(1, c("label", intersect(plot1$anno, colnames(groups))))
 
     glimma(
@@ -211,10 +211,10 @@ glMDSPlot.DGEList <- function (
     ...
 ) {
     labels <- getLabels(x, labels)
-    transformedCounts <- edgeR::cpm(x, log=TRUE, prior.count = prior.count)
+    transformed_counts <- edgeR::cpm(x, log=TRUE, prior.count = prior.count)
 
     glMDSPlot.default(
-        transformedCounts,
+        transformed_counts,
         top = top,
         labels = labels,
         groups = groups,
@@ -258,7 +258,7 @@ glMDSPlot.DESeqDataSet <- function(
     ...
 ) {
     labels <- getLabels(x, labels)
-    transformedCounts <- edgeR::cpm(
+    transformed_counts <- edgeR::cpm(
         DESeq2::counts(x),
         log = TRUE,
         prior.count = prior.count
@@ -275,7 +275,7 @@ glMDSPlot.DESeqDataSet <- function(
 
 
     glMDSPlot.default(
-        transformedCounts,
+        transformed_counts,
         top = top,
         labels = labels,
         groups = groups,
@@ -318,7 +318,7 @@ glMDSPlot.SCESet <- function (
     launch = TRUE,
     ...
 ) {
-    transformedCounts <- edgeR::cpm(
+    transformed_counts <- edgeR::cpm(
         scater::counts(x),
         log = TRUE,
         prior.count = prior.count
@@ -327,19 +327,19 @@ glMDSPlot.SCESet <- function (
     if (not.null(Biobase::sampleNames(x))) {
         labels <- Biobase::sampleNames(x)
     } else {
-        labels <- 1:ncol(transformedCounts)
+        labels <- 1:ncol(transformed_counts)
     }
 
     if (is.null(groups)) {
         if (not.null(Biobase::pData(x))) {
             groups <- Biobase::pData(x)
         } else {
-            groups <- rep(1, ncol(transformedCounts))
+            groups <- rep(1, ncol(transformed_counts))
         }
     }
 
     glMDSPlot.default(
-        transformedCounts,
+        transformed_counts,
         top = top,
         labels = labels,
         groups = groups,
