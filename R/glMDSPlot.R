@@ -84,8 +84,6 @@ glMDSPlot.default <- function(
     #
     ##
 
-    plot.title <- quotify(main)
-
     gene.selection <- match.arg(gene.selection, c("pairwise", "common"))
 
     # Distance matrix from pairwise leading fold changes
