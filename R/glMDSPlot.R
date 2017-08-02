@@ -176,6 +176,8 @@ glMDSPlot.default <- function(
         html = html,
         launch = launch
     )
+
+    invisible(a1)
 }
 
 #' Glimma MDS Plot
