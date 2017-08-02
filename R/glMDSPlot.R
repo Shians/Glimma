@@ -122,8 +122,8 @@ glMDSPlot.default <- function(
         groups <- data.frame(groups)
     }
 
-    all.col.names <- colnames(groups)
-    first.col.name <- all.col.names[1]
+    all_col_names <- colnames(groups)
+    first_col_name <- all_col_names[1]
 
     points <- data.frame(points)
     names(points) <- paste0("dim", 1:ncol(points))
@@ -141,8 +141,8 @@ glMDSPlot.default <- function(
         point.size = 4,
         xlab = "Dimension 1",
         ylab = "Dimension 2",
-        annot = c("label", all.col.names, "dim1", "dim2"),
-        colval = first.col.name,
+        annot = c("label", all_col_names, "dim1", "dim2"),
+        colval = first_col_name,
         main = main,
         info = list(groupsNames=colnames(groups))
     )
