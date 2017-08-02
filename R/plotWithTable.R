@@ -23,15 +23,23 @@ plotWithTable <- function(
 
     # Reordering so that significant points appear on top of insignificant
     # points.
-    plotting.data <- rbind(plotting.data[plotting.data$cols == default.col, ],
-                           plotting.data[plotting.data$cols != default.col, ])
+    plotting.data <- rbind(
+        plotting.data[plotting.data$cols == default.col, ],
+        plotting.data[plotting.data$cols != default.col, ]
+    )
 
-    plot1 <- glScatter(plotting.data, xval=xval, yval=yval,
-                    xlab=xlab, idval=side.main,
-                    ylab=ylab,
-                    annot=c(display.columns, xval, yval, "Adj.PValue"),
-                    flag="mdplot", ndigits=4,
-                    ...)
+    plot1 <- glScatter(
+        plotting.data,
+        xval = xval,
+        yval = yval,
+        xlab = xlab,
+        idval = side.main,
+        ylab = ylab,
+        annot = c(display.columns, xval, yval, "Adj.PValue"),
+        flag = "mdplot",
+        ndigits = 4,
+        ...
+    )
 
     if (not.null(sample.exp)) {
         link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=side.main)
@@ -75,20 +83,48 @@ plotWithTable <- function(
     )
 }
 
-draw.plots <- function(display.columns, xval, yval,
-                        plot1, plot2, link1, link2, path, folder, html,
-                        launch) {
-    # TODO: Have different columns to tooltip
+draw.plots <- function(
+    display.columns,
+    xval,
+    yval,
+    plot1,
+    plot2,
+    link1,
+    link2,
+    path,
+    folder,
+    html,
+    launch
+) {
     link3 <- gltablink(1, 1, action="highlightById")
     table1 <- glTable(1, plot1$anno)
 
     if (not.null(plot2)) {
-        glimma(plot1, plot2, link1, link2, table1, link3, layout=c(1, 2),
-            path=path, folder=folder, html=html, overwrite=TRUE,
-            launch=launch)
+        glimma(
+            plot1,
+            plot2,
+            link1,
+            link2,
+            table1,
+            link3,
+            layout = c(1, 2),
+            path = path,
+            folder = folder,
+            html = html,
+            overwrite = TRUE,
+            launch = launch
+        )
     } else {
-        glimma(plot1, table1, link3, layout=c(1, 1),
-            path=path, folder=folder, html=html, overwrite=TRUE,
-            launch=launch)
+        glimma(
+            plot1,
+            table1,
+            link3,
+            layout = c(1, 1),
+            path = path,
+            folder = folder,
+            html = html,
+            overwrite = TRUE,
+            launch = launch
+        )
     }
 }
