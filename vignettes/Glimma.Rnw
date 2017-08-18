@@ -42,7 +42,7 @@ concordance=TRUE
 
 \setkeys{Gin}{width=\textwidth}
 
-<<style-Sweave, eval=FALSE, echo=FALSE, results='asis'>>=
+<<style-Sweave, eval=FALSE, echo=FALSE, results='tex'>>=
 BiocStyle::latex()
 @
 
