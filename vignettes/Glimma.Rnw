@@ -5,7 +5,6 @@
 %\VignettePackage{Glimma}
 %\usepackage[utf8]{inputenc}
 \documentclass[a4paper, 12pt]{article}
-
 \usepackage{titling}
 \usepackage{url}
 \usepackage[usenames, dvipsnames]{xcolor}
@@ -42,7 +41,7 @@ concordance=TRUE
 
 \setkeys{Gin}{width=\textwidth}
 
-<<style-Sweave, eval=FALSE, echo=FALSE, results='tex'>>=
+<<style-Sweave, eval=FALSE, echo=FALSE, results="tex">>=
 BiocStyle::latex()
 @
 
