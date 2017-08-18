@@ -19,7 +19,7 @@
 #' glimma(plot1, c(1,1))
 #' }
 #'
-#' @importFrom utils browseURL read.delim write.table
+#' @importFrom utils browseURL read.delim cat
 
 glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
                 html="index", overwrite=TRUE, launch=TRUE) {
@@ -81,13 +81,10 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
         read.delim(index.path, header=FALSE, as.is=TRUE, sep="\n")[, 1]
     )
 
-    write.table(
+    cat(
         temp, 
         file = file.path(path, folder, paste0(html, ".html")),
-        quote = FALSE, 
-        sep = "\n", 
-        row.names = FALSE, 
-        col.names = FALSE
+        sep = "\n"
     )
 
     file.copy(
