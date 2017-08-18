@@ -14,7 +14,7 @@ biocViews:
     RNASeq,
     Sequencing,
     Visualization
-Depends: R (>= 3.3.0)
+Depends: R (>= 3.4.0)
 Imports:
 	Biobase,
     edgeR,

@@ -5,7 +5,7 @@
 %\VignettePackage{Glimma}
 %\usepackage[utf8]{inputenc}
 \documentclass[a4paper, 12pt]{article}
-\usepackage{Sweave}
+
 \usepackage{titling}
 \usepackage{url}
 \usepackage[usenames, dvipsnames]{xcolor}
@@ -32,10 +32,17 @@
 \newdateformat{mydate}{\THEDAY\ \monthname[\THEMONTH]\ \THEYEAR}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(
+concordance=TRUE
+)
+@
+
 \setkeys{Gin}{width=\textwidth}
 
-<<style-Sweave, eval=FALSE, echo=FALSE, results=tex>>=
+<<style-Sweave, eval=FALSE, echo=FALSE, results='asis'>>=
 BiocStyle::latex()
 @
 

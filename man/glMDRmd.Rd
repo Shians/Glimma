@@ -7,7 +7,7 @@
 glMDRmd(html = "MD-Plot")
 }
 \arguments{
-\item{html_name}{name of the HTML page containing plots from glMDPlot.}
+\item{html}{name of the HTML page containing plots from glMDPlot.}
 }
 \value{
 None
@@ -15,6 +15,10 @@ None
 \description{
 When run inside of a text-block of Rmarkdown document using `r ...` this
 produces a link and instructions about the usage of the interactive plots.
+}
+\examples{
+glMDRmd()
+
 }
 \seealso{
 \code{\link{glMDPlot}}

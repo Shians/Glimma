@@ -19,7 +19,7 @@
 #' glimma(plot1, c(1,1))
 #' }
 #'
-#' @importFrom utils browseURL read.delim cat
+#' @importFrom utils browseURL read.delim
 
 glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
                 html="index", overwrite=TRUE, launch=TRUE) {
