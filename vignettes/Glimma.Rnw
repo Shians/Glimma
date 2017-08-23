@@ -1,11 +1,11 @@
+%\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{Glimma Vignette}
 %\VignetteKeyword{RNA-Seq}
 %\VignetteKeyword{differential expression}
 %\VignetteKeyword{interactive graphics}
 %\VignettePackage{Glimma}
-%\usepackage[utf8]{inputenc}
+\usepackage[utf8]{inputenc}
 \documentclass[a4paper, 12pt]{article}
-\usepackage{Sweave}
 \usepackage{titling}
 \usepackage{url}
 \usepackage[usenames, dvipsnames]{xcolor}
@@ -31,13 +31,18 @@
 
 \newdateformat{mydate}{\THEDAY\ \monthname[\THEMONTH]\ \THEYEAR}
 
-\begin{document}
-\SweaveOpts{concordance=TRUE}
-\setkeys{Gin}{width=\textwidth}
-
-<<style-Sweave, eval=FALSE, echo=FALSE, results=tex>>=
+<<style-Sweave, eval=FALSE, echo=FALSE, results="asis">>=
 BiocStyle::latex()
 @
+
+\begin{document}
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(
+concordance=TRUE
+)
+@
+\setkeys{Gin}{width=\textwidth}
 
 \vspace*{100pt}
 \begin{center}
@@ -468,6 +473,10 @@ sessionInfo()
 @
 
 \clearpage
+
+<<cleanup, include=FALSE>>=
+unlink("glimma-plots", recursive=TRUE)
+@
 
 \begin{thebibliography}{}
 \bibitem[1]{limma} Ritchie ME, Phipson B, Wu D, Hu Y, Law CW, Shi W, Smyth GK. (2015) limma powers differential
