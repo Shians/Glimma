@@ -2,8 +2,7 @@ _site
 glimma.sublime-workspace
 glimma.sublime-project
 .Rproj.user
-
-*.Rproj
 *.tex
 DESCRIPTION.bak
 inst/doc
+.Rhistory
