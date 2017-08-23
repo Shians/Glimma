@@ -41,8 +41,8 @@ concordance=TRUE
 
 \setkeys{Gin}{width=\textwidth}
 
-<<style-Sweave, eval=FALSE, echo=FALSE, results="tex">>=
-BiocStyle::latex()
+<<style-Sweave, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex2()
 @
 
 \vspace*{100pt}
