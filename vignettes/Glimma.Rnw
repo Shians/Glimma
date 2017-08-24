@@ -12,6 +12,8 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{datetime}
+\usepackage{fancyvrb}
+
 \topmargin 0in
 \headheight 0in
 \headsep 0in
@@ -19,11 +21,13 @@
 \evensidemargin 0in
 \textwidth 6.25in
 \textheight 9.6in
+
 \definecolor{darkgrey}{gray}{0.2}
-\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
 \DefineVerbatimEnvironment{Sinput}{Verbatim}{fontsize=\small, formatcom=\color{darkgrey}}
 \DefineVerbatimEnvironment{Soutput}{Verbatim}{fontsize=\small, formatcom=\color{darkgrey}}
 \DefineVerbatimEnvironment{Scode}{Verbatim}{fontsize=\small}
+
 \newcommand{\Rarg}[1]{\textcolor{ProcessBlue}{{\sf{#1}}}}
 \newcommand{\Rfun}[1]{\textcolor{VioletRed}{{\sf{#1}}}}
 \newcommand{\Robj}[1]{\textcolor{Black}{{\sf{#1}}}}
@@ -57,6 +61,7 @@ First edition 28 January 2016\\
 Last revised \mydate\today
 }
 \end{center}
+
 \newpage
 \tableofcontents
 \newpage
