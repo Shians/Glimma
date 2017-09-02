@@ -21,7 +21,6 @@ Imports:
     grDevices,
     jsonlite,
     methods,
-    scater,
     stats,
     S4Vectors,
     utils
