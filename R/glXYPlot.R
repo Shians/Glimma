@@ -103,14 +103,14 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
 
         checkThat(side.main, isIn(display.columns))
 
-        anno <- anno[, colnames(anno) %in% display.columns]
+        anno <- anno[, colnames(anno) %in% display.columns, drop=FALSE]
     }
     display.columns <- colnames(anno)
 
     # Remove any colnames in anno that clash with xlab and ylab
     if (any(colnames(x) %in% display.columns)) {
         display.columns <- setdiff(display.columns, colnames(x))
-        anno <- anno[, colnames(anno) %in% display.columns]
+        anno <- anno[, colnames(anno) %in% display.columns, drop=FALSE]
     }
 
     glMDPlot.default(data, xval=xlab, yval=ylab,
