@@ -1,4 +1,3 @@
-%\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{Glimma Vignette}
 %\VignetteKeyword{RNA-Seq}
 %\VignetteKeyword{differential expression}
