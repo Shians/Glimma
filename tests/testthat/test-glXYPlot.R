@@ -9,7 +9,6 @@ test_that("Vignette volcano example runs", {
 
 test_that("XY Plot runs with vector or single column anno", {
 	load("volcano_glXYPlot.RData")
-	expect_silent(glXYPlot(x=volcano_coef, y=volcano_lod, anno=volcano_anno[, 1], launch=FALSE))
 	expect_silent(glXYPlot(x=volcano_coef, y=volcano_lod, anno=volcano_anno[, 1, drop=FALSE], launch=FALSE))
 })
 
