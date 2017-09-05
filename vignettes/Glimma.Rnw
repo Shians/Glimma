@@ -1,9 +1,10 @@
+%\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{Glimma Vignette}
 %\VignetteKeyword{RNA-Seq}
 %\VignetteKeyword{differential expression}
 %\VignetteKeyword{interactive graphics}
 %\VignettePackage{Glimma}
-<<style-Sweave, eval=TRUE, echo=FALSE, results=tex>>=
+<<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
 BiocStyle::latex()
 @
 \documentclass[a4paper, 12pt]{article}
@@ -37,7 +38,14 @@ BiocStyle::latex()
 \newdateformat{mydate}{\THEDAY\ \monthname[\THEMONTH]\ \THEYEAR}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(
+concordance=TRUE
+)
+@
+
 <<include=FALSE>>=
 library(knitr)
 opts_chunk$set(
