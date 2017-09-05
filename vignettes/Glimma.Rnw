@@ -4,14 +4,12 @@
 %\VignetteKeyword{differential expression}
 %\VignetteKeyword{interactive graphics}
 %\VignettePackage{Glimma}
-<<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
-BiocStyle::latex()
-@
 \documentclass[a4paper, 12pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{titling}
 \usepackage{url}
 \usepackage[usenames, dvipsnames]{xcolor}
+\usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{datetime}
 \usepackage{fancyvrb}
@@ -37,15 +35,11 @@ BiocStyle::latex()
 
 \newdateformat{mydate}{\THEDAY\ \monthname[\THEMONTH]\ \THEYEAR}
 
-\begin{document}
-
-<<include=FALSE>>=
-library(knitr)
-opts_chunk$set(
-concordance=TRUE
-)
+<<style-Sweave, eval=FALSE, echo=FALSE, results="asis">>=
+BiocStyle::latex()
 @
 
+\begin{document}
 <<include=FALSE>>=
 library(knitr)
 opts_chunk$set(
