@@ -34,7 +34,7 @@
 
 \newdateformat{mydate}{\THEDAY\ \monthname[\THEMONTH]\ \THEYEAR}
 
-<<style-Sweave, eval=FALSE, echo=FALSE, results=tex>>=
+<<style-Sweave, eval=TRUE, echo=FALSE, results=tex>>=
 BiocStyle::latex()
 @
 
