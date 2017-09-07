@@ -113,12 +113,29 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
         anno <- anno[, colnames(anno) %in% display.columns, drop=FALSE]
     }
 
-    glMDPlot.default(data, xval=xlab, yval=ylab,
-                    counts=counts, groups=groups, samples=samples,
-                    status=status, anno=anno, display.columns=display.columns,
-                    side.main=side.main, xlab=xlab, ylab=ylab,
-                    side.xlab=side.xlab, side.ylab=side.ylab,
-                    sample.cols=sample.cols, cols=cols,
-                    jitter=jitter, table=TRUE,
-                    path=path, folder=folder, html=html, launch=launch, ...)
+    glMDPlot.default(
+        data,
+        xval = xlab,
+        yval = ylab,
+        counts = counts,
+        groups = groups,
+        samples = samples,
+        status = status,
+        anno = anno,
+        display.columns = display.columns,
+        side.main = side.main,
+        xlab = xlab,
+        ylab = ylab,
+        side.xlab = side.xlab,
+        side.ylab = side.ylab,
+        sample.cols = sample.cols,
+        cols = cols,
+        jitter = jitter,
+        table = TRUE,
+        path = path,
+        folder = folder,
+        html = html,
+        launch = launch,
+        ...
+    )
 }
