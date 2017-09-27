@@ -75,7 +75,7 @@ glMDSPlot.default <- function(
     bad <- rowSums(is.finite(x)) < nsamples
 
     if (any(bad)) {
-        x <- x[!bad, drop=FALSE]
+        x <- x[!bad, , drop=FALSE]
     }
 
     nprobes <- nrow(x)
