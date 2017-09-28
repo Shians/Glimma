@@ -1011,18 +1011,26 @@ checkSideMainPresent <- function(side.main, anno, x) {
         if (side.main %!in% union(colnames(anno), colnames(x$table))) {
             stop(paste("column", quotify(side.main), "cannot be found in x$table or anno."))
         }
+        combined_anno <- cbind(anno, x$table)
     } else if (class(x) == "MArrayLM") {
         if (side.main %!in% union(colnames(anno), colnames(x$genes))) {
             stop(paste("column", quotify(side.main), "cannot be found in x$genes or anno."))
         }
+        combined_anno <- cbind(anno, x$genes)
     } else if (class(x) == "DESeqResults") {
         if (side.main %!in% union(colnames(anno), names(x@listData))) {
             stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
         }
+        combined_anno <- cbind(anno, x@listData)
     } else {
         if (side.main %!in% union(colnames(anno), colnames(x))) {
             stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
         }
+        combined_anno <- cbind(anno, x)
+    }
+
+    if (anyNA(combined_anno[[side.main]])) {
+        stop(paste("column", quotify(side.main), "cannot contain NA values."))
     }
 }
 
