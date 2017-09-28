@@ -75,6 +75,7 @@ glMDSPlot.default <- function(
     bad <- rowSums(is.finite(x)) < nsamples
 
     if (any(bad)) {
+        warning("Rows containing infinite values have been removed")
         x <- x[!bad, , drop=FALSE]
     }
 
