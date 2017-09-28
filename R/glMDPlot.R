@@ -1011,22 +1011,38 @@ checkSideMainPresent <- function(side.main, anno, x) {
         if (side.main %!in% union(colnames(anno), colnames(x$table))) {
             stop(paste("column", quotify(side.main), "cannot be found in x$table or anno."))
         }
-        combined_anno <- cbind(anno, x$table)
+        if (not.null(x$table)) {
+            combined_anno <- cbind(anno, x$table)
+        } else {
+            combined_anno <- anno
+        }
     } else if (class(x) == "MArrayLM") {
         if (side.main %!in% union(colnames(anno), colnames(x$genes))) {
             stop(paste("column", quotify(side.main), "cannot be found in x$genes or anno."))
         }
-        combined_anno <- cbind(anno, x$genes)
+        if (not.null(x$genes)) {
+            combined_anno <- cbind(anno, x$genes)
+        } else {
+            combined_anno <- anno
+        }
     } else if (class(x) == "DESeqResults") {
         if (side.main %!in% union(colnames(anno), names(x@listData))) {
             stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
         }
-        combined_anno <- cbind(anno, x@listData)
+        if (not.null(x@listData)) {
+            combined_anno <- cbind(anno, x@listData)
+        } else {
+            combined_anno <- anno
+        }
     } else {
         if (side.main %!in% union(colnames(anno), colnames(x))) {
             stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
         }
-        combined_anno <- cbind(anno, x)
+        if (is.data.frame(x)) {
+            combined_anno <- cbind(anno, x)
+        } else {
+            combined_anno <- anno
+        }
     }
 
     if (anyNA(combined_anno[[side.main]])) {
