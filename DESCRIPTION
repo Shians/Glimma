@@ -16,7 +16,6 @@ biocViews:
     Visualization
 Depends: R (>= 3.4.0)
 Imports:
-	Biobase,
     edgeR,
     grDevices,
     jsonlite,
