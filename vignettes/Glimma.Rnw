@@ -4,8 +4,8 @@
 %\VignetteKeyword{differential expression}
 %\VignetteKeyword{interactive graphics}
 %\VignettePackage{Glimma}
-\usepackage[utf8]{inputenc}
 \documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
 \usepackage{titling}
 \usepackage{url}
 \usepackage[usenames, dvipsnames]{xcolor}

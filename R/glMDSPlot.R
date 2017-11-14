@@ -75,6 +75,7 @@ glMDSPlot.default <- function(
     bad <- rowSums(is.finite(x)) < nsamples
 
     if (any(bad)) {
+        warning("Rows containing infinite values have been removed")
         x <- x[!bad, , drop=FALSE]
     }
 
@@ -289,19 +290,21 @@ glMDSPlot.DESeqDataSet <- function(
     )
 }
 
+# extract sample groups based on object class
 getLabels <- function(x, labels) {
-    if (class(x) == "DGEList") {
-        if (is.null(labels)) {
+    
+    if (is.null(labels)) {
+        if (class(x) == "DGEList") {
+            # DGElist get from 
             if (not.null(x$samples$groups)) {
-                labels <- rownames(x$samples$groups)
+                labels <- rownames(x$samples)
             } else {
                 labels <- 1:ncol(x)
             }
-        }
-    } else if (class(x) == "DESeqDataSet") {
-        if (is.null(labels)) {
-            if (not.null(x@colData)) {
-                labels <- rownames(x@colData)
+        } else if (class(x) == "DESeqDataSet") {
+            # DESeqDaset
+            if (not.null(colData(x))) {
+                labels <- rownames(colData(x))
             } else {
                 labels <- 1:ncol(x)
             }

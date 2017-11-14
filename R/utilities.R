@@ -14,7 +14,7 @@ printJsonToFile <- function(json, filename, varname) {
     close(file.con)
 }
 
-# Function to return filepaths
+# function to return filepaths
 pathMaker <- function(path) {
     if (char(path, -1) != "/") {
         stop("path must end with /")
@@ -23,10 +23,12 @@ pathMaker <- function(path) {
     return ( function (x) { return(paste0(path, x)) } )
 }
 
+# removes columns with the same name
 rmDuplicateCols <- function(x) {
     x[, !duplicated(names(x))]
 }
 
+# appends enumeration to duplicated values in vector
 makeUnique <- function(x) {
     x <- as.character(x)
 
@@ -42,16 +44,20 @@ makeUnique <- function(x) {
     x
 }
 
-"%!in%" <- function(x, y)!("%in%"(x, y))
+# not in operator
+"%!in%" <- function(x, y) !("%in%"(x, y))
 
+# get row of matrix
 getRows <- function(x, inds) {
     x[inds, , drop=FALSE]
 }
 
+# get column of matrix
 getCols <- function(x, inds) {
     x[, inds, drop=FALSE]
 }
 
+# not null check
 not.null <- function(x) {
     !is.null(x)
 }

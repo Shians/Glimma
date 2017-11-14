@@ -135,6 +135,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     if (not.null(side.main)) {
         if (side.main %in% colnames(x)) {
+            # append numbers to duplicated values
             x[[side.main]] <- makeUnique(x[[side.main]])
         } else if (side.main %in% colnames(anno)) {
             anno[[side.main]] <- makeUnique(anno[[side.main]])
@@ -1011,17 +1012,37 @@ checkSideMainPresent <- function(side.main, anno, x) {
         if (side.main %!in% union(colnames(anno), colnames(x$table))) {
             stop(paste("column", quotify(side.main), "cannot be found in x$table or anno."))
         }
+        if (not.null(x$table)) {
+            combined_anno <- cbind(anno, x$table)
+        } else {
+            combined_anno <- anno
+        }
     } else if (class(x) == "MArrayLM") {
         if (side.main %!in% union(colnames(anno), colnames(x$genes))) {
             stop(paste("column", quotify(side.main), "cannot be found in x$genes or anno."))
+        }
+        if (not.null(x$genes)) {
+            combined_anno <- cbind(anno, x$genes)
+        } else {
+            combined_anno <- anno
         }
     } else if (class(x) == "DESeqResults") {
         if (side.main %!in% union(colnames(anno), names(x@listData))) {
             stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
         }
+        if (not.null(x@listData)) {
+            combined_anno <- cbind(anno, x@listData)
+        } else {
+            combined_anno <- anno
+        }
     } else {
         if (side.main %!in% union(colnames(anno), colnames(x))) {
             stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
+        }
+        if (is.data.frame(x)) {
+            combined_anno <- cbind(anno, x)
+        } else {
+            combined_anno <- anno
         }
     }
 }

@@ -1,7 +1,7 @@
 Package: Glimma
 Type: Package
 Title: Interactive HTML graphics
-Version: 1.5.2
+Version: 1.5.3
 Date: 2016-12-21
 Author: Shian Su, Matthew E. Ritchie, Charity Law, Stuart Lee
 Maintainer: Shian Su <su.s@wehi.edu.au>
@@ -16,7 +16,6 @@ biocViews:
     Visualization
 Depends: R (>= 3.4.0)
 Imports:
-	Biobase,
     edgeR,
     grDevices,
     jsonlite,
@@ -37,3 +36,4 @@ BugReports: https://github.com/Shians/Glimma/issues
 RoxygenNote: 6.0.1
 NeedsCompilation: no
 LazyData: true
+VignetteBuilder: knitr

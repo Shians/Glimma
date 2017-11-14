@@ -6,6 +6,9 @@ test_that("MDS Plot runs for matrix", {
     expect_silent(glMDSPlot(countData, launch=FALSE))
     expect_silent(glMDSPlot(countData, groups=colData[, 1], launch=FALSE))
     expect_silent(glMDSPlot(countData, groups=colData, launch=FALSE))
+
+    countData[1, ] <- NaN
+    expect_warning(glMDSPlot(countData, groups=colData, launch=FALSE))
 })
 
 test_that("MDS Plot runs for DGEList", {

@@ -6,10 +6,10 @@
 #'
 #' @param x a numeric vector of values to plot on the x-axis of the summary plot.
 #' @param y a numeric vector of values to plot on the y-axis of the summary plot.
-#' @param counts the matrix containing all counts.
+#' @param counts the matrix containing all counts, the column order should correspond to the order of the x and y vectors.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colou
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour
 #' @param anno the data.frame containing gene annotations.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param xlab the label on the x axis for the left plot.
@@ -48,16 +48,29 @@
 #'
 #' @export
 
-glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
-                        status=rep(0, nrow(data)),
-                        anno=NULL, display.columns=NULL,
-                        xlab="x", ylab="y",
-                        side.main="GeneID", side.xlab="Group", side.ylab="Expression",
-                        sample.cols=rep("#1f77b4", length(groups)),
-                        cols=c("#00bfff", "#858585", "#ff3030"),
-                        jitter=30,
-                        path=getwd(), folder="glimma-plots", html="XY-Plot",
-                        launch=TRUE, ...) {
+glXYPlot <- function(
+    x,
+    y,
+    counts = NULL,
+    groups = NULL,
+    samples = NULL,
+    status = rep(0, nrow(data)),
+    anno = NULL,
+    display.columns = NULL,
+    xlab = "x",
+    ylab = "y",
+    side.main = "GeneID",
+    side.xlab = "Group",
+    side.ylab = "Expression",
+    sample.cols = rep("#1f77b4", length(groups)),
+    cols = c("#00bfff", "#858585", "#ff3030"),
+    jitter = 30,
+    path = getwd(),
+    folder = "glimma-plots",
+    html = "XY-Plot",
+    launch = TRUE,
+    ...
+) {
     # Plot any x and y
     # Shian Su and Charity Law
     # Created 4 July 2016. Last modified 6 July 2016.
@@ -113,12 +126,29 @@ glXYPlot <- function(x, y, counts=NULL, groups=NULL, samples=NULL,
         anno <- anno[, colnames(anno) %in% display.columns, drop=FALSE]
     }
 
-    glMDPlot.default(data, xval=xlab, yval=ylab,
-                    counts=counts, groups=groups, samples=samples,
-                    status=status, anno=anno, display.columns=display.columns,
-                    side.main=side.main, xlab=xlab, ylab=ylab,
-                    side.xlab=side.xlab, side.ylab=side.ylab,
-                    sample.cols=sample.cols, cols=cols,
-                    jitter=jitter, table=TRUE,
-                    path=path, folder=folder, html=html, launch=launch, ...)
+    glMDPlot.default(
+        data,
+        xval = xlab,
+        yval = ylab,
+        counts = counts,
+        groups = groups,
+        samples = samples,
+        status = status,
+        anno = anno,
+        display.columns = display.columns,
+        side.main = side.main,
+        xlab = xlab,
+        ylab = ylab,
+        side.xlab = side.xlab,
+        side.ylab = side.ylab,
+        sample.cols = sample.cols,
+        cols = cols,
+        jitter = jitter,
+        table = TRUE,
+        path = path,
+        folder = folder,
+        html = html,
+        launch = launch,
+        ...
+    )
 }
