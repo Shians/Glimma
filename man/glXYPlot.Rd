@@ -16,13 +16,13 @@ glXYPlot(x, y, counts = NULL, groups = NULL, samples = NULL,
 
 \item{y}{a numeric vector of values to plot on the y-axis of the summary plot.}
 
-\item{counts}{the matrix containing all counts.}
+\item{counts}{the matrix containing all counts, the column order should correspond to the order of the x and y vectors.}
 
 \item{groups}{the factor containing experimental groups of the samples.}
 
 \item{samples}{the names of the samples.}
 
-\item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colou}
+\item{status}{vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour}
 
 \item{anno}{the data.frame containing gene annotations.}
 

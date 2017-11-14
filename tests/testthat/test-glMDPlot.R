@@ -17,15 +17,6 @@ test_that("Helper functions run as expected", {
     expect_equal(initialiseGroups(NULL), NULL)
 })
 
-test_that("Checking side.main for NA values works",{
-	load("test_data_voom.RData")
-	counts <- counts$counts
-	display.columns <- c("Symbols", "GeneID")
-	geneanno$Symbols[3] <- NA
-
-	expect_error(glMDPlot(fit, counts=counts, anno=geneanno, side.main="Symbols", launch=FALSE))
-})
-
 test_that("MD Plot runs for MArrayLM", {
     load("test_data_voom.RData")
     counts <- counts$counts

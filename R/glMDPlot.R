@@ -135,6 +135,7 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
 
     if (not.null(side.main)) {
         if (side.main %in% colnames(x)) {
+            # append numbers to duplicated values
             x[[side.main]] <- makeUnique(x[[side.main]])
         } else if (side.main %in% colnames(anno)) {
             anno[[side.main]] <- makeUnique(anno[[side.main]])
@@ -1043,10 +1044,6 @@ checkSideMainPresent <- function(side.main, anno, x) {
         } else {
             combined_anno <- anno
         }
-    }
-
-    if (anyNA(combined_anno[[side.main]])) {
-        stop(paste("column", quotify(side.main), "cannot contain NA values."))
     }
 }
 

@@ -6,10 +6,10 @@
 #'
 #' @param x a numeric vector of values to plot on the x-axis of the summary plot.
 #' @param y a numeric vector of values to plot on the y-axis of the summary plot.
-#' @param counts the matrix containing all counts.
+#' @param counts the matrix containing all counts, the column order should correspond to the order of the x and y vectors.
 #' @param groups the factor containing experimental groups of the samples.
 #' @param samples the names of the samples.
-#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colou
+#' @param status vector giving the control status of data point, of same length as the number of rows of object. If NULL, then all points are plotted in the default colour
 #' @param anno the data.frame containing gene annotations.
 #' @param display.columns character vector containing names of columns to display in mouseover tooltips and table.
 #' @param xlab the label on the x axis for the left plot.
