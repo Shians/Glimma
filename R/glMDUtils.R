@@ -1,13 +1,14 @@
-# TODO: Assumption is made that all possible status are present
-# need to generalise such no such assumption is made.
+# converts status vector to colours
 convertStatusToCols <- function(x, cols) {
 
-    isDefaultStates <- function(x) all(x == -1 || x == 0 || x == 1)
-    isDefaultCols <- function(x) all(x == c("#00bfff", "#858585", "#ff3030"))
+    isDefaultStates <- function(x) all(x == -1 | x == 0 | x == 1)
+    isDefaultCols <- function(x) identical(x, c("#00bfff", "#858585", "#ff3030"))
 
     if (isDefaultStates(x) && isDefaultCols(cols)) {
+        # using default states and colours
         x <- factor(x, levels=c(-1, 0, 1))
     } else {
+        # if custom states or colours used
         uniqueStates <- length(unique(x))
 
         if (uniqueStates != length(cols)) {
@@ -15,13 +16,17 @@ convertStatusToCols <- function(x, cols) {
                     uniqueStates, " vs ", length(cols), ".")
         }
 
-        status.levels <- sort(unique(x))
-        cols <- c(cols[status.levels==0], cols[status.levels!=0])
-        cols.levels <- c(0, setdiff(status.levels, 0))
-        x <- factor(x, levels=cols.levels)
+        status_levels <- sort(unique(x))
+        # relevel the input factor and colours such that zero colours are moved to the
+        # front, this causes them to be draw first and allows the remaining points to be
+        # drawn on top.
+        cols <- c(cols[status_levels==0], cols[status_levels!=0])
+        cols_levels <- c(0, setdiff(status_levels, 0))
+        x <- factor(x, levels=cols_levels)
     }
 
     if (all(x == 0)) {
+        # all insignificant
         output <- rep(cols[2], length(x))
     } else {
         output <- cols[x]
@@ -66,7 +71,7 @@ setDisplayColumns <- function(display.columns, anno, xval, yval) {
     output
 }
 
-#TODO: Add test
+# assigns groups as 1:n
 initialiseGroups <- function(n) {
     output <- NULL
     if (not.null(n)) {
@@ -76,7 +81,7 @@ initialiseGroups <- function(n) {
     output
 }
 
-#TODO: Add test
+# reorder rows so the background colours are at the top
 sortInsigPointsToTop <- function(plotting.data, bg.col) {
     output <- rbind(getRows(plotting.data, plotting.data$cols == bg.col),
                     getRows(plotting.data, plotting.data$cols != bg.col))
@@ -144,6 +149,7 @@ checkObjAnnoCountsShapes <- function(anno, counts, x) {
     }
 }
 
+#TODO: Add test
 checkSideMainPresent <- function(side.main, anno, x) {
     if (class(x) == "DGELRT" || class(x) == "DGEExact") {
         if (side.main %!in% union(colnames(anno), colnames(x$table))) {

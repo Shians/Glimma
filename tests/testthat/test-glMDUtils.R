@@ -1,0 +1,39 @@
+context("glMDPlot Utilities")
+
+test_that("convert status to colours", {
+    expect_equal(
+        convertStatusToCols(c(-1, 0, 1), c("#00bfff", "#858585", "#ff3030")),
+        c("#00bfff", "#858585", "#ff3030")
+    )
+
+    expect_equal(
+        convertStatusToCols(c(0, 0, 0), c("#00bfff", "#858585", "#ff3030")),
+        c("#858585", "#858585", "#858585")
+    )
+
+    expect_error(
+        convertStatusToCols(c(1, 2), c("#00bfff", "#858585", "#ff3030"))
+    )
+
+    expect_error(
+        convertStatusToCols(c(-1, 0, 1), c("#00bfff", "#858585"))
+    )
+})
+
+test_that("group initialisation", {
+    expect_equal(initialiseGroups(3), 1:3)
+})
+
+test_that("sort insignificant points to the top", {
+    plotting.data <- data.frame(
+        sample = c(1, 2, 3),
+        cols = c("#00bfff", "#858585", "#ff3030")
+    )
+
+    expected_output <- plotting.data[c(2, 1, 3), ]
+
+    expect_equal(
+        sortInsigPointsToTop(plotting.data, "#858585"),
+        expected_output
+    )
+})
