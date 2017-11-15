@@ -37,3 +37,7 @@ test_that("sort insignificant points to the top", {
         expected_output
     )
 })
+
+test_that("glMDRmd runs"), {
+    expect_sileng(glMDRmd())
+})
