@@ -89,7 +89,7 @@ sortInsigPointsToTop <- function(plotting.data, bg.col) {
     output
 }
 
-#TODO: Add test
+# transform counts into log-cpm with genes down columns
 transformCounts <- function(counts, transform, colnames=colnames(counts)) {
     rownames(counts) <- make.names(colnames)
 
@@ -117,7 +117,7 @@ checkCountsAndSamples <- function(counts, samples, side.log=FALSE) {
     }
 }
 
-#TODO: Add test
+# get indices of rows with NAs in specified columns
 naRowInds <- function(res.df, ...) {
     res.df <- data.frame(res.df)
     filterCols <- unlist(list(...))
@@ -131,7 +131,7 @@ naRowInds <- function(res.df, ...) {
     delRows
 }
 
-#TODO: Add test
+# check that anno has the same rows as counts has columns
 checkObjAnnoCountsShapes <- function(anno, counts, x) {
     if (not.null(anno)) {
         checkThat(nrow(anno), notNull)
@@ -149,7 +149,7 @@ checkObjAnnoCountsShapes <- function(anno, counts, x) {
     }
 }
 
-#TODO: Add test
+# check that side.main exists as a column in either anno or main object
 checkSideMainPresent <- function(side.main, anno, x) {
     if (class(x) == "DGELRT" || class(x) == "DGEExact") {
         if (side.main %!in% union(colnames(anno), colnames(x$table))) {
