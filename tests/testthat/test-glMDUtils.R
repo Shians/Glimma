@@ -38,6 +38,30 @@ test_that("sort insignificant points to the top", {
     )
 })
 
-test_that("glMDRmd runs"), {
-    expect_sileng(glMDRmd())
+test_that("glMDRmd runs", {
+    expect_silent(glMDRmd())
+})
+
+test_that("checkSideMainPresent flags errors", {
+    anno <- data.frame(
+        Symbol = c("gene1", "gene2"),
+        Chr = c("chr1", "chr2")
+    )
+    x <- list(table = data.frame(avgExpr = c(1, 2), logFC = c(1, 2)))
+
+    class(x) <- "DGELRT"
+    expect_error(checkSideMainPresent("GeneID", anno, x))
+
+    x$table <- NULL
+    expect_silent(checkSideMainPresent("Symbol", anno, x))
+
+    class(x) <- "LMArrayLM"
+    x$genes <- data.frame(avgExpr = c(1, 2), logFC = c(1, 2))
+    expect_error(checkSideMainPresent("GeneID", anno, x))
+
+    x$table <- NULL
+    expect_silent(checkSideMainPresent("Symbol", anno, x))
+
+    class(x) <- "data.frame"
+    expect_error(checkSideMainPresent("GeneID", anno, x))
 })
