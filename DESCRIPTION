@@ -11,7 +11,7 @@ Authors@R:
             email = "su.s@wehi.edu.au"
         ),
         person(
-            "Matthew", "Ritchie",
+            "Matthew", "Ritchie", "E.",
             role = c("aut")
         ),
         person(
