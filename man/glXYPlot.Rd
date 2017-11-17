@@ -70,7 +70,8 @@ Draw an interactive XY plot with multiple panels
 \examples{
 data(iris)
 \donttest{
-glXYPlot(iris$Sepal.Width, iris$Sepal.Length, xlab="Sepal.Width", ylab="Sepal.Length", side.main="PlantID")
+glXYPlot(iris$Sepal.Width, iris$Sepal.Length, 
+         xlab="Sepal.Width", ylab="Sepal.Length", side.main="PlantID")
 }
 
 }
