@@ -135,7 +135,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 
     accepted.types <- c("jslink", "jschart", "jsinput", "jstable")
     # Process arguments
-    for (i in 1:length(args)) {
+    for (i in seq_along(args)) {
         if (any(class(args[[i]]) == accepted.types)) {
             if (args[[i]]$type == "link") {
                 actions <- rbind(actions, args[[i]]$link)

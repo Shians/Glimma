@@ -6,7 +6,7 @@ printJsonToFile <- function(json, filename, varname) {
         stop("json vector must be same length as varname vector")
     }
 
-    for (i in 1:length(json)) {
+    for (i in seq_along(json)) {
         write(paste0("var ", varname[i], " = ", json[i], ";"), file=file.con,
                     sep=" ", append=TRUE)
     }
@@ -60,4 +60,14 @@ getCols <- function(x, inds) {
 # not null check
 not.null <- function(x) {
     !is.null(x)
+}
+
+# sequence along 1:nrow(x)
+seq_rows <- function(x) {
+    seq_len(nrow(x))
+}
+
+# sequence along 1:ncol(x)
+seq_cols <- function(x) {
+    seq_len(ncol(x))
 }
