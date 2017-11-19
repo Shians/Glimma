@@ -47,7 +47,8 @@ Suggests:
     limma,
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    pryr
 License: GPL-3 | file LICENSE
 URL: https://github.com/Shians/Glimma
 BugReports: https://github.com/Shians/Glimma/issues
