@@ -22,15 +22,31 @@ test_that("MD Plot runs for MArrayLM", {
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
 
+    # common arguments for warning tests
+    glMDPlot_warning <- pryr::partial(
+    	glMDPlot,
+    	x = fit,
+    	counts = counts,
+    	launch = FALSE
+	)
     # No anno warning
-    expect_warning(glMDPlot(fit, counts=counts, launch=FALSE))
-    expect_warning(glMDPlot(fit, counts=counts, status=is.de, launch=FALSE))
+    expect_warning(glMDPlot_warning())
+    expect_warning(glMDPlot_warning(status=is.de))
 
-    expect_silent(glMDPlot(fit, counts=counts, anno=geneanno, launch=FALSE))
-    expect_silent(glMDPlot(fit, counts=counts, anno=geneanno, xlab="foo", ylab="bar", launch=FALSE))
-    expect_silent(glMDPlot(fit, counts=counts, anno=geneanno, side.xlab="foo", side.ylab="bar", launch=FALSE))
-    expect_silent(glMDPlot(fit, counts=counts, anno=geneanno, groups=genotypes, display.columns=display.columns, launch=FALSE))
-    expect_silent(glMDPlot(fit, counts=counts, anno=geneanno, groups=genotypes, samples=1:6, status=is.de, display.columns=display.columns, launch=FALSE))
+    # common arguments for working tests
+    glMDPlot_core <- pryr::partial(
+    	glMDPlot,
+    	x = fit,
+    	anno = geneanno,
+    	counts = counts,
+    	launch = FALSE
+    )
+
+    expect_silent(glMDPlot_core())
+    expect_silent(glMDPlot_core(xlab="foo", ylab="bar"))
+    expect_silent(glMDPlot_core(side.xlab="foo", side.ylab="bar"))
+    expect_silent(glMDPlot_core(groups=genotypes, display.columns=display.columns))
+    expect_silent(glMDPlot_core(groups=genotypes, samples=1:6, status=is.de, display.columns=display.columns))
 
     expect_error(glMDPlot(fit, counts=counts, samples=1:2, anno=geneanno, launch=FALSE))
 
