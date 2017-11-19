@@ -348,7 +348,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
             if (not.null(colnames(counts))) {
                 samples <- colnames(counts)
             } else {
-                samples <- 1:ncol(counts)
+                samples <- seq_rows(counts)
             }
         }
     }
@@ -551,7 +551,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
             if (not.null(colnames(counts))) {
                 samples <- colnames(counts)
             } else {
-                samples <- 1:ncol(counts)
+                samples <- seq_cols(counts)
             }
         }
     }

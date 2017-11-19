@@ -45,7 +45,7 @@ glMDSPlot <- function(x, ...) {
 glMDSPlot.default <- function(
     x,
     top = 500,
-    labels = 1:ncol(x),
+    labels = seq_cols(x),
     groups = rep(1, ncol(x)),
     gene.selection = c("pairwise", "common"),
     main  ="MDS Plot",
@@ -127,7 +127,7 @@ glMDSPlot.default <- function(
     first_col_name <- all_col_names[1]
 
     points <- data.frame(points)
-    names(points) <- paste0("dim", 1:ncol(points))
+    names(points) <- paste0("dim", seq_cols(points))
     points <- data.frame(points, label=labels, groups)
 
     eigen <- data.frame(
@@ -299,14 +299,14 @@ getLabels <- function(x, labels) {
             if (not.null(x$samples$groups)) {
                 labels <- rownames(x$samples)
             } else {
-                labels <- 1:ncol(x)
+                labels <- seq_cols(x)
             }
         } else if (class(x) == "DESeqDataSet") {
             # DESeqDaset
             if (not.null(colData(x))) {
                 labels <- rownames(colData(x))
             } else {
-                labels <- 1:ncol(x)
+                labels <- seq_cols(x)
             }
         }
     }

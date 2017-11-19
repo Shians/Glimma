@@ -105,7 +105,7 @@ glXYPlot <- function(
         if (not.null(counts)) {
             anno <- data.frame(id=rownames(counts))
         } else {
-            anno <- data.frame(id=1:nrow(data))
+            anno <- data.frame(id=seq_rows(data))
         }
         colnames(anno) <- side.main
     } else {
