@@ -43,6 +43,8 @@ Imports:
     utils
 Suggests:
     BiocStyle,
+    S4Vectors,
+    IRanges,
     DESeq2,
     limma,
     testthat,
