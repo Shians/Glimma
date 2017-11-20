@@ -45,6 +45,8 @@ Suggests:
     BiocStyle,
     S4Vectors,
     IRanges,
+    GenomicRanges
+    SummarizedExperiments,
     DESeq2,
     limma,
     testthat,
