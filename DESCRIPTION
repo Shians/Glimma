@@ -46,7 +46,7 @@ Suggests:
     S4Vectors,
     IRanges,
     GenomicRanges,
-    SummarizedExperiments,
+    SummarizedExperiment,
     DESeq2,
     limma,
     testthat,
