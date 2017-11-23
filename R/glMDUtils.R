@@ -82,9 +82,9 @@ initialiseGroups <- function(n) {
 }
 
 # reorder rows so the background colours are at the top
-sortInsigPointsToTop <- function(plotting.data, bg.col) {
-    output <- rbind(getRows(plotting.data, plotting.data$cols == bg.col),
-                    getRows(plotting.data, plotting.data$cols != bg.col))
+sortInsigPointsToTop <- function(plotting_data, bg.col) {
+    output <- rbind(getRows(plotting_data, plotting_data$cols == bg.col),
+                    getRows(plotting_data, plotting_data$cols != bg.col))
 
     output
 }
