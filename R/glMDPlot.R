@@ -225,17 +225,19 @@ glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
         plot2 <- NULL
     }
 
-    draw.plots(display.columns=display.columns,
-                xval=xval,
-                yval=yval,
-                plot1=plot1,
-                plot2=plot2,
-                link1=link1,
-                link2=link2,
-                path=path,
-                folder=folder,
-                html=html,
-                launch=launch)
+    draw.plots(
+        display.columns = display.columns,
+        xval = xval,
+        yval = yval,
+        plot1 = plot1,
+        plot2 = plot2,
+        link1 = link1,
+        link2 = link2,
+        path = path,
+        folder = folder,
+        html = html,
+        launch = launch
+    )
 }
 
 #' Glimma MD Plot
@@ -401,14 +403,27 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
         sample.exp <- NULL
     }
 
-    plotWithTable(plotting.data, sample.exp, display.columns,
-                side.main=side.main, default.col=cols[2], jitter=jitter,
-                path=path, folder=folder, html=html, launch=launch,
-                xval=xval, yval=yval,
-                xlab=xlab, ylab=ylab,
-                side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
-                side.gridstep=side.gridstep,
-                ...)
+    plotWithTable(
+        plotting.data,
+        sample.exp,
+        display.columns,
+        side.main = side.main,
+        default.col = cols[2],
+        jitter = jitter,
+        path = path,
+        folder = folder,
+        html = html,
+        launch = launch,
+        xval = xval,
+        yval = yval,
+        xlab = xlab,
+        ylab = ylab,
+        side.xlab = side.xlab,
+        side.ylab = side.ylab,
+        side.log = side.log,
+        side.gridstep = side.gridstep,
+        ...
+    )
 }
 
 #' Glimma MD Plot
@@ -610,14 +625,26 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         sample.exp <- NULL
     }
 
-    plotWithTable(plotting.data, sample.exp, display.columns,
-                side.main=side.main, default.col=cols[2], jitter=jitter,
-                path=path, folder=folder, html=html, launch=launch,
-                xval=xval, yval=yval,
-                xlab=xlab, ylab=ylab,
-                side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
-                side.gridstep=side.gridstep,
-                ...)
+    plotWithTable(plotting.data,
+        sample.exp,
+        display.columns,
+        side.main = side.main,
+        default.col = cols[2],
+        jitter = jitter,
+        path = path,
+        folder = folder,
+        html = html,
+        launch = launch,
+        xval = xval,
+        yval = yval,
+        xlab = xlab,
+        ylab = ylab,
+        side.xlab = side.xlab,
+        side.ylab = side.ylab,
+        side.log = side.log,
+        side.gridstep = side.gridstep,
+        ...
+    )
 }
 
 #' Glimma MD Plot
@@ -752,14 +779,27 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
                              Group=factor(groups),
                              tr.counts)
 
-    plotWithTable(plotting.data, sample.exp, display.columns,
-                    side.main=side.main, default.col=cols[2], jitter=jitter,
-                    path=path, folder=folder, html=html, launch=launch,
-                    xval=xval, yval=yval,
-                    xlab=xlab, ylab=ylab,
-                    side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
-                    side.gridstep=side.gridstep,
-                    ...)
+    plotWithTable(
+        plotting.data,
+        sample.exp,
+        display.columns,
+        side.main = side.main,
+        default.col = cols[2],
+        jitter = jitter,
+        path = path,
+        folder = folder,
+        html = html,
+        launch = launch,
+        xval = xval,
+        yval = yval,
+        xlab = xlab,
+        ylab = ylab,
+        side.xlab = side.xlab,
+        side.ylab = side.ylab,
+        side.log = side.log,
+        side.gridstep = side.gridstep,
+        ...
+    )
 }
 
 #' Glimma MD Plot
@@ -866,13 +906,26 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
 
     plotting.data <- sortInsigPointsToTop(plotting.data, bg.col)
 
-    plotWithTable(plotting.data, sample.exp, display.columns,
-                    side.main=side.main, default.col=cols[2], jitter=jitter,
-                    path=path, folder=folder, html=html, launch=launch,
-                    xval=xval, yval=yval,
-                    xlab=xlab, ylab=ylab,
-                    side.xlab=side.xlab, side.ylab=side.ylab, side.log=side.log,
-                    side.gridstep=side.gridstep,
-                    ...)
+    plotWithTable(
+        plotting.data,
+        sample.exp,
+        display.columns,
+        side.main=side.main,
+        default.col=cols[2],
+        jitter=jitter,
+        path=path,
+        folder=folder,
+        html=html,
+        launch=launch,
+        xval=xval,
+        yval=yval,
+        xlab=xlab,
+        ylab=ylab,
+        side.xlab=side.xlab,
+        side.ylab=side.ylab,
+        side.log=side.log,
+        side.gridstep=side.gridstep,
+        ...
+    )
 
 }
