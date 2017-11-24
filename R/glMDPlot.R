@@ -345,6 +345,15 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
+    if (not.null(side.main)) {
+        if (side.main %in% colnames(x)) {
+            # append numbers to duplicated values
+            x[[side.main]] <- makeUnique(x[[side.main]])
+        } else if (side.main %in% colnames(anno)) {
+            anno[[side.main]] <- makeUnique(anno[[side.main]])
+        }
+    }
+
     if (is.null(samples)) {
         if (not.null(counts)) {
             if (not.null(colnames(counts))) {
@@ -555,6 +564,15 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
+    if (not.null(side.main)) {
+        if (side.main %in% colnames(x)) {
+            # append numbers to duplicated values
+            x[[side.main]] <- makeUnique(x[[side.main]])
+        } else if (side.main %in% colnames(anno)) {
+            anno[[side.main]] <- makeUnique(anno[[side.main]])
+        }
+    }
+
     if (not.null(ncol(status))) {
         if (ncol(status) > 1) {
             status <- status[, coef]
@@ -738,6 +756,15 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
     xval <- "logMean"
     yval <- "logFC"
 
+    if (not.null(side.main)) {
+        if (side.main %in% colnames(x)) {
+            # append numbers to duplicated values
+            x[[side.main]] <- makeUnique(x[[side.main]])
+        } else if (side.main %in% colnames(anno)) {
+            anno[[side.main]] <- makeUnique(anno[[side.main]])
+        }
+    }
+
     cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
@@ -858,6 +885,15 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
 
     xval <- "logMean"
     yval <- "logFC"
+
+    if (not.null(side.main)) {
+        if (side.main %in% colnames(x)) {
+            # append numbers to duplicated values
+            x[[side.main]] <- makeUnique(x[[side.main]])
+        } else if (side.main %in% colnames(anno)) {
+            anno[[side.main]] <- makeUnique(anno[[side.main]])
+        }
+    }
 
     cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
