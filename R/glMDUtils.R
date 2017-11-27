@@ -35,22 +35,16 @@ convertStatusToCols <- function(x, cols) {
     output
 }
 
-#TODO: Add test
 makeAnno <- function(x, anno) {
     output <- NULL
+
     if (is.null(anno) && is.null(x$genes)) {
-
         warning("No gene annotation provided.")
-
     } else if (not.null(anno) && not.null(x$genes)) {
-
         anno <- cbind(anno, x$genes)
         anno <- rmDuplicateCols(anno)
-
     } else if (not.null(x$genes)) {
-
         anno <- x$genes
-
     }
 
     output <- anno
@@ -252,4 +246,16 @@ make_side_main_unique <- function(x, side.main, anno) {
         x = x,
         anno = anno
     )
+}
+
+sample_size <- function(x) {
+    is <- methods::is
+    
+    samples <- ifelse(
+        not.null(nrow(x)),
+        nrow(x),
+        length(x)
+    )
+
+    samples
 }

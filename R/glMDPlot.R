@@ -240,12 +240,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     # Input checking
 
     # check status has same length as number of genes
-    if (is(status, "numeric")) {
-        checkThat(length(status), sameAs(nrow(x)))
-    } else if (is(status, "matrix")) {
-        checkThat(nrow(status), sameAs(nrow(x)))
-    }
-
+    checkThat(sample_size(status), sameAs(sample_size(x)))
     checkObjAnnoCountsShapes(anno, counts, x$table)
     checkCountsAndSamples(counts, samples, side.log)
 
