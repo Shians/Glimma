@@ -31,6 +31,7 @@ rmDuplicateCols <- function(x) {
 # appends enumeration to duplicated values in vector
 makeUnique <- function(x) {
     x <- as.character(x)
+    x[is.na(x)] <- "NA"
 
     dupes <- x[duplicated(x)]
     dupes <- unique(dupes)
