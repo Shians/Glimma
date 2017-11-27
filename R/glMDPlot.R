@@ -102,128 +102,61 @@ glMDPlot <- function(x, ...) {
 #'
 #' @export
 
-glMDPlot.default <- function(x, xval, yval, counts=NULL, anno=NULL,
-                        groups=NULL, samples=NULL,
-                        status=rep(0, nrow(x)), transform=FALSE,
-                        side.main="GeneID",
-                        side.xlab="Group", side.ylab="Expression",
-                        side.log=FALSE,
-                        side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
-                        xlab=xval, ylab=yval, jitter=30,
-                        display.columns=side.main,
-                        cols=c("#00bfff", "#858585", "#ff3030"),
-                        sample.cols=rep("#1f77b4", ncol(counts)),
-                        path=getwd(), folder="glimma-plots", html="MD-Plot",
-                        launch=TRUE, ...) {
-
-    ##
-    # Input checking
-
+glMDPlot.default <- function(
+    x,
+    xval,
+    yval,
+    counts = NULL,
+    anno = NULL,
+    groups = NULL,
+    samples = NULL,
+    status = rep(0, nrow(x)),
+    transform = FALSE,
+    side.main = "GeneID",
+    side.xlab = "Group",
+    side.ylab = "Expression",
+    side.log = FALSE,
+    side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
+    xlab = xval,
+    ylab = yval,
+    jitter = 30,
+    display.columns = side.main,
+    cols = c("#00bfff", "#858585", "#ff3030"),
+    sample.cols = rep("#1f77b4", ncol(counts)),
+    path = getwd(),
+    folder = "glimma-plots",
+    html = "MD-Plot",
+    launch = TRUE,
+    ...
+) {
+    # check status has same length as number of genes
     checkThat(length(status), sameAs(nrow(x)))
     checkObjAnnoCountsShapes(anno, counts, x)
+
     if (not.null(counts)) {
         checkSideMainPresent(side.main, anno, x)
     } else {
         side.main <- NULL
     }
-
-    #
-    ##
-
-    ##
-    # Value initialisation
-
-    if (not.null(side.main)) {
-        if (side.main %in% colnames(x)) {
-            # append numbers to duplicated values
-            x[[side.main]] <- makeUnique(x[[side.main]])
-        } else if (side.main %in% colnames(anno)) {
-            anno[[side.main]] <- makeUnique(anno[[side.main]])
-        }
-    }
-
-    cols <- as.hexcol(cols)
-
+    # append numbers to duplicated values
+    x <- make_side_main_unique(x, side.main, anno)$x
+    anno <- make_side_main_unique(x, side.main, anno)$anno
     checkCountsAndSamples(counts, samples, side.log)
 
-    if (is.null(groups)) {
-        groups <- initialiseGroups(ncol(counts))
-    }
-
-    #
-    ##
-
+    if (is.null(groups)) groups <- initialiseGroups(ncol(counts))
     jitter <- ifelse(is.numeric(groups), 0, jitter)
+    cols <- convertStatusToCols(status, as.hexcol(cols))
 
-    cols <- convertStatusToCols(status, cols)
-
-    if (is.null(anno)) {
-        plotting_data <- data.frame(x, cols=cols)
-    } else {
-        plotting_data <- data.frame(anno, x, cols=cols)
-    }
-
-    if (not.null(counts)) {
-        tr.counts <- transformCounts(counts, transform, plotting_data[[side.main]])
-
-        if (is(groups, "numeric")) {
-            sample_exp <- data.frame(
-                Sample=samples,
-                cols=as.hexcol(sample.cols),
-                Group=groups,
-                tr.counts
-            )
-        } else {
-            sample_exp <- data.frame(
-                Sample=samples,
-                cols=as.hexcol(sample.cols),
-                Group=factor(groups),
-                tr.counts
-            )
-        }
-    } else {
-        sample_exp <- NULL
-    }
-
+    plotting_data <- get_plotting_data(x, anno, cols)
+    sample_exp <- get_sample_exp(counts, transform, plotting_data, side.main, groups, samples, sample.cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
-    plot1 <- glScatter(plotting_data, xval=xval, yval=yval,
-                    xlab=xlab, idval=side.main, ylab=ylab,
-                    annot=c(display.columns, xval, yval), flag="mdplot",
-                    ndigits=4, ...)
+    plots_and_links <- get_plots_and_links(plotting_data, xval, yval, xlab, side.main, ylab, display.columns, counts, side.gridstep, sample_exp, side.xlab, side.ylab, jitter, ...)
 
-    if (not.null(counts)) {
-
-        link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=side.main)
-        link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=side.main)
-
-        if (side.gridstep) {
-            plot2 <- glScatter(sample_exp, xval="Group",
-                                yval=colnames(sample_exp)[4],
-                                xlab=side.xlab, ylab=side.ylab,
-                                main=colnames(sample_exp)[4],
-                                colval="cols",
-                                annot=c("Sample", colnames(sample_exp)[4]),
-                                annot.lab=c("Sample", "logCPM"),
-                                x.jitter=jitter,
-                                ndigits=4, hide=TRUE,
-                                ystep=side.gridstep, ygrid=TRUE)
-        } else {
-            plot2 <- glScatter(sample_exp, xval="Group",
-                                yval=colnames(sample_exp)[4],
-                                xlab=side.xlab, ylab=side.ylab,
-                                main=colnames(sample_exp)[4],
-                                colval="cols",
-                                annot=c("Sample", colnames(sample_exp)[4]),
-                                annot.lab=c("Sample", "logCPM"),
-                                x.jitter=jitter,
-                                ndigits=4, hide=TRUE, ygrid=FALSE)
-        }
-    } else {
-        link1 <- NULL
-        link2 <- NULL
-        plot2 <- NULL
-    }
+    plot1 <- plots_and_links$plot1
+    plot2 <- plots_and_links$plot2
+    link1 <- plots_and_links$link1
+    link2 <- plots_and_links$link2
 
     draw.plots(
         display.columns = display.columns,
@@ -306,6 +239,7 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     ##
     # Input checking
 
+    # check status has same length as number of genes
     if (is(status, "numeric")) {
         checkThat(length(status), sameAs(nrow(x)))
     } else if (is(status, "matrix")) {
@@ -345,9 +279,9 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
+    # append numbers to duplicated values
     if (not.null(side.main)) {
         if (side.main %in% colnames(x)) {
-            # append numbers to duplicated values
             x[[side.main]] <- makeUnique(x[[side.main]])
         } else if (side.main %in% colnames(anno)) {
             anno[[side.main]] <- makeUnique(anno[[side.main]])
@@ -370,10 +304,10 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     jitter <- ifelse(is.numeric(groups), 0, jitter)
 
+    cols <- convertStatusToCols(status, cols)
     #
     ##
 
-    cols <- convertStatusToCols(status, cols)
 
     if (is.null(anno)) {
         plotting_data <- data.frame(
@@ -525,6 +459,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     ##
     # Input checking
 
+    # check status has same length as number of genes
     if (is(status, "numeric")) {
         checkThat(length(status), sameAs(nrow(x)))
     } else if (is(status, "matrix")) {
@@ -564,9 +499,9 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     cols <- as.hexcol(cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
+    # append numbers to duplicated values
     if (not.null(side.main)) {
         if (side.main %in% colnames(x)) {
-            # append numbers to duplicated values
             x[[side.main]] <- makeUnique(x[[side.main]])
         } else if (side.main %in% colnames(anno)) {
             anno[[side.main]] <- makeUnique(anno[[side.main]])
@@ -732,6 +667,7 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
     ##
     # Input checking
 
+    # check status has same length as number of genes
     if (is(status, "numeric")) {
         checkThat(length(status), sameAs(nrow(x)))
     } else if (is(status, "matrix")) {
@@ -756,9 +692,9 @@ glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
     xval <- "logMean"
     yval <- "logFC"
 
+    # append numbers to duplicated values
     if (not.null(side.main)) {
         if (side.main %in% colnames(x)) {
-            # append numbers to duplicated values
             x[[side.main]] <- makeUnique(x[[side.main]])
         } else if (side.main %in% colnames(anno)) {
             anno[[side.main]] <- makeUnique(anno[[side.main]])
@@ -863,6 +799,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
     ##
     # Input checking
 
+    # check status has same length as number of genes
     if (is(status, "numeric")) {
         checkThat(length(status), sameAs(nrow(x)))
     } else if (is(status, "matrix")) {
@@ -886,9 +823,9 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
     xval <- "logMean"
     yval <- "logFC"
 
+    # append numbers to duplicated values
     if (not.null(side.main)) {
         if (side.main %in% colnames(x)) {
-            # append numbers to duplicated values
             x[[side.main]] <- makeUnique(x[[side.main]])
         } else if (side.main %in% colnames(anno)) {
             anno[[side.main]] <- makeUnique(anno[[side.main]])
