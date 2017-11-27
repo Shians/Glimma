@@ -121,7 +121,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 
     # Write linkage
     if (not.null(actions)) {
-        actions_js <- makeJson(actions[-1, ])
+        actions_js <- makeJson(actions)
         write.data(paste0("glimma.storage.linkage = ", actions_js, ";\n"))
     } else {
         write.data("glimma.storage.linkage = [];\n")
