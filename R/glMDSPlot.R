@@ -266,8 +266,8 @@ glMDSPlot.DESeqDataSet <- function(
     )
 
     if (is.null(groups)) {
-        if (not.null(x@colData)) {
-            groups <- S4Vectors::as.data.frame.DataTable(x@colData)
+        if (not.null(SummarizedExperiment::colData(x)) {
+            groups <- S4Vectors::as.data.frame.DataTable(SummarizedExperiment::colData(x))
         } else {
             groups <- rep(1, ncol(x))
         }
@@ -303,8 +303,8 @@ getLabels <- function(x, labels) {
             }
         } else if (class(x) == "DESeqDataSet") {
             # DESeqDaset
-            if (not.null(colData(x))) {
-                labels <- rownames(colData(x))
+            if (not.null(SummarizedExperiment::colData(x))) {
+                labels <- rownames(SummarizedExperiment::colData(x))
             } else {
                 labels <- seq_cols(x)
             }
