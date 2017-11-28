@@ -266,7 +266,7 @@ glMDSPlot.DESeqDataSet <- function(
     )
 
     if (is.null(groups)) {
-        if (not.null(SummarizedExperiment::colData(x)) {
+        if (not.null(SummarizedExperiment::colData(x))) {
             groups <- S4Vectors::as.data.frame.DataTable(SummarizedExperiment::colData(x))
         } else {
             groups <- rep(1, ncol(x))
