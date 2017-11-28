@@ -21,7 +21,7 @@ test_that("convert status to colours", {
 })
 
 test_that("group initialisation", {
-    expect_equal(initialiseGroups(3), 1:3)
+    expect_equal(initialise_groups(NULL, 3), 1:3)
 })
 
 test_that("sort insignificant points to the top", {

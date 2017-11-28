@@ -66,13 +66,14 @@ setDisplayColumns <- function(display.columns, anno, xval, yval) {
 }
 
 # assigns groups as 1:n
-initialiseGroups <- function(n) {
-    output <- NULL
-    if (not.null(n)) {
-        output <- 1:n
+initialise_groups <- function(groups, n) {
+    if (is.null(groups)) {
+        if (not.null(n)) {
+            groups <- 1:n
+        }
     }
 
-    output
+    groups
 }
 
 # reorder rows so the background colours are at the top
@@ -139,7 +140,11 @@ glMDRmd <- function(html = "MD-Plot") {
 }
 
 # create plotting_data data.frame for main plot
-get_plotting_data <- function(x, anno, cols) {
+get_plotting_data <- function(x, ...) {
+    UseMethod("get_plotting_data")
+}
+
+get_plotting_data.default <- function(x, anno, cols) {
     if (is.null(anno)) {
         plotting_data <- data.frame(x, cols=cols)
     } else {
@@ -148,6 +153,18 @@ get_plotting_data <- function(x, anno, cols) {
     
     plotting_data
 }
+
+get_plotting_data.DGELRT <- function(x, anno, cols, p.adj.method) {
+  Adj.PValue <- p.adjust(x$table$PValue, method=p.adj.method)
+  x <- data.frame(
+      x$table,
+      Adj.PValue
+  )
+
+  get_plotting_data.default(x, anno, cols)
+}
+
+get_plotting_data.DGEExact <- get_plotting_data.DGELRT
 
 # create sample_exp data.frame for side plot
 get_sample_exp <- function(
@@ -231,7 +248,7 @@ get_plots_and_links <- function(plotting_data, xval, yval, xlab, side.main, ylab
     )
 }
 
-
+# make sure side.main column contains unique values
 make_side_main_unique <- function(x, side.main, anno) {
     if (not.null(side.main)) {
         if (side.main %in% colnames(x)) {
@@ -257,5 +274,32 @@ sample_size <- function(x) {
         length(x)
     )
 
+    samples
+}
+
+# create anno from count rownames
+anno_from_count_rows <- function(anno, counts, side.main) {
+    if (is.null(anno)) {
+        anno <- data.frame(rownames(counts))
+        names(anno) <- side.main
+    } else {
+        anno <- data.frame(rownames(counts), anno)
+        names(anno)[1] <- side.main
+    }
+    
+    anno
+}
+
+# assign colnames to samples if samples not defined.
+get_samples <- function(samples, counts) {
+    if (is.null(samples)) {
+        if (not.null(counts)) {
+            if (not.null(colnames(counts))) {
+                samples <- colnames(counts)
+            } else {
+                samples <- seq_rows(counts)
+            }
+        }
+    }
     samples
 }

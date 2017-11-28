@@ -134,16 +134,20 @@ glMDPlot.default <- function(
     checkObjAnnoCountsShapes(anno, counts, x)
 
     if (not.null(counts)) {
+        # if counts present, check we have valid side.main
         checkSideMainPresent(side.main, anno, x)
     } else {
+        # else it does not matter
         side.main <- NULL
     }
+
     # append numbers to duplicated values
     x <- make_side_main_unique(x, side.main, anno)$x
     anno <- make_side_main_unique(x, side.main, anno)$anno
+
     checkCountsAndSamples(counts, samples, side.log)
 
-    if (is.null(groups)) groups <- initialiseGroups(ncol(counts))
+    groups <- initialise_groups(groups, ncol(counts))
     jitter <- ifelse(is.numeric(groups), 0, jitter)
     cols <- convertStatusToCols(status, as.hexcol(cols))
 
@@ -236,9 +240,6 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
                             path=getwd(), folder="glimma-plots", html="MD-Plot",
                             launch=TRUE, ...) {
 
-    ##
-    # Input checking
-
     # check status has same length as number of genes
     checkThat(sample_size(status), sameAs(sample_size(x)))
     checkObjAnnoCountsShapes(anno, counts, x$table)
@@ -246,28 +247,18 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
 
     anno <- makeAnno(x, anno)
     # Assign side.main column from rowname of counts if required
-    if (not.null(counts) && side.main %!in% union(names(x$table), names(anno))) {
-        geneIds <- rownames(counts)
-        if (is.null(anno)) {
-            anno <- data.frame(geneIds)
-            names(anno) <- side.main
-        } else {
-            anno <- data.frame(geneIds, anno)
-            names(anno)[1] <- side.main
-        }
+    missing_side_main <- side.main %!in% union(names(x$table), names(anno))
+    if (not.null(counts) && missing_side_main) {
+        anno <- anno_from_count_rows(anno, counts, side.main)
     }
 
     if (not.null(counts)) {
+        # if counts present, check we have valid side.main
         checkSideMainPresent(side.main, anno, x)
     } else {
+        # else it does not matter
         side.main <- NULL
     }
-
-    #
-    ##
-
-    ##
-    # Value initialisation
 
     xval <- "logCPM"
     yval <- "logFC"
@@ -275,71 +266,16 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     # append numbers to duplicated values
-    if (not.null(side.main)) {
-        if (side.main %in% colnames(x)) {
-            x[[side.main]] <- makeUnique(x[[side.main]])
-        } else if (side.main %in% colnames(anno)) {
-            anno[[side.main]] <- makeUnique(anno[[side.main]])
-        }
-    }
+    x <- make_side_main_unique(x, side.main, anno)$x
+    anno <- make_side_main_unique(x, side.main, anno)$anno
 
-    if (is.null(samples)) {
-        if (not.null(counts)) {
-            if (not.null(colnames(counts))) {
-                samples <- colnames(counts)
-            } else {
-                samples <- seq_rows(counts)
-            }
-        }
-    }
-
-    if (is.null(groups)) {
-        groups <- initialiseGroups(ncol(counts))
-    }
-
+    samples <- get_samples(samples, counts)
+    groups <- initialise_groups(groups, ncol(counts))
     jitter <- ifelse(is.numeric(groups), 0, jitter)
-
     cols <- convertStatusToCols(status, cols)
-    #
-    ##
 
-
-    if (is.null(anno)) {
-        plotting_data <- data.frame(
-            x$table,
-            cols=cols,
-            Adj.PValue=p.adjust(x$table$PValue, method=p.adj.method)
-        )
-    } else {
-        plotting_data <- data.frame(
-            anno,
-            x$table,
-            cols=cols,
-            Adj.PValue=p.adjust(x$table$PValue,method=p.adj.method)
-        )
-    }
-
-    if (not.null(counts)) {
-        tr.counts <- transformCounts(counts, transform, plotting_data[[side.main]])
-
-        if (is(groups, "numeric")) {
-            sample_exp <- data.frame(
-                Sample=samples,
-                cols=as.hexcol(sample.cols),
-                Group=groups,
-                tr.counts
-            )
-        } else {
-            sample_exp <- data.frame(
-                Sample=samples,
-                cols=as.hexcol(sample.cols),
-                Group=factor(groups),
-                tr.counts
-            )
-        }
-    } else {
-        sample_exp <- NULL
-    }
+    plotting_data <- get_plotting_data(x, anno, cols, p.adj.method)
+    sample_exp <- get_sample_exp(counts, transform, plotting_data, side.main, groups, samples, sample.cols)
 
     plotWithTable(
         plotting_data,
@@ -519,9 +455,7 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
         }
     }
 
-    if (is.null(groups)) {
-        groups <- initialiseGroups(ncol(counts))
-    }
+    groups <- initialise_groups(groups, ncol(counts))
 
     jitter <- ifelse(is.numeric(groups), 0, jitter)
 
