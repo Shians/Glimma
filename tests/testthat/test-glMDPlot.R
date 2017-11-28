@@ -44,6 +44,7 @@ test_that("MD Plot runs for DGELRT", {
     )
 
     expect_silent(glMDPlot_with_counts(samples=1:6, status=is.de))
+    expect_silent(glMDPlot_with_counts(samples=1:6, status=is.de, sample.cols=rep(c(1,2), c(3, 3))))
     expect_silent(glMDPlot_with_counts(groups=genotypes, samples=1:6, status=is.de))
     expect_silent(glMDPlot_with_counts(groups=genotypes, samples=1:6, display.columns=display.columns, status=is.de))
 

@@ -29,8 +29,11 @@ as.hexcol <- function(x) {
 
         output <- "#000000"
 
-        if (x > 0) {
+        if (all(x > 0)) {
             output <- as.character(charToHexCol(palette()[x]))
+        } else {
+            output[x > 0] <- as.character(charToHexCol(palette()[x[x > 0]]))
+            warning("0 is not a valid colour selection.")
         }
 
         output
