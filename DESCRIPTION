@@ -43,7 +43,6 @@ Imports:
     utils
 Suggests:
     BiocStyle,
-    S4Vectors,
     IRanges,
     GenomicRanges,
     SummarizedExperiment,
