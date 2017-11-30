@@ -130,7 +130,7 @@ glMDPlot.default <- function(
     ...
 ) {
     # check status has same length as number of genes
-    checkThat(length(status), sameAs(nrow(x)))
+    checkThat(sample_size(status), sameAs(nrow(x)))
     checkObjAnnoCountsShapes(anno, counts, x)
 
     if (not.null(counts)) {
@@ -142,8 +142,8 @@ glMDPlot.default <- function(
     }
 
     # append numbers to duplicated values
-    x <- make_side_main_unique(x, side.main, anno)$x
-    anno <- make_side_main_unique(x, side.main, anno)$anno
+    x <- make_side_main_unique(x, anno, side.main)$x
+    anno <- make_side_main_unique(x, anno, side.main)$anno
 
     checkCountsAndSamples(counts, samples, side.log)
 
@@ -226,19 +226,32 @@ glMDPlot.default <- function(
 #'
 #' @export
 
-glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
-                            groups=NULL, samples=NULL,
-                            status=rep(0, nrow(x)), transform=FALSE,
-							xlab="Average log CPM", ylab="log-fold-change",
-                            side.xlab="Group", side.ylab="Expression",
-                            side.log=FALSE,
-                            side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
-                            p.adj.method="BH", jitter=30,
-                            side.main="GeneID", display.columns=NULL,
-                            cols=c("#00bfff", "#858585", "#ff3030"),
-                            sample.cols=rep("#1f77b4", ncol(counts)),
-                            path=getwd(), folder="glimma-plots", html="MD-Plot",
-                            launch=TRUE, ...) {
+glMDPlot.DGELRT <- function(
+    x,
+    counts = NULL,
+    anno = NULL,
+    groups = NULL,
+    samples = NULL,
+    status = rep(0, nrow(x)),
+    transform = FALSE,
+    xlab = "Average log CPM",
+    ylab = "log-fold-change",
+    side.xlab = "Group",
+    side.ylab = "Expression",
+    side.log = FALSE,
+    side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
+    p.adj.method = "BH",
+    jitter = 30,
+    side.main = "GeneID",
+    display.columns = NULL,
+    cols = c("#00bfff", "#858585", "#ff3030"),
+    sample.cols = rep("#1f77b4", ncol(counts)),
+    path = getwd(),
+    folder = "glimma-plots",
+    html = "MD-Plot",
+    launch = TRUE,
+    ...
+) {
 
     # check status has same length as number of genes
     checkThat(sample_size(status), sameAs(sample_size(x)))
@@ -266,8 +279,8 @@ glMDPlot.DGELRT <- function(x, counts=NULL, anno=NULL,
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     # append numbers to duplicated values
-    x <- make_side_main_unique(x, side.main, anno)$x
-    anno <- make_side_main_unique(x, side.main, anno)$anno
+    x <- make_side_main_unique(x, anno, side.main)$x
+    anno <- make_side_main_unique(x, anno, side.main)$anno
 
     samples <- get_samples(samples, counts)
     groups <- initialise_groups(groups, ncol(counts))
@@ -371,59 +384,53 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #'
 #' @export
 
-glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
-                            groups=NULL, samples=NULL,
-                            status=rep(0, nrow(x)), transform=FALSE,
-					    	xlab="Average log CPM", ylab="log-fold-change",
-                            side.main="GeneID",
-                            side.xlab="Group", side.ylab="Expression",
-                            side.log=FALSE,
-                            side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
-                            coef=ncol(x$coefficients),
-                            p.adj.method="BH", jitter=30,
-                            display.columns=NULL,
-                            cols=c("#00bfff", "#858585", "#ff3030"),
-                            sample.cols=rep("#1f77b4", ncol(counts)),
-                            path=getwd(), folder="glimma-plots", html="MD-Plot",
-                            launch=TRUE, ...) {
-
-    ##
-    # Input checking
+glMDPlot.MArrayLM <- function(
+    x,
+    counts = NULL,
+    anno = NULL,
+    groups = NULL,
+    samples = NULL,
+    status = rep(0, nrow(x)),
+    transform = FALSE,
+    xlab = "Average log CPM",
+    ylab = "log-fold-change",
+    side.main = "GeneID",
+    side.xlab = "Group",
+    side.ylab = "Expression",
+    side.log = FALSE,
+    side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
+    coef = ncol(x$coefficients),
+    p.adj.method = "BH",
+    jitter = 30,
+    display.columns = NULL,
+    cols = c("#00bfff", "#858585", "#ff3030"),
+    sample.cols = rep("#1f77b4", ncol(counts)),
+    path = getwd(),
+    folder = "glimma-plots",
+    html = "MD-Plot",
+    launch = TRUE,
+    ...
+) {
 
     # check status has same length as number of genes
-    if (is(status, "numeric")) {
-        checkThat(length(status), sameAs(nrow(x)))
-    } else if (is(status, "matrix")) {
-        checkThat(nrow(status), sameAs(nrow(x)))
-    }
-
+    checkThat(sample_size(status), sameAs(nrow(x)))
     checkObjAnnoCountsShapes(anno, counts, x)
     checkCountsAndSamples(counts, samples, side.log)
 
     anno <- makeAnno(x, anno)
     # Assign side.main column from rowname of counts if required
-    if (not.null(counts) && side.main %!in% union(names(x$genes), names(anno))) {
-        geneIds <- rownames(counts)
-        if (is.null(anno)) {
-            anno <- data.frame(geneIds)
-            names(anno) <- side.main
-        } else {
-            anno <- data.frame(geneIds, anno)
-            names(anno)[1] <- side.main
-        }
+    missing_side_main <- side.main %!in% union(names(x$table), names(anno))
+    if (not.null(counts) && missing_side_main) {
+        anno <- anno_from_count_rows(anno, counts, side.main)
     }
 
     if (not.null(counts)) {
+        # if counts present, check we have valid side.main
         checkSideMainPresent(side.main, anno, x)
     } else {
+        # else it does not matter
         side.main <- NULL
     }
-
-    #
-    ##
-
-    ##
-    # Value initialisation
 
     xval <- "logCPM"
     yval <- "logFC"
@@ -431,81 +438,17 @@ glMDPlot.MArrayLM <- function(x, counts=NULL, anno=NULL,
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
     # append numbers to duplicated values
-    if (not.null(side.main)) {
-        if (side.main %in% colnames(x)) {
-            x[[side.main]] <- makeUnique(x[[side.main]])
-        } else if (side.main %in% colnames(anno)) {
-            anno[[side.main]] <- makeUnique(anno[[side.main]])
-        }
-    }
+    x <- make_side_main_unique(x, anno, side.main)$x
+    anno <- make_side_main_unique(x, anno, side.main)$anno
+    status <- get_coef_status(status, coef)
 
-    if (not.null(ncol(status))) {
-        if (ncol(status) > 1) {
-            status <- status[, coef]
-        }
-    }
-
-    if (is.null(samples)) {
-        if (not.null(counts)) {
-            if (not.null(colnames(counts))) {
-                samples <- colnames(counts)
-            } else {
-                samples <- seq_cols(counts)
-            }
-        }
-    }
-
+    samples <- get_samples(samples, counts)
     groups <- initialise_groups(groups, ncol(counts))
-
     jitter <- ifelse(is.numeric(groups), 0, jitter)
-
-    #
-    ##
-
     cols <- convertStatusToCols(status, cols)
 
-    Adj.PValue <- stats::p.adjust(x$p.value[, coef], method=p.adj.method)
-    if (is.null(anno)) {
-
-        plotting_data <- data.frame(
-            logFC=x$coefficients[, coef],
-            logCPM=x$Amean,
-            cols=cols,
-            PValue=x$p.value[, coef],
-            Adj.PValue=Adj.PValue
-        )
-    } else {
-        plotting_data <- data.frame(
-            logFC=x$coefficients[, coef],
-            logCPM=x$Amean,
-            cols=cols,
-            PValue=x$p.value[, coef],
-            Adj.PValue=Adj.PValue,
-            anno
-        )
-    }
-
-    if (not.null(counts)) {
-        tr.counts <- transformCounts(counts, transform, plotting_data[[side.main]])
-
-        if (is(groups, "numeric")) {
-            sample_exp <- data.frame(
-                Sample=samples,
-                cols=as.hexcol(sample.cols),
-                Group=groups,
-                tr.counts
-            )
-        } else {
-            sample_exp <- data.frame(
-                Sample=samples,
-                cols=as.hexcol(sample.cols),
-                Group=factor(groups),
-                tr.counts
-            )
-        }
-    } else {
-        sample_exp <- NULL
-    }
+    plotting_data <- get_plotting_data(x, anno, cols, p.adj.method, coef)
+    sample_exp <- get_sample_exp(counts, transform, plotting_data, side.main, groups, samples, sample.cols)
 
     plotWithTable(plotting_data,
         sample_exp,

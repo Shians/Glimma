@@ -166,6 +166,18 @@ get_plotting_data.DGELRT <- function(x, anno, cols, p.adj.method) {
 
 get_plotting_data.DGEExact <- get_plotting_data.DGELRT
 
+get_plotting_data.MArrayLM <- function(x, anno, cols, p.adj.method, coef) {
+    Adj.PValue <- stats::p.adjust(x$p.value[, coef], method=p.adj.method)
+    x <- data.frame(
+        logFC=x$coefficients[, coef],
+        logCPM=x$Amean,
+        PValue=x$p.value[, coef],
+        Adj.PValue=Adj.PValue
+    )
+
+    get_plotting_data.default(x, anno, cols)
+}
+
 # create sample_exp data.frame for side plot
 get_sample_exp <- function(
     counts,
@@ -249,7 +261,7 @@ get_plots_and_links <- function(plotting_data, xval, yval, xlab, side.main, ylab
 }
 
 # make sure side.main column contains unique values
-make_side_main_unique <- function(x, side.main, anno) {
+make_side_main_unique <- function(x, anno, side.main) {
     if (not.null(side.main)) {
         if (side.main %in% colnames(x)) {
             x[[side.main]] <- makeUnique(x[[side.main]])
@@ -265,9 +277,8 @@ make_side_main_unique <- function(x, side.main, anno) {
     )
 }
 
+# get sample size, length if vector and rows if tabular
 sample_size <- function(x) {
-    is <- methods::is
-    
     samples <- ifelse(
         not.null(nrow(x)),
         nrow(x),
@@ -297,9 +308,19 @@ get_samples <- function(samples, counts) {
             if (not.null(colnames(counts))) {
                 samples <- colnames(counts)
             } else {
-                samples <- seq_rows(counts)
+                samples <- seq_cols(counts)
             }
         }
     }
     samples
+}
+
+# get column of status defined by coef
+get_coef_status <- function(status, coef) {
+    if (not.null(ncol(status))) {
+        if (ncol(status) > 1) {
+            status <- status[, coef]
+        }
+    }
+    status
 }
