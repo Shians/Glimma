@@ -69,14 +69,15 @@ glMDPlot <- function(x, ...) {
 #'   as the number of rows of object. If NULL, then all points are plotted in
 #'   the default colour.
 #' @param transform TRUE if counts cpm transformed.
+#' @param main the title for the left plot.
+#' @param xlab the label on the x axis for the left plot.
+#' @param ylab the label on the y axis for the left plot.
 #' @param side.main the column containing mains for right plot.
 #' @param side.xlab label for x axis on right plot.
 #' @param side.ylab label for y axis on right plot.
 #' @param side.log TRUE to plot expression on the right plot on log scale.
 #' @param side.gridstep intervals along which to place grid lines on y axis.
 #'   Currently only available for linear scale.
-#' @param xlab the label on the x axis for the left plot.
-#' @param ylab the label on the y axis for the left plot.
 #' @param jitter the amount of jitter to apply to the samples in the expressions
 #'   plot.
 #' @param display.columns character vector containing names of columns to
@@ -112,13 +113,14 @@ glMDPlot.default <- function(
     samples = NULL,
     status = rep(0, nrow(x)),
     transform = FALSE,
+    main = "",
+    xlab = xval,
+    ylab = yval,
     side.main = "GeneID",
     side.xlab = "Group",
     side.ylab = "Expression",
     side.log = FALSE,
     side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
-    xlab = xval,
-    ylab = yval,
     jitter = 30,
     display.columns = side.main,
     cols = c("#00bfff", "#858585", "#ff3030"),
@@ -193,6 +195,7 @@ glMDPlot.default <- function(
 #'   as the number of rows of object. If NULL, then all points are plotted in
 #'   the default colour.
 #' @param transform TRUE if counts cpm transformed.
+#' @param main the title for the left plot.
 #' @param xlab label for x axis on left plot.
 #' @param ylab label for y axis on left plot.
 #' @param side.main the column containing mains for right plot.
@@ -234,6 +237,7 @@ glMDPlot.DGELRT <- function(
     samples = NULL,
     status = rep(0, nrow(x)),
     transform = FALSE,
+    main = "",
     xlab = "Average log CPM",
     ylab = "log-fold-change",
     side.xlab = "Group",
@@ -392,6 +396,7 @@ glMDPlot.MArrayLM <- function(
     samples = NULL,
     status = rep(0, nrow(x)),
     transform = FALSE,
+    main = "",
     xlab = "Average log CPM",
     ylab = "log-fold-change",
     side.main = "GeneID",
@@ -487,6 +492,7 @@ glMDPlot.MArrayLM <- function(
 #'   as the number of rows of object. If NULL, then all points are plotted in
 #'   the default colour.
 #' @param transform TRUE if counts cpm transformed.
+#' @param main the title for the left plot.
 #' @param xlab label for x axis on left plot.
 #' @param ylab label for y axis on left plot.
 #' @param side.main the column containing mains for right plot.
@@ -519,18 +525,32 @@ glMDPlot.MArrayLM <- function(
 #'
 #' @export
 
-glMDPlot.DESeqDataSet <- function(x, counts=NULL, anno, groups, samples=NULL,
-                                status=rep(0, nrow(x)), transform=FALSE,
-						    	xlab="Mean Expression", ylab="log-fold-change",
-                                side.xlab="Group", side.ylab="logMean",
-                                side.log=FALSE,
-                                side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
-                                jitter=30, side.main="GeneID",
-                                display.columns=NULL,
-                                cols=c("#00bfff", "#858585", "#ff3030"),
-                                sample.cols=rep("#1f77b4", ncol(x)),
-                                path=getwd(), folder="glimma-plots",
-                                html="MD-Plot", launch=TRUE, ...) {
+glMDPlot.DESeqDataSet <- function(
+    x,
+    counts = NULL,
+    anno,
+    groups,
+    samples = NULL,
+    status = rep(0, nrow(x)),
+    transform = FALSE,
+    main = "",
+    xlab = "Mean Expression",
+    ylab = "log-fold-change",
+    side.xlab = "Group",
+    side.ylab = "logMean",
+    side.log = FALSE,
+    side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
+    jitter = 30,
+    side.main = "GeneID",
+    display.columns = NULL,
+    cols = c("#00bfff", "#858585", "#ff3030"),
+    sample.cols = rep("#1f77b4", ncol(x)),
+    path = getwd(),
+    folder = "glimma-plots",
+    html = "MD-Plot",
+    launch = TRUE,
+    ...
+) {
 
     if (is.null(counts)) {
         counts <- DESeq2::counts(x)

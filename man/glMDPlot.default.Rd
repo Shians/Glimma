@@ -6,13 +6,13 @@
 \usage{
 \method{glMDPlot}{default}(x, xval, yval, counts = NULL, anno = NULL,
   groups = NULL, samples = NULL, status = rep(0, nrow(x)),
-  transform = FALSE, side.main = "GeneID", side.xlab = "Group",
-  side.ylab = "Expression", side.log = FALSE,
-  side.gridstep = ifelse(!transform || side.log, FALSE, 0.5), xlab = xval,
-  ylab = yval, jitter = 30, display.columns = side.main,
-  cols = c("#00bfff", "#858585", "#ff3030"), sample.cols = rep("#1f77b4",
-  ncol(counts)), path = getwd(), folder = "glimma-plots",
-  html = "MD-Plot", launch = TRUE, ...)
+  transform = FALSE, main = "", xlab = xval, ylab = yval,
+  side.main = "GeneID", side.xlab = "Group", side.ylab = "Expression",
+  side.log = FALSE, side.gridstep = ifelse(!transform || side.log, FALSE,
+  0.5), jitter = 30, display.columns = side.main, cols = c("#00bfff",
+  "#858585", "#ff3030"), sample.cols = rep("#1f77b4", ncol(counts)),
+  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
+  launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the data.frame object containing expression and fold change values.}
@@ -35,6 +35,12 @@ the default colour.}
 
 \item{transform}{TRUE if counts cpm transformed.}
 
+\item{main}{the title for the left plot.}
+
+\item{xlab}{the label on the x axis for the left plot.}
+
+\item{ylab}{the label on the y axis for the left plot.}
+
 \item{side.main}{the column containing mains for right plot.}
 
 \item{side.xlab}{label for x axis on right plot.}
@@ -45,10 +51,6 @@ the default colour.}
 
 \item{side.gridstep}{intervals along which to place grid lines on y axis.
 Currently only available for linear scale.}
-
-\item{xlab}{the label on the x axis for the left plot.}
-
-\item{ylab}{the label on the y axis for the left plot.}
 
 \item{jitter}{the amount of jitter to apply to the samples in the expressions
 plot.}
