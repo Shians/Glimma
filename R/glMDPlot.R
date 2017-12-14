@@ -629,10 +629,12 @@ glMDPlot.DESeqDataSet <- function(
 
     plotting_data <- sortInsigPointsToTop(plotting_data, bg.col)
 
-    sample_exp <- data.frame(Sample=samples,
-                             cols=as.hexcol(sample.cols),
-                             Group=factor(groups),
-                             tr.counts)
+    sample_exp <- data.frame(
+        Sample=samples,
+        cols=as.hexcol(sample.cols),
+        Group=factor(groups),
+        tr.counts
+    )
 
     plotWithTable(
         plotting_data,
@@ -760,10 +762,12 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
 
         tr.counts <- transformCounts(counts, transform, plotting_data[[side.main]])
 
-        sample_exp <- data.frame(Sample=samples,
-                                 cols=as.hexcol(sample.cols),
-                                 Group=factor(groups),
-                                 tr.counts)
+        sample_exp <- data.frame(
+            Sample=samples,
+            cols=as.hexcol(sample.cols),
+            Group=factor(groups),
+            tr.counts
+        )
 
     } else {
         sample_exp <- NULL

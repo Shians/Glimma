@@ -193,16 +193,21 @@ get_sample_exp <- function(
         
         if (is(groups, "numeric")) {
             sample_exp <- data.frame(
-                Sample=samples,
-                cols=as.hexcol(sample.cols),
-                Group=groups,
+                Sample = samples,
+                cols = as.hexcol(sample.cols),
+                Group = groups,
                 transformed_counts
             )
         } else {
+            # reorder samples to group levels
+            groups <- factor(groups)
+            transformed_counts <- transformed_counts[order(groups), ]
+            groups <- sort(groups)
+
             sample_exp <- data.frame(
-                Sample=samples,
-                cols=as.hexcol(sample.cols),
-                Group=factor(groups),
+                Sample = samples,
+                cols = as.hexcol(sample.cols),
+                Group = groups,
                 transformed_counts
             )
         }
