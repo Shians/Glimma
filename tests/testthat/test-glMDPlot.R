@@ -28,7 +28,7 @@ test_that("MD Plot runs for DGELRT", {
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
 
-    expect_warning(glMDPlot(qlf, counts=counts, main="MDPlot", launch=FALSE))
+    expect_warning(glMDPlot(qlf, counts=counts, main="MDPlot", launch=FALSE, path = temp_dir))
 
     # common arguments for working tests
     glMDPlot_core <- pryr::partial(
@@ -37,7 +37,7 @@ test_that("MD Plot runs for DGELRT", {
         anno = geneanno,
         main = "MDPlot",
         launch = FALSE,
-        path = tempdir
+        path = temp_dir
     )
 
     expect_silent(glMDPlot_core())
@@ -57,8 +57,8 @@ test_that("MD Plot runs for DGELRT", {
 
     load("little_mait_DGELRT.RData")
 
-    expect_silent(glMDPlot(little_mait, launch=FALSE))
-    expect_silent(glMDPlot(little_mait, anno=little_mait$genes, launch=FALSE))
+    expect_silent(glMDPlot(little_mait, launch=FALSE, path=temp_dir))
+    expect_silent(glMDPlot(little_mait, anno=little_mait$genes, launch=FALSE, path=temp_dir))
 })
 
 test_that("MD Plot runs for DGEExact", {
@@ -74,7 +74,7 @@ test_that("MD Plot runs for DGEExact", {
         x = et,
         main = "MDPlot",
         launch = FALSE,
-        path = tempdir
+        path = temp_dir
     )
 
     expect_silent(glMDPlot_core())
@@ -106,7 +106,7 @@ test_that("MD Plot runs for MArrayLM", {
         x = fit,
         counts = counts,
         launch = FALSE,
-        path = tempdir
+        path = temp_dir
     )
     # No anno warning
     expect_warning(glMDPlot_warning())
@@ -119,7 +119,7 @@ test_that("MD Plot runs for MArrayLM", {
         anno = geneanno,
         counts = counts,
         launch = FALSE,
-        path = tempdir
+        path = temp_dir
     )
 
     expect_silent(glMDPlot_core())
@@ -128,11 +128,11 @@ test_that("MD Plot runs for MArrayLM", {
     expect_silent(glMDPlot_core(groups=genotypes, display.columns=display.columns))
     expect_silent(glMDPlot_core(groups=genotypes, samples=1:6, status=is.de, display.columns=display.columns))
 
-    expect_error(glMDPlot(fit, counts=counts, samples=1:2, anno=geneanno, launch=FALSE))
+    expect_error(glMDPlot(fit, counts=counts, samples=1:2, anno=geneanno, launch=FALSE, path = temp_dir))
 
     load("invalid_names_glMDPlot.RData")
 
-    expect_silent(glMDPlot(invalid_names_fit, anno=invalid_names_anno, side.main="ENTREZID", launch=FALSE))
+    expect_silent(glMDPlot(invalid_names_fit, anno=invalid_names_anno, side.main="ENTREZID", launch=FALSE, path = temp_dir))
 })
 
 test_that("MD Plot runs for DESeqDataSet", {
@@ -148,7 +148,7 @@ test_that("MD Plot runs for DESeqDataSet", {
         anno = lymphoma_anno,
         groups = lymphoma_genotypes,
         launch = FALSE,
-        path = tempdir
+        path = temp_dir
     )
 
     expect_silent(glMDPlot_core())
@@ -161,7 +161,8 @@ test_that("MD Plot runs for DESeqDataSet", {
         counts = DESeq2::counts(lymphoma_dds),
         anno = lymphoma_anno,
         groups = lymphoma_genotypes,
-        launch = FALSE
+        launch = FALSE,
+        path = temp_dir
     )
 
     expect_silent(glMDPlot_deseqresults())
