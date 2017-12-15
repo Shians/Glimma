@@ -1,14 +1,18 @@
 context("Test MD Plot")
 
 test_that("id.column deprecation warning works", {
+    temp_dir <- normalizePath(tempdir())
     load("test_data_voom.RData")
+
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
 
-    expect_error(glMDPlot(fit, counts=counts, id.column="ENTREZID", launch=FALSE))
+    expect_error(glMDPlot(fit, counts=counts, id.column="ENTREZID", launch=FALSE, path=temp_dir))
 })
 
 test_that("Helper functions run as expected", {
+    temp_dir <- normalizePath(tempdir())
+
     status <- c(0, 1, -1)
     cols <- c("blue", "black", "red")
 
@@ -18,6 +22,8 @@ test_that("Helper functions run as expected", {
 })
 
 test_that("MD Plot runs for DGELRT", {
+    temp_dir <- normalizePath(tempdir())
+
     load("test_data_DGELRT.RData")
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
@@ -30,7 +36,8 @@ test_that("MD Plot runs for DGELRT", {
         x = qlf,
         anno = geneanno,
         main = "MDPlot",
-        launch = FALSE
+        launch = FALSE,
+        path = tempdir
     )
 
     expect_silent(glMDPlot_core())
@@ -55,6 +62,8 @@ test_that("MD Plot runs for DGELRT", {
 })
 
 test_that("MD Plot runs for DGEExact", {
+    temp_dir <- normalizePath(tempdir())
+
     load("test_data_DGEExact.RData")
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
@@ -64,7 +73,8 @@ test_that("MD Plot runs for DGEExact", {
         glMDPlot,
         x = et,
         main = "MDPlot",
-        launch = FALSE
+        launch = FALSE,
+        path = tempdir
     )
 
     expect_silent(glMDPlot_core())
@@ -84,6 +94,8 @@ test_that("MD Plot runs for DGEExact", {
 })
 
 test_that("MD Plot runs for MArrayLM", {
+    temp_dir <- normalizePath(tempdir())
+
     load("test_data_voom.RData")
     counts <- counts$counts
     display.columns <- c("Symbols", "GeneID")
@@ -93,7 +105,8 @@ test_that("MD Plot runs for MArrayLM", {
         glMDPlot,
         x = fit,
         counts = counts,
-        launch = FALSE
+        launch = FALSE,
+        path = tempdir
     )
     # No anno warning
     expect_warning(glMDPlot_warning())
@@ -105,7 +118,8 @@ test_that("MD Plot runs for MArrayLM", {
         x = fit,
         anno = geneanno,
         counts = counts,
-        launch = FALSE
+        launch = FALSE,
+        path = tempdir
     )
 
     expect_silent(glMDPlot_core())
@@ -122,6 +136,8 @@ test_that("MD Plot runs for MArrayLM", {
 })
 
 test_that("MD Plot runs for DESeqDataSet", {
+    temp_dir <- normalizePath(tempdir())
+
     library(DESeq2)
     load("test_data_DESeqDataSet.RData")
 
@@ -131,7 +147,8 @@ test_that("MD Plot runs for DESeqDataSet", {
         x = lymphoma_dds,
         anno = lymphoma_anno,
         groups = lymphoma_genotypes,
-        launch = FALSE
+        launch = FALSE,
+        path = tempdir
     )
 
     expect_silent(glMDPlot_core())
@@ -151,5 +168,3 @@ test_that("MD Plot runs for DESeqDataSet", {
     expect_silent(glMDPlot_deseqresults(samples=1:7, status=lymphoma_status))
 
 })
-
-unlink("glimma-plots", recursive=TRUE)
