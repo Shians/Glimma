@@ -129,8 +129,8 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
 
     # Write input fields
     if (not.null(inputs)) {
-        inputs.js <- makeJson(inputs[-1, ])
-        write.data(paste0("glimma.storage.input = ", inputs.js, ";\n"))
+        inputs_js <- makeJson(inputs[-1, ])
+        write.data(paste0("glimma.storage.input = ", inputs_js, ";\n"))
     } else {
         write.data("glimma.storage.input = [];\n")
     }
