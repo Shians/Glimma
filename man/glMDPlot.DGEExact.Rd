@@ -6,8 +6,8 @@
 \usage{
 \method{glMDPlot}{DGEExact}(x, counts = NULL, anno = NULL, groups = NULL,
   samples = NULL, status = rep(0, nrow(x)), transform = FALSE,
-  xlab = "Average log CPM", ylab = "log-fold-change", side.xlab = "Group",
-  side.ylab = "Expression", side.log = FALSE,
+  main = "", xlab = "Average log CPM", ylab = "log-fold-change",
+  side.xlab = "Group", side.ylab = "Expression", side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
   p.adj.method = "BH", jitter = 30, side.main = "GeneID",
   display.columns = NULL, cols = c("#00bfff", "#858585", "#ff3030"),
@@ -30,6 +30,8 @@ as the number of rows of object. If NULL, then all points are plotted in
 the default colour.}
 
 \item{transform}{TRUE if counts cpm transformed.}
+
+\item{main}{the title for the left plot.}
 
 \item{xlab}{label for x axis on left plot.}
 

@@ -21,19 +21,19 @@ test_that("convert status to colours", {
 })
 
 test_that("group initialisation", {
-    expect_equal(initialiseGroups(3), 1:3)
+    expect_equal(initialise_groups(NULL, 3), 1:3)
 })
 
 test_that("sort insignificant points to the top", {
-    plotting.data <- data.frame(
+    plotting_data <- data.frame(
         sample = c(1, 2, 3),
         cols = c("#00bfff", "#858585", "#ff3030")
     )
 
-    expected_output <- plotting.data[c(2, 1, 3), ]
+    expected_output <- plotting_data[c(2, 1, 3), ]
 
     expect_equal(
-        sortInsigPointsToTop(plotting.data, "#858585"),
+        sortInsigPointsToTop(plotting_data, "#858585"),
         expected_output
     )
 })

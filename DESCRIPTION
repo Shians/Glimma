@@ -1,10 +1,28 @@
 Package: Glimma
 Type: Package
 Title: Interactive HTML graphics
-Version: 1.5.3
+Version: 1.7.1
 Date: 2016-12-21
-Author: Shian Su, Matthew E. Ritchie, Charity Law, Stuart Lee
-Maintainer: Shian Su <su.s@wehi.edu.au>
+Authors@R: 
+    c(
+        person(
+            "Shian", "Su",
+            role = c("aut", "cre"),
+            email = "su.s@wehi.edu.au"
+        ),
+        person(
+            "Matthew", "Ritchie",
+            role = c("aut")
+        ),
+        person(
+            "Charity", "Law",
+            role = c("aut")
+        ),
+        person(
+            "Stuart", "Lee",
+            role = c("ctb")
+        )
+    )        
 Description: This package generates interactive visualisations for analysis of RNA-sequencing data using output from limma, edgeR or DESeq2 packages in an HTML page. The interactions are built on top of the popular static representations of analysis results in order to provide additional information.
 biocViews:
     DifferentialExpression,
@@ -25,11 +43,15 @@ Imports:
     utils
 Suggests:
     BiocStyle,
+    IRanges,
+    GenomicRanges,
+    SummarizedExperiment,
     DESeq2,
     limma,
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    pryr
 License: GPL-3 | file LICENSE
 URL: https://github.com/Shians/Glimma
 BugReports: https://github.com/Shians/Glimma/issues

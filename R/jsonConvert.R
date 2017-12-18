@@ -123,7 +123,7 @@ arrayify <- function(x) {
 
 getLogicalCols <- function(df) {
     logicalCols <- logical(ncol(df))
-    for (i in 1:ncol(df)) {
+    for (i in seq_cols(df)) {
         logicalCols[i] <- is.logical(df[, i])
     }
 

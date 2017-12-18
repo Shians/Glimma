@@ -70,15 +70,15 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     }
 
     # Create file
-    index.path <- system.file(package="Glimma", "index.html")
-    js.path <- system.file(package="Glimma", "js")
-    css.path <- system.file(package="Glimma", "css")
+    index_path <- system.file(package="Glimma", "index.html")
+    js_path <- system.file(package="Glimma", "js")
+    css_path <- system.file(package="Glimma", "css")
 
     # Renaming the data.js in html file
     temp <- gsub(
         "data.js",
         paste0(html, ".js"),
-        read.delim(index.path, header=FALSE, as.is=TRUE, sep="\n")[, 1]
+        read.delim(index_path, header=FALSE, as.is=TRUE, sep="\n")[, 1]
     )
 
     cat(
@@ -88,14 +88,14 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     )
 
     file.copy(
-        js.path,
+        js_path,
         file.path(path, folder),
         recursive = TRUE,
         overwrite = overwrite
     )
 
     file.copy(
-        css.path,
+        css_path,
         file.path(path, folder),
         recursive = TRUE,
         overwrite = overwrite
@@ -106,63 +106,31 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     write.data <- writeMaker(data.path)
 
     # Generate layout
-    layout.method <- jsMethod("glimma", "layout", "setupGrid")
-    layout.args <- jsArgs(
+    layout_method <- jsMethod("glimma", "layout", "setupGrid")
+    layout_args <- jsArgs(
         "d3.select(\".container\")",
         quotify("md"),
         arrayify(layout)
     )
-    layout <- jsCall(layout.method, layout.args)
+    layout <- jsCall(layout_method, layout_args)
     write.data(layout)
 
-    # Initialise data variables
-    actions <- data.frame(
-        from=0,
-        to=0,
-        src="none",
-        dest="none",
-        flag="none",
-        info="none"
-    ) # Dummy row
-
-    inputs <- data.frame(
-        target=0,
-        action="none",
-        idval="none",
-        flag="none"
-    ) # Dummy row
-    data.list <- list()
-
-    accepted.types <- c("jslink", "jschart", "jsinput", "jstable")
-    # Process arguments
-    for (i in 1:length(args)) {
-        if (any(class(args[[i]]) == accepted.types)) {
-            if (args[[i]]$type == "link") {
-                actions <- rbind(actions, args[[i]]$link)
-            } else if (args[[i]]$type == "tablink") {
-                actions <- rbind(actions, args[[i]]$link)
-            } else if (args[[i]]$type == "autocomplete") {
-                inputs <- rbind(inputs, args[[i]]$input)
-            } else if (args[[i]]$type == "data.table") {
-                processTable(write.data, args[[i]])
-            } else {
-                processPlot(write.data, args[[i]]$type, args[[i]], i)
-            }
-        }
-    }
+    processed_args <- processArguments(args, write.data)
+    actions <- processed_args$actions
+    inputs <- processed_args$inputs
 
     # Write linkage
-    if (nrow(actions) > 1) {
-        actions.js <- makeJson(actions[-1, ])
-        write.data(paste0("glimma.storage.linkage = ", actions.js, ";\n"))
+    if (not.null(actions)) {
+        actions_js <- makeJson(actions)
+        write.data(paste0("glimma.storage.linkage = ", actions_js, ";\n"))
     } else {
         write.data("glimma.storage.linkage = [];\n")
     }
 
     # Write input fields
-    if (nrow(inputs) > 1) {
-        inputs.js <- makeJson(inputs[-1, ])
-        write.data(paste0("glimma.storage.input = ", inputs.js, ";\n"))
+    if (not.null(inputs)) {
+        inputs_js <- makeJson(inputs[-1, ])
+        write.data(paste0("glimma.storage.input = ", inputs_js, ";\n"))
     } else {
         write.data("glimma.storage.input = [];\n")
     }
@@ -173,6 +141,51 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     }
 }
 
+# process arguments to glimma
+processArguments <- function(args, write.data) {
+    is_accepted_class <- function(x) {
+        x %in% c("jslink", "jschart", "jsinput", "jstable")
+    }
+
+    # append object to list
+    list_append <- function(lst, obj) {
+        lst[[length(lst) + 1]] <- obj
+        lst
+    }
+
+    action_list <- list()
+    input_list <- list()
+
+    # Process arguments
+    for (i in seq_along(args)) {
+        obj_class <- class(args[[i]])
+        if (is_accepted_class(obj_class)) {
+            obj_type <- args[[i]]$type
+            if (obj_type == "link") {
+                # add plot linkage action
+                action_list <- list_append(action_list, args[[i]]$link)
+            } else if (obj_type == "tablink") {
+                # add table linkage
+                action_list <- list_append(action_list, args[[i]]$link)
+            } else if (obj_type == "autocomplete") {
+                # add autocomplete linkage
+                input_list <- list_append(input_list, args[[i]]$input)
+            } else if (obj_type == "data.table") {
+                processTable(write.data, args[[i]])
+            } else {
+                processPlot(write.data, obj_type, args[[i]], i)
+            }
+        }
+    }
+
+    actions <- do.call(rbind, action_list)
+    inputs <- do.call(rbind, input_list)
+
+    list(
+        actions = actions,
+        inputs = inputs
+    )
+}
 
 # Helper function for parsing the information in a plot object
 processPlot <- function(write.data, type, chart, index) {
@@ -202,32 +215,32 @@ processPlot <- function(write.data, type, chart, index) {
 
 processTable <- function(write.data, data.table) {
     # Creates glimma.chart.table()
-    call1.func <- jsMethod("glimma", "chart", "table")
-    call1 <- jsCall(call1.func, "")
+    call1_func <- jsMethod("glimma", "chart", "table")
+    call1 <- jsCall(call1_func, "")
 
     # Creates data()
-    call2.func <- jsFunction("data")
-    call2.arg <- paste0("glimma.storage.chartData[", data.table$input-1, "]")
-    call2 <- jsCall(call2.func, call2.arg)
+    call2_func <- jsFunction("data")
+    call2_arg <- paste0("glimma.storage.chartData[", data.table$input-1, "]")
+    call2 <- jsCall(call2_func, call2_arg)
 
     # Creates columns()
-    call3.func <-  jsFunction("columns")
-    call3.arg <- arrayify(quotify(data.table$columns))
-    call3 <- jsCall(call3.func, call3.arg)
+    call3_func <- jsFunction("columns")
+    call3_arg <- arrayify(quotify(data.table$columns))
+    call3 <- jsCall(call3_func, call3_arg)
 
     # glimma.storage.tables.push( glimma.chart.table().data().columns() )
-    call4.func <- jsMethod("glimma", "storage", "tables", "push")
-    call4.arg <- jsChain(call1, call2, call3)
-    call4 <- jsCall(call4.func, call4.arg)
+    call4_func <- jsMethod("glimma", "storage", "tables", "push")
+    call4_arg <- jsChain(call1, call2, call3)
+    call4 <- jsCall(call4_func, call4_arg)
     write.data(call4)
 
     # glimma.layout.bsAddRow
-    call5.func <- jsMethod("glimma", "layout", "bsAddRow")
-    call5.arg <- jsArgs("d3.select(\".container\")")
-    call5 <- jsCall(call5.func, call5.arg)
+    call5_func <- jsMethod("glimma", "layout", "bsAddRow")
+    call5_arg <- jsArgs("d3.select(\".container\")")
+    call5 <- jsCall(call5_func, call5_arg)
 
-    call6.func <- jsMethod("glimma", "layout", "addTable")
-    call6 <- jsCall(call6.func, call5)
+    call6_func <- jsMethod("glimma", "layout", "addTable")
+    call6 <- jsCall(call6_func, call5)
     write.data(call6)
 }
 

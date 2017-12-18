@@ -1,7 +1,7 @@
 # Hidden internal functions for use by edgeR and limma based plotting
 plotWithTable <- function(
-    plotting.data,
-    sample.exp,
+    plotting_data,
+    sample_exp,
     display.columns,
     side.main,
     default.col,
@@ -23,13 +23,13 @@ plotWithTable <- function(
 
     # Reordering so that significant points appear on top of insignificant
     # points.
-    plotting.data <- rbind(
-        plotting.data[plotting.data$cols == default.col, ],
-        plotting.data[plotting.data$cols != default.col, ]
+    plotting_data <- rbind(
+        plotting_data[plotting_data$cols == default.col, ],
+        plotting_data[plotting_data$cols != default.col, ]
     )
 
     plot1 <- glScatter(
-        plotting.data,
+        plotting_data,
         xval = xval,
         yval = yval,
         xlab = xlab,
@@ -41,18 +41,18 @@ plotWithTable <- function(
         ...
     )
 
-    if (not.null(sample.exp)) {
+    if (not.null(sample_exp)) {
         link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=side.main)
         link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=side.main)
         plot2 <- glScatter(
-            sample.exp,
+            sample_exp,
             xval = "Group",
-            yval = colnames(sample.exp)[4],
+            yval = colnames(sample_exp)[4],
             idval = "Sample",
             xlab = side.xlab,
             ylab = side.ylab,
-            main = colnames(sample.exp)[4],
-            annot = c("Sample", colnames(sample.exp)[4]),
+            main = colnames(sample_exp)[4],
+            annot = c("Sample", colnames(sample_exp)[4]),
             colval = "cols",
             log = ifelse(side.log, "y", ""),
             annot.lab = c("Sample", side.ylab),

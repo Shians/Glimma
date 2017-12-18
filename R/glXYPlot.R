@@ -39,7 +39,8 @@
 #' @examples
 #' data(iris)
 #' \donttest{
-#' glXYPlot(iris$Sepal.Width, iris$Sepal.Length, xlab="Sepal.Width", ylab="Sepal.Length", side.main="PlantID")
+#' glXYPlot(iris$Sepal.Width, iris$Sepal.Length, 
+#'          xlab="Sepal.Width", ylab="Sepal.Length", side.main="PlantID")
 #' }
 #'
 #' @importFrom stats p.adjust
@@ -104,7 +105,7 @@ glXYPlot <- function(
         if (not.null(counts)) {
             anno <- data.frame(id=rownames(counts))
         } else {
-            anno <- data.frame(id=1:nrow(data))
+            anno <- data.frame(id=seq_rows(data))
         }
         colnames(anno) <- side.main
     } else {

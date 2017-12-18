@@ -26,3 +26,11 @@ test_that("path maker works", {
     expect_equal(p_maker("to"), "path/to")
     expect_equal(p_maker("to/elsewhere"), "path/to/elsewhere")
 })
+
+test_that("seq_along variants work", {
+    data(mtcars)
+
+    expect_identical(seq_rows(mtcars), 1:32)
+
+    expect_identical(seq_cols(mtcars), 1:11)
+})
