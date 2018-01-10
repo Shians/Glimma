@@ -219,9 +219,9 @@ get_sample_exp <- function(
 }
 
 # create main and side with linkage actions
-get_plots_and_links <- function(plotting_data, xval, yval, xlab, side.main, ylab, display.columns, counts, side.gridstep, sample_exp, side.xlab, side.ylab, jitter, ...) {
+get_plots_and_links <- function(plotting_data, xval, yval, xlab, main, side.main, ylab, display.columns, counts, side.gridstep, sample_exp, side.xlab, side.ylab, jitter, ...) {
     plot1 <- glScatter(plotting_data, xval=xval, yval=yval,
-                       xlab=xlab, idval=side.main, ylab=ylab,
+                       xlab=xlab, main=main, idval=side.main, ylab=ylab,
                        annot=c(display.columns, xval, yval), flag="mdplot",
                        ndigits=4, ...)
     
