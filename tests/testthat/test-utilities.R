@@ -8,6 +8,7 @@ test_that("char extraction", {
 test_that("unique conversion works", {
     expect_equal(makeUnique(c(1, 1, 2)), c("1.1", "1.2", "2"))
     expect_equal(makeUnique(c("a", "a", "b")), c("a.1", "a.2", "b"))
+    expect_equal(makeUnique(c(NA, NA)), c("NA.1", "NA.2"))
 })
 
 test_that("Row and column extractions work", {

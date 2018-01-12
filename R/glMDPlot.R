@@ -157,7 +157,7 @@ glMDPlot.default <- function(
     sample_exp <- get_sample_exp(counts, transform, plotting_data, side.main, groups, samples, sample.cols)
     display.columns <- setDisplayColumns(display.columns, anno, xval, yval)
 
-    plots_and_links <- get_plots_and_links(plotting_data, xval, yval, xlab, side.main, ylab, display.columns, counts, side.gridstep, sample_exp, side.xlab, side.ylab, jitter, ...)
+    plots_and_links <- get_plots_and_links(plotting_data, xval, yval, xlab, main, side.main, ylab, display.columns, counts, side.gridstep, sample_exp, side.xlab, side.ylab, jitter, ...)
 
     plot1 <- plots_and_links$plot1
     plot2 <- plots_and_links$plot2
@@ -298,6 +298,7 @@ glMDPlot.DGELRT <- function(
         plotting_data,
         sample_exp,
         display.columns,
+        main=main,
         side.main = side.main,
         default.col = cols[2],
         jitter = jitter,
@@ -458,6 +459,7 @@ glMDPlot.MArrayLM <- function(
     plotWithTable(plotting_data,
         sample_exp,
         display.columns,
+        main=main,
         side.main = side.main,
         default.col = cols[2],
         jitter = jitter,
@@ -640,6 +642,7 @@ glMDPlot.DESeqDataSet <- function(
         plotting_data,
         sample_exp,
         display.columns,
+        main=main,
         side.main = side.main,
         default.col = cols[2],
         jitter = jitter,
@@ -677,18 +680,32 @@ glMDPlot.DESeqDataSet <- function(
 #'
 #' @export
 
-glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
-                                status=rep(0, nrow(x)), transform=FALSE,
-							  	xlab="Mean Expression", ylab="log-fold-change",
-                                side.xlab="Group", side.ylab="Expression",
-                                side.log=FALSE,
-                                side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
-                                jitter=30, side.main="GeneID",
-                                display.columns=NULL,
-                                cols=c("#00bfff", "#858585", "#ff3030"),
-                                sample.cols=rep("#1f77b4", ncol(counts)),
-                                path=getwd(), folder="glimma-plots",
-                                html="MD-Plot", launch=TRUE, ...) {
+glMDPlot.DESeqResults <- function(
+    x,
+    counts,
+    anno,
+    groups,
+    samples=NULL,
+    status=rep(0, nrow(x)),
+    transform=FALSE,
+    main = "",
+    xlab="Mean Expression",
+    ylab="log-fold-change",
+    side.xlab="Group",
+    side.ylab="Expression",
+    side.log=FALSE,
+    side.gridstep=ifelse(!transform || side.log, FALSE, 0.5),
+    jitter=30,
+    side.main="GeneID",
+    display.columns=NULL,
+    cols=c("#00bfff", "#858585", "#ff3030"),
+    sample.cols=rep("#1f77b4", ncol(counts)),
+    path=getwd(),
+    folder="glimma-plots",
+    html="MD-Plot",
+    launch=TRUE,
+    ...
+) {
 
     ##
     # Input checking
@@ -779,6 +796,7 @@ glMDPlot.DESeqResults <- function(x, counts, anno, groups, samples=NULL,
         plotting_data,
         sample_exp,
         display.columns,
+        main=main,
         side.main=side.main,
         default.col=cols[2],
         jitter=jitter,
