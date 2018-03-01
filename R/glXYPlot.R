@@ -129,8 +129,8 @@ glXYPlot <- function(
 
     glMDPlot.default(
         data,
-        xval = xlab,
-        yval = ylab,
+        xval = make.names(xlab),
+        yval = make.names(ylab),
         counts = counts,
         groups = groups,
         samples = samples,
