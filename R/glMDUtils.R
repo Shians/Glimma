@@ -270,7 +270,6 @@ make_side_main_unique <- function(x, anno, side.main) {
     if (not.null(side.main)) {
         if (side.main %in% colnames(x)) {
             x[[side.main]] <- makeUnique(x[[side.main]])
-            return(x)
         } else if (side.main %in% colnames(anno)) {
             anno[[side.main]] <- makeUnique(anno[[side.main]])
         }
