@@ -29,7 +29,7 @@
 as the number of rows of object. If NULL, then all points are plotted in
 the default colour.}
 
-\item{transform}{TRUE if counts cpm transformed.}
+\item{transform}{TRUE if counts should be log-cpm transformed.}
 
 \item{main}{the title for the left plot.}
 

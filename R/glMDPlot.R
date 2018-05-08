@@ -68,7 +68,7 @@ glMDPlot <- function(x, ...) {
 #' @param status vector giving the control status of data point, of same length
 #'   as the number of rows of object. If NULL, then all points are plotted in
 #'   the default colour.
-#' @param transform TRUE if counts cpm transformed.
+#' @param transform TRUE if counts should be log-cpm transformed.
 #' @param main the title for the left plot.
 #' @param xlab the label on the x axis for the left plot.
 #' @param ylab the label on the y axis for the left plot.
@@ -194,7 +194,7 @@ glMDPlot.default <- function(
 #' @param status vector giving the control status of data point, of same length
 #'   as the number of rows of object. If NULL, then all points are plotted in
 #'   the default colour.
-#' @param transform TRUE if counts cpm transformed.
+#' @param transform TRUE if counts should be log-cpm transformed.
 #' @param main the title for the left plot.
 #' @param xlab label for x axis on left plot.
 #' @param ylab label for y axis on left plot.
@@ -493,7 +493,7 @@ glMDPlot.MArrayLM <- function(
 #' @param status vector giving the control status of data point, of same length
 #'   as the number of rows of object. If NULL, then all points are plotted in
 #'   the default colour.
-#' @param transform TRUE if counts cpm transformed.
+#' @param transform TRUE if counts should be log-cpm transformed.
 #' @param main the title for the left plot.
 #' @param xlab label for x axis on left plot.
 #' @param ylab label for y axis on left plot.
