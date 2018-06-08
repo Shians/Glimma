@@ -155,13 +155,13 @@ get_plotting_data.default <- function(x, anno, cols) {
 }
 
 get_plotting_data.DGELRT <- function(x, anno, cols, p.adj.method) {
-  Adj.PValue <- p.adjust(x$table$PValue, method=p.adj.method)
-  x <- data.frame(
-      x$table,
-      Adj.PValue
-  )
+    Adj.PValue <- p.adjust(x$table$PValue, method=p.adj.method)
+    x <- data.frame(
+        x$table,
+        Adj.PValue
+    )
 
-  get_plotting_data.default(x, anno, cols)
+    get_plotting_data.default(x, anno, cols)
 }
 
 get_plotting_data.DGEExact <- get_plotting_data.DGELRT
@@ -191,26 +191,21 @@ get_sample_exp <- function(
     if (not.null(counts)) {
         transformed_counts <- transformCounts(counts, transform, plotting_data[[side.main]])
         
-        if (is(groups, "numeric")) {
-            sample_exp <- data.frame(
-                Sample = samples,
-                cols = as.hexcol(sample.cols),
-                Group = groups,
-                transformed_counts
-            )
-        } else {
+        if (!is(groups, "numeric")) {
             # reorder samples to group levels
             groups <- factor(groups)
             transformed_counts <- transformed_counts[order(groups), ]
+            sample.cols <- sample.cols[order(groups)]
+            samples <- samples[order(groups)]
             groups <- sort(groups)
-
-            sample_exp <- data.frame(
-                Sample = samples,
-                cols = as.hexcol(sample.cols),
-                Group = groups,
-                transformed_counts
-            )
         }
+
+        sample_exp <- data.frame(
+            Sample = samples,
+            cols = as.hexcol(sample.cols),
+            Group = groups,
+            transformed_counts
+        )
     } else {
         sample_exp <- NULL
     }
