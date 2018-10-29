@@ -2,7 +2,10 @@ _site
 glimma.sublime-workspace
 glimma.sublime-project
 .Rproj.user
+.Rhistory
+
 *.tex
+
 DESCRIPTION.bak
 inst/doc
-.Rhistory
+Smchd1-Lymphoma
