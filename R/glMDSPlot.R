@@ -203,7 +203,7 @@ glMDSPlot.DGEList <- function (
     labels = NULL,
     groups = rep(1, ncol(x)),
     gene.selection = c("pairwise", "common"),
-    prior.count = 0.25,
+    prior.count = 2,
     main = "MDS Plot",
     path = getwd(),
     folder = "glimma-plots",
