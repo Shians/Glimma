@@ -4,10 +4,11 @@
 \alias{glMDPlot.DGEExact}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{DGEExact}(x, counts = NULL, anno = NULL, groups = NULL,
-  samples = NULL, status = rep(0, nrow(x)), transform = FALSE,
-  main = "", xlab = "Average log CPM", ylab = "log-fold-change",
-  side.xlab = "Group", side.ylab = "Expression", side.log = FALSE,
+\method{glMDPlot}{DGEExact}(x, counts = NULL, anno = NULL,
+  groups = NULL, samples = NULL, status = rep(0, nrow(x)),
+  transform = FALSE, main = "", xlab = "Average log CPM",
+  ylab = "log-fold-change", side.xlab = "Group",
+  side.ylab = "Expression", side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
   p.adj.method = "BH", jitter = 30, side.main = "GeneID",
   display.columns = NULL, cols = c("#00bfff", "#858585", "#ff3030"),

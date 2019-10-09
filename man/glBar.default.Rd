@@ -4,10 +4,10 @@
 \alias{glBar.default}
 \title{Glimma MD Plot}
 \usage{
-\method{glBar}{default}(x, yval, names.arg = rownames(x), ndigits = NULL,
-  signif = 6, xlab = NULL, ylab = yval, main = NULL, height = 400,
-  width = 500, colval = NULL, annot = yval, flag = NULL, info = NULL,
-  ...)
+\method{glBar}{default}(x, yval, names.arg = rownames(x),
+  ndigits = NULL, signif = 6, xlab = NULL, ylab = yval,
+  main = NULL, height = 400, width = 500, colval = NULL,
+  annot = yval, flag = NULL, info = NULL, ...)
 }
 \arguments{
 \item{x}{the data.frame containing data to plot.}

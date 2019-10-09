@@ -8,11 +8,11 @@
   samples = NULL, status = rep(0, nrow(x)), transform = FALSE,
   main = "", xlab = "Mean Expression", ylab = "log-fold-change",
   side.xlab = "Group", side.ylab = "logMean", side.log = FALSE,
-  side.gridstep = ifelse(!transform || side.log, FALSE, 0.5), jitter = 30,
-  side.main = "GeneID", display.columns = NULL, cols = c("#00bfff",
-  "#858585", "#ff3030"), sample.cols = rep("#1f77b4", ncol(x)),
-  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
-  launch = TRUE, ...)
+  side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
+  jitter = 30, side.main = "GeneID", display.columns = NULL,
+  cols = c("#00bfff", "#858585", "#ff3030"),
+  sample.cols = rep("#1f77b4", ncol(x)), path = getwd(),
+  folder = "glimma-plots", html = "MD-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DESeqDataSet object.}

@@ -150,7 +150,7 @@ get_plotting_data.default <- function(x, anno, cols) {
     } else {
         plotting_data <- data.frame(anno, x, cols=cols)
     }
-    
+
     plotting_data
 }
 
@@ -190,7 +190,7 @@ get_sample_exp <- function(
 ) {
     if (not.null(counts)) {
         transformed_counts <- transformCounts(counts, transform, plotting_data[[side.main]])
-        
+
         if (!is(groups, "numeric")) {
             # reorder samples to group levels
             groups <- factor(groups)
@@ -209,7 +209,7 @@ get_sample_exp <- function(
     } else {
         sample_exp <- NULL
     }
-    
+
     sample_exp
 }
 
@@ -219,19 +219,19 @@ get_plots_and_links <- function(plotting_data, xval, yval, xlab, main, side.main
                        xlab=xlab, main=main, idval=side.main, ylab=ylab,
                        annot=c(display.columns, xval, yval), flag="mdplot",
                        ndigits=4, ...)
-    
+
     if (not.null(counts)) {
         link1 <- gllink(1, 2, "hover", "yChange", flag="byKey", info=side.main)
         link2 <- gllink(1, 2, "click", "yChange", flag="byKey", info=side.main)
-        
+
         if (side.gridstep) {
             plot2 <- glScatter(sample_exp, xval="Group",
                                yval=colnames(sample_exp)[4],
                                xlab=side.xlab, ylab=side.ylab,
                                main=colnames(sample_exp)[4],
                                colval="cols",
-                               annot=c("Sample", colnames(sample_exp)[4]),
-                               annot.lab=c("Sample", "logCPM"),
+                               annot=c("Sample", "Group", colnames(sample_exp)[4]),
+                               annot.lab=c("Sample", "Group", "logCPM"),
                                x.jitter=jitter,
                                ndigits=4, hide=TRUE,
                                ystep=side.gridstep, ygrid=TRUE)
@@ -241,8 +241,8 @@ get_plots_and_links <- function(plotting_data, xval, yval, xlab, main, side.main
                                xlab=side.xlab, ylab=side.ylab,
                                main=colnames(sample_exp)[4],
                                colval="cols",
-                               annot=c("Sample", colnames(sample_exp)[4]),
-                               annot.lab=c("Sample", "logCPM"),
+                               annot=c("Sample", "Group", colnames(sample_exp)[4]),
+                               annot.lab=c("Sample", "Group", "logCPM"),
                                x.jitter=jitter,
                                ndigits=4, hide=TRUE, ygrid=FALSE)
         }
@@ -251,7 +251,7 @@ get_plots_and_links <- function(plotting_data, xval, yval, xlab, main, side.main
         link2 <- NULL
         plot2 <- NULL
     }
-    
+
     list(
         plot1 = plot1,
         plot2 = plot2,
@@ -269,7 +269,7 @@ make_side_main_unique <- function(x, anno, side.main) {
             anno[[side.main]] <- makeUnique(anno[[side.main]])
         }
     }
-    
+
     list(
         x = x,
         anno = anno
@@ -296,7 +296,7 @@ anno_from_count_rows <- function(anno, counts, side.main) {
         anno <- data.frame(rownames(counts), anno)
         names(anno)[1] <- side.main
     }
-    
+
     anno
 }
 

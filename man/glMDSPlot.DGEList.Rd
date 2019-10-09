@@ -4,10 +4,10 @@
 \alias{glMDSPlot.DGEList}
 \title{Glimma MDS Plot}
 \usage{
-\method{glMDSPlot}{DGEList}(x, top = 500, labels = NULL, groups = rep(1,
-  ncol(x)), gene.selection = c("pairwise", "common"), prior.count = 0.25,
-  main = "MDS Plot", path = getwd(), folder = "glimma-plots",
-  html = "MDS-Plot", launch = TRUE, ...)
+\method{glMDSPlot}{DGEList}(x, top = 500, labels = NULL,
+  groups = rep(1, ncol(x)), gene.selection = c("pairwise", "common"),
+  prior.count = 0.25, main = "MDS Plot", path = getwd(),
+  folder = "glimma-plots", html = "MDS-Plot", launch = TRUE, ...)
 }
 \arguments{
 \item{x}{the DGEList containing the gene expressions.}
