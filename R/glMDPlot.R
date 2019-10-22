@@ -29,7 +29,7 @@
 #' des <- model.matrix(~genotype)
 #'
 #' ## Apply voom with sample quality weights and fit linear model
-#' v <- voomWithQualityWeights(x, design=des, normalization="none", plot=FALSE)
+#' v <- voomWithQualityWeights(x, design=des, normalize.method="none", plot=FALSE)
 #' vfit <- lmFit(v,des)
 #'
 #' ## Apply treat relative to a fold-change of 1.5
@@ -368,7 +368,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' des <- model.matrix(~genotype)
 #'
 #' ## Apply voom with sample quality weights and fit linear model
-#' v <- voomWithQualityWeights(x, design=des, normalization="none", plot=FALSE)
+#' v <- voomWithQualityWeights(x, design=des, normalize.method="none", plot=FALSE)
 #' vfit <- lmFit(v,des)
 #'
 #' ## Apply treat relative to a fold-change of 1.5
