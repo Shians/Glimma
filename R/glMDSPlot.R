@@ -292,16 +292,16 @@ glMDSPlot.DESeqDataSet <- function(
 
 # extract sample groups based on object class
 getLabels <- function(x, labels) {
-    
+
     if (is.null(labels)) {
-        if (class(x) == "DGEList") {
-            # DGElist get from 
+        if (is(x, "DGEList")) {
+            # DGElist get from
             if (not.null(x$samples$groups)) {
                 labels <- rownames(x$samples)
             } else {
                 labels <- seq_cols(x)
             }
-        } else if (class(x) == "DESeqDataSet") {
+        } else if (is(x, "DESeqDataSet")) {
             # DESeqDaset
             if (not.null(SummarizedExperiment::colData(x))) {
                 labels <- rownames(SummarizedExperiment::colData(x))

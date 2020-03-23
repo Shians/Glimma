@@ -28,7 +28,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     ##
     # Input checking
     for (i in list(...)) {
-        if (class(i) == "jschart") {
+        if (is(i, "jschart")) {
             nplots <- nplots + 1
         }
     }
@@ -82,7 +82,7 @@ glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
     )
 
     cat(
-        temp, 
+        temp,
         file = file.path(path, folder, paste0(html, ".html")),
         sep = "\n"
     )
