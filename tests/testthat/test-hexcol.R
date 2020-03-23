@@ -16,5 +16,9 @@ test_that("hex colour tools are correct", {
 
     expect_warning(as.hexcol(0))
     expect_equal(as.hexcol(1), "#000000")
-    expect_equal(as.hexcol(2), "#df536b") # R4.0.0 palette change
+    if (getRversion() < "4.0.0") {
+        expect_equal(as.hexcol(2), "#ff0000") # R4.0.0 palette change
+    } else {
+        expect_equal(as.hexcol(2), "#df536b") # R4.0.0 palette change
+    }
 })

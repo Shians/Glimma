@@ -55,7 +55,7 @@ Suggests:
 License: GPL-3 | file LICENSE
 URL: https://github.com/Shians/Glimma
 BugReports: https://github.com/Shians/Glimma/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 7.0.2
 NeedsCompilation: no
 LazyData: true
 VignetteBuilder: knitr
