@@ -29,7 +29,7 @@
 #' des <- model.matrix(~genotype)
 #'
 #' ## Apply voom with sample quality weights and fit linear model
-#' v <- voomWithQualityWeights(x, design=des, normalize.method="none", plot=FALSE)
+#' v <- voomWithQualityWeights(x, design=des, plot=FALSE)
 #' vfit <- lmFit(v,des)
 #'
 #' ## Apply treat relative to a fold-change of 1.5
@@ -57,7 +57,6 @@ glMDPlot <- function(x, ...) {
 #'
 #' @author Shian Su
 #'
-#' @inheritParams glMDPlot
 #' @param x the data.frame object containing expression and fold change values.
 #' @param xval the column to plot on x axis of left plot.
 #' @param yval the column to plot on y axis of left plot.
@@ -185,7 +184,6 @@ glMDPlot.default <- function(
 #'
 #' @author Shian Su
 #'
-#' @inheritParams glMDPlot
 #' @param x the DGELRT object.
 #' @param counts the matrix of expression values, with samples in columns.
 #' @param anno the data.frame containing gene annotations.
@@ -368,7 +366,7 @@ glMDPlot.DGEExact <- glMDPlot.DGELRT
 #' des <- model.matrix(~genotype)
 #'
 #' ## Apply voom with sample quality weights and fit linear model
-#' v <- voomWithQualityWeights(x, design=des, normalize.method="none", plot=FALSE)
+#' v <- voomWithQualityWeights(x, design=des, plot=FALSE)
 #' vfit <- lmFit(v,des)
 #'
 #' ## Apply treat relative to a fold-change of 1.5

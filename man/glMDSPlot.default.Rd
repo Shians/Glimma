@@ -4,10 +4,19 @@
 \alias{glMDSPlot.default}
 \title{Glimma MDS Plot}
 \usage{
-\method{glMDSPlot}{default}(x, top = 500, labels = seq_cols(x),
-  groups = rep(1, ncol(x)), gene.selection = c("pairwise", "common"),
-  main = "MDS Plot", path = getwd(), folder = "glimma-plots",
-  html = "MDS-Plot", launch = TRUE, ...)
+\method{glMDSPlot}{default}(
+  x,
+  top = 500,
+  labels = seq_cols(x),
+  groups = rep(1, ncol(x)),
+  gene.selection = c("pairwise", "common"),
+  main = "MDS Plot",
+  path = getwd(),
+  folder = "glimma-plots",
+  html = "MDS-Plot",
+  launch = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{the matrix containing the gene expressions.}

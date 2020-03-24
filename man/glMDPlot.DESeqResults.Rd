@@ -4,15 +4,32 @@
 \alias{glMDPlot.DESeqResults}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{DESeqResults}(x, counts = NULL, anno, groups,
-  samples = NULL, status = rep(0, nrow(x)), transform = FALSE,
-  main = "", xlab = "Mean Expression", ylab = "log-fold-change",
-  side.xlab = "Group", side.ylab = "Expression", side.log = FALSE,
+\method{glMDPlot}{DESeqResults}(
+  x,
+  counts = NULL,
+  anno,
+  groups,
+  samples = NULL,
+  status = rep(0, nrow(x)),
+  transform = FALSE,
+  main = "",
+  xlab = "Mean Expression",
+  ylab = "log-fold-change",
+  side.xlab = "Group",
+  side.ylab = "Expression",
+  side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
-  jitter = 30, side.main = "GeneID", display.columns = NULL,
+  jitter = 30,
+  side.main = "GeneID",
+  display.columns = NULL,
   cols = c("#00bfff", "#858585", "#ff3030"),
-  sample.cols = rep("#1f77b4", ncol(counts)), path = getwd(),
-  folder = "glimma-plots", html = "MD-Plot", launch = TRUE, ...)
+  sample.cols = rep("#1f77b4", ncol(counts)),
+  path = getwd(),
+  folder = "glimma-plots",
+  html = "MD-Plot",
+  launch = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{the DESeqResults object.}

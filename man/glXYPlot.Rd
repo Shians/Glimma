@@ -4,13 +4,29 @@
 \alias{glXYPlot}
 \title{Glimma XY Plot}
 \usage{
-glXYPlot(x, y, counts = NULL, groups = NULL, samples = NULL,
-  status = rep(0, nrow(data)), anno = NULL, display.columns = NULL,
-  xlab = "x", ylab = "y", side.main = "GeneID",
-  side.xlab = "Group", side.ylab = "Expression",
-  sample.cols = rep("#1f77b4", length(groups)), cols = c("#00bfff",
-  "#858585", "#ff3030"), jitter = 30, path = getwd(),
-  folder = "glimma-plots", html = "XY-Plot", launch = TRUE, ...)
+glXYPlot(
+  x,
+  y,
+  counts = NULL,
+  groups = NULL,
+  samples = NULL,
+  status = rep(0, nrow(data)),
+  anno = NULL,
+  display.columns = NULL,
+  xlab = "x",
+  ylab = "y",
+  side.main = "GeneID",
+  side.xlab = "Group",
+  side.ylab = "Expression",
+  sample.cols = rep("#1f77b4", length(groups)),
+  cols = c("#00bfff", "#858585", "#ff3030"),
+  jitter = 30,
+  path = getwd(),
+  folder = "glimma-plots",
+  html = "XY-Plot",
+  launch = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{a numeric vector of values to plot on the x-axis of the summary plot.}

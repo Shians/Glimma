@@ -31,7 +31,7 @@ checkObjAnnoCountsShapes <- function(anno, counts, x) {
 
 # check that side.main exists as a column in either anno or main object
 checkSideMainPresent <- function(side.main, anno, x) {
-    if (class(x) == "DGELRT" || class(x) == "DGEExact") {
+    if (is(x, "DGELRT") || is(x, "DGEExact")) {
         if (side.main %!in% union(colnames(anno), colnames(x$table))) {
             stop(paste("column", quotify(side.main), "cannot be found in x$table or anno."))
         }
@@ -40,7 +40,7 @@ checkSideMainPresent <- function(side.main, anno, x) {
         } else {
             combined_anno <- anno
         }
-    } else if (class(x) == "MArrayLM") {
+    } else if (is(x, "MArrayLM")) {
         if (side.main %!in% union(colnames(anno), colnames(x$genes))) {
             stop(paste("column", quotify(side.main), "cannot be found in x$genes or anno."))
         }
@@ -49,7 +49,7 @@ checkSideMainPresent <- function(side.main, anno, x) {
         } else {
             combined_anno <- anno
         }
-    } else if (class(x) == "DESeqResults") {
+    } else if (is(x, "DESeqResults")) {
         if (side.main %!in% union(colnames(anno), names(x@listData))) {
             stop(paste("column", quotify(side.main), "cannot be found in x or anno."))
         }

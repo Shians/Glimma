@@ -118,7 +118,7 @@ glMDSPlot.default <- function(
     # Method for MDS objects
     points <- a1$points
 
-    if (!is.data.frame(groups) && class(groups) != "DataFrame") {
+    if (!is.data.frame(groups) && !is(groups, "DataFrame")) {
     # Rename for the column name in dataframe
         groups <- data.frame(groups)
     }
@@ -203,7 +203,7 @@ glMDSPlot.DGEList <- function (
     labels = NULL,
     groups = rep(1, ncol(x)),
     gene.selection = c("pairwise", "common"),
-    prior.count = 0.25,
+    prior.count = 2,
     main = "MDS Plot",
     path = getwd(),
     folder = "glimma-plots",
@@ -292,16 +292,16 @@ glMDSPlot.DESeqDataSet <- function(
 
 # extract sample groups based on object class
 getLabels <- function(x, labels) {
-    
+
     if (is.null(labels)) {
-        if (class(x) == "DGEList") {
-            # DGElist get from 
+        if (is(x, "DGEList")) {
+            # DGElist get from
             if (not.null(x$samples$groups)) {
                 labels <- rownames(x$samples)
             } else {
                 labels <- seq_cols(x)
             }
-        } else if (class(x) == "DESeqDataSet") {
+        } else if (is(x, "DESeqDataSet")) {
             # DESeqDaset
             if (not.null(SummarizedExperiment::colData(x))) {
                 labels <- rownames(SummarizedExperiment::colData(x))

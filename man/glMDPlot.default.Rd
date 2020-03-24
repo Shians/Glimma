@@ -4,16 +4,34 @@
 \alias{glMDPlot.default}
 \title{Glimma MD Plot}
 \usage{
-\method{glMDPlot}{default}(x, xval, yval, counts = NULL, anno = NULL,
-  groups = NULL, samples = NULL, status = rep(0, nrow(x)),
-  transform = FALSE, main = "", xlab = xval, ylab = yval,
-  side.main = "GeneID", side.xlab = "Group",
-  side.ylab = "Expression", side.log = FALSE,
+\method{glMDPlot}{default}(
+  x,
+  xval,
+  yval,
+  counts = NULL,
+  anno = NULL,
+  groups = NULL,
+  samples = NULL,
+  status = rep(0, nrow(x)),
+  transform = FALSE,
+  main = "",
+  xlab = xval,
+  ylab = yval,
+  side.main = "GeneID",
+  side.xlab = "Group",
+  side.ylab = "Expression",
+  side.log = FALSE,
   side.gridstep = ifelse(!transform || side.log, FALSE, 0.5),
-  jitter = 30, display.columns = side.main, cols = c("#00bfff",
-  "#858585", "#ff3030"), sample.cols = rep("#1f77b4", ncol(counts)),
-  path = getwd(), folder = "glimma-plots", html = "MD-Plot",
-  launch = TRUE, ...)
+  jitter = 30,
+  display.columns = side.main,
+  cols = c("#00bfff", "#858585", "#ff3030"),
+  sample.cols = rep("#1f77b4", ncol(counts)),
+  path = getwd(),
+  folder = "glimma-plots",
+  html = "MD-Plot",
+  launch = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{the data.frame object containing expression and fold change values.}

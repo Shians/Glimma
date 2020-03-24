@@ -4,9 +4,15 @@
 \alias{glimma}
 \title{Glimma plot manager}
 \usage{
-glimma(..., layout = c(1, 1), path = getwd(),
-  folder = "glimma-plots", html = "index", overwrite = TRUE,
-  launch = TRUE)
+glimma(
+  ...,
+  layout = c(1, 1),
+  path = getwd(),
+  folder = "glimma-plots",
+  html = "index",
+  overwrite = TRUE,
+  launch = TRUE
+)
 }
 \arguments{
 \item{...}{the jschart or jslink objects for processing.}
