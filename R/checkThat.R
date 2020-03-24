@@ -68,7 +68,7 @@ hasRows <- function(...) {
 isType <- function(x, typename, typecheck=NULL) {
     if (is.null(typecheck)) {
         typecheck <- function(x) {
-            output <- class(x) == typename
+            output <- is(x, typename)
 
             output
         }

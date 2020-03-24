@@ -55,7 +55,11 @@ Suggests:
 License: GPL-3 | file LICENSE
 URL: https://github.com/Shians/Glimma
 BugReports: https://github.com/Shians/Glimma/issues
+<<<<<<< HEAD
 RoxygenNote: 7.1.0
+=======
+RoxygenNote: 7.0.2
+>>>>>>> 05d28796d198abdfc9aa9f4c824aa111f2a43ee4
 NeedsCompilation: no
 LazyData: true
 VignetteBuilder: knitr
