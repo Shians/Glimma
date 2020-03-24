@@ -4,8 +4,15 @@
 \alias{gllink}
 \title{Plot linkages}
 \usage{
-gllink(from, to, src = "none", dest = "none", flag = "none",
-  both = FALSE, info = "none")
+gllink(
+  from,
+  to,
+  src = "none",
+  dest = "none",
+  flag = "none",
+  both = FALSE,
+  info = "none"
+)
 }
 \arguments{
 \item{from}{the index of the plot from which the event is dispatched.}

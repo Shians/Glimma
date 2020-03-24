@@ -4,10 +4,20 @@
 \alias{glMDSPlot.DESeqDataSet}
 \title{Glimma MDS Plot}
 \usage{
-\method{glMDSPlot}{DESeqDataSet}(x, top = 500, labels = NULL,
-  groups = NULL, gene.selection = c("pairwise", "common"),
-  prior.count = 0.25, main = "MDS Plot", path = getwd(),
-  folder = "glimma-plots", html = "MDS-Plot", launch = TRUE, ...)
+\method{glMDSPlot}{DESeqDataSet}(
+  x,
+  top = 500,
+  labels = NULL,
+  groups = NULL,
+  gene.selection = c("pairwise", "common"),
+  prior.count = 0.25,
+  main = "MDS Plot",
+  path = getwd(),
+  folder = "glimma-plots",
+  html = "MDS-Plot",
+  launch = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{the DESeqDataSet containing the gene expressions.}
