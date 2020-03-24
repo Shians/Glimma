@@ -1,12 +1,15 @@
-Glimma News
+Changes in Glimma 1.9.4
 
-Changes IN Glimma 1.6.0
+  * Fixed tests for R4.0.0
+  * Fixed examples for limma voom (normlization argument is now normalize.method)
+
+Changes in Glimma 1.6.0
 
   * Added table to MDS plot.
   * Changed encoding of javascript data to be more compact
   * Fixed handling of top and gene.selection parameters in glMDSPlot
 
-CHANGES IN Glimma 1.3.0
+Changes in Glimma 1.3.0
 
   * Added highlighting to bars in MDS plot.
   * Added interaction with table when clicking on points in MD plot.
@@ -15,7 +18,7 @@ CHANGES IN Glimma 1.3.0
   * Changed style of table.
   * Changed size of highlighted points.
 
-CHANGES IN Glimma 1.2.0
+Changes in Glimma 1.2.0
 
   * Added option to turn off internal cpm transform (transform=FALSE) in MD Plot.
   * Added gridlines to MD Plot.
@@ -30,27 +33,27 @@ CHANGES IN Glimma 1.2.0
   * Fixed logical values in annotation breaking graphs.
   * Fixed numeric values not working for colours.
 
-CHANGES IN Glimma 1.1.0
+Changes in Glimma 1.1.0
 
   * Added tables to MD Plot.
 
-CHANGES IN Glimma 1.0.0
+Changes in Glimma 1.0.0
 
   * Bioconductor release version.
 
-CHANGES IN Glimma 0.99.4:
+Changes in Glimma 0.99.4:
 
   * Added sample colours for MD plot.
   * Added DESeqResults method for glMDPlot
 
-CHANGES IN Glimma 0.99.3:
+Changes in Glimma 0.99.3:
 
   * Imported p.adjust for relevant functions.
 
-CHANGES IN Glimma 0.99.2:
+Changes in Glimma 0.99.2:
 
   * Added don't test cases for non-exported functions to pass checks.
 
-CHANGES IN Glimma 0.99.1:
+Changes in Glimma 0.99.1:
 
   * Initial package creation.
