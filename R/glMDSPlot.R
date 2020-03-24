@@ -118,7 +118,7 @@ glMDSPlot.default <- function(
     # Method for MDS objects
     points <- a1$points
 
-    if (!is.data.frame(groups) && class(groups) != "DataFrame") {
+    if (!is.data.frame(groups) && !is(groups, "DataFrame")) {
     # Rename for the column name in dataframe
         groups <- data.frame(groups)
     }
