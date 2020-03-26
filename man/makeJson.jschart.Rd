@@ -15,3 +15,4 @@ a stringified JSON object containing the chart data.
 \description{
 Function to make json object from a chart, ignoring the json property
 }
+\keyword{internal}

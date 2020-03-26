@@ -19,8 +19,10 @@
 #' plot1 <- glScatter(data, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
 #' plot2 <- glScatter(data, xval="Species", yval="Petal.Length", colval="Species")
 #' link1 <- gllink(1, 2, src="hover", dest="hover", both=TRUE)
-#' glimma(plot1, plot2, link1, layout=c(1,2))
+#' glimma_plot(plot1, plot2, link1, layout=c(1,2))
 #' }
+#'
+#' @keywords internal
 
 gllink <- function(from, to, src="none", dest="none", flag="none", both=FALSE, info="none") {
     out <- list()

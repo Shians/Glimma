@@ -21,3 +21,4 @@ a link object containing the plot linking information.
 \description{
 Helper function for writing the link properties in interactive Glimma plots
 }
+\keyword{internal}

@@ -1,7 +1,7 @@
 Package: Glimma
 Type: Package
 Title: Interactive HTML graphics
-Version: 1.15.2
+Version: 1.15.3
 Date: 2016-12-21
 Authors@R: 
     c(
@@ -59,3 +59,4 @@ RoxygenNote: 7.1.0
 NeedsCompilation: no
 LazyData: true
 VignetteBuilder: knitr
+Encoding: UTF-8

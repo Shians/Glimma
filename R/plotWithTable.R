@@ -102,7 +102,7 @@ draw.plots <- function(
     table1 <- glTable(1, plot1$anno)
 
     if (not.null(plot2)) {
-        glimma(
+        glimma_plot(
             plot1,
             plot2,
             link1,
@@ -117,7 +117,7 @@ draw.plots <- function(
             launch = launch
         )
     } else {
-        glimma(
+        glimma_plot(
             plot1,
             table1,
             link3,

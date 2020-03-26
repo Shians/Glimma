@@ -13,8 +13,10 @@
 #' data(iris)
 #' \donttest{
 #' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
-#' glimma(plot1, c(1,1))
+#' glimma_plot(plot1, c(1,1))
 #' }
+#'
+#' @keywords internal
 
 glScatter <- function(x, ...) {
     UseMethod("glScatter")
@@ -60,8 +62,10 @@ glScatter <- function(x, ...) {
 #' data(iris)
 #' \donttest{
 #' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
-#' glimma(plot1, c(1,1))
+#' glimma_plot(plot1, c(1,1))
 #' }
+#'
+#' @keywords internal
 
 glScatter.default <- function(x, xval="x", yval="y", idval=NULL, point.size=2,
                                 x.jitter = 0, y.jitter = 0,

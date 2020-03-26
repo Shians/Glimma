@@ -17,3 +17,4 @@ a input object containing the input field information.
 \description{
 Create a table using the data from a chart.
 }
+\keyword{internal}

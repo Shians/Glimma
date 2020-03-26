@@ -17,3 +17,4 @@ a stringified JSON object.
 \description{
 Function to generate json strings from
 }
+\keyword{internal}

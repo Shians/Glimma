@@ -164,7 +164,7 @@ glMDSPlot.default <- function(
     link2 <- gltablink(1, 1, action="highlightById")
     table1 <- glTable(1, c("label", intersect(plot1$anno, colnames(groups))))
 
-    glimma(
+    glimma_plot(
         plot1,
         plot2,
         link1,

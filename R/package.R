@@ -5,9 +5,10 @@
 #' functions can be used with both limma, edgeR and DESeq objecs.
 #'
 #' @section Main functions:
-#' \code{\link{glMDSPlot}}
-#' \code{\link{glMDPlot}}
+#' \code{\link{glMDSPlot}},
+#' \code{\link{glMDPlot}},
 #' \code{\link{glXYPlot}}
 #'
 #' @docType package
-#' @name Glimma
+#' @name glimma
+NULL

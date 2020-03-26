@@ -23,8 +23,9 @@ counts <- table(mtcars$gear)
 data <- data.frame(nGears=as.numeric(names(counts)), Count=as.numeric(counts))
 \donttest{
 plot1 <- glBar(data, "Count", "nGears", ylab="Number of Gears")
-glimma(plot1, layout=c(1,1), launch=TRUE)
+glimma_plot(plot1, layout=c(1,1), launch=TRUE)
 }
+
 }
 \seealso{
 \code{\link{glBar.default}}
@@ -32,3 +33,4 @@ glimma(plot1, layout=c(1,1), launch=TRUE)
 \author{
 Shian Su
 }
+\keyword{internal}

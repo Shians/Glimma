@@ -17,8 +17,10 @@
 #' data <- data.frame(nGears=as.numeric(names(counts)), Count=as.numeric(counts))
 #' \donttest{
 #' plot1 <- glBar(data, "Count", "nGears", ylab="Number of Gears")
-#' glimma(plot1, layout=c(1,1), launch=TRUE)
+#' glimma_plot(plot1, layout=c(1,1), launch=TRUE)
 #' }
+#'
+#' @keywords internal
 
 glBar <- function(x, ...) {
     UseMethod("glBar")
@@ -56,8 +58,10 @@ glBar <- function(x, ...) {
 #' data <- data.frame(nGears=as.numeric(names(counts)), Count=as.numeric(counts))
 #' \donttest{
 #' plot1 <- glBar(data, "Count", "nGears", ylab="Number of Gears")
-#' glimma(plot1, layout=c(1,1), launch=TRUE)
+#' glimma_plot(plot1, layout=c(1,1), launch=TRUE)
 #' }
+#'
+#' @keywords internal
 
 glBar.default <- function(x, yval, names.arg=rownames(x),
                             ndigits=NULL, signif=6,

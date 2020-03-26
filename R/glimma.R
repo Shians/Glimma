@@ -16,12 +16,13 @@
 #' data(iris)
 #' \donttest{
 #' plot1 <- glScatter(iris, xval="Sepal.Length", yval="Sepal.Width", colval="Species")
-#' glimma(plot1, c(1,1))
+#' glimma_plot(plot1, c(1,1))
 #' }
 #'
 #' @importFrom utils browseURL read.delim
+#' @keywords internal
 
-glimma <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
+glimma_plot <- function(..., layout=c(1, 1), path=getwd(), folder="glimma-plots",
                 html="index", overwrite=TRUE, launch=TRUE) {
     nplots <- 0
 

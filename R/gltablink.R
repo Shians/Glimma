@@ -8,6 +8,8 @@
 #' @param info additional info for creating the link.
 #'
 #' @return a link object containing the plot linking information.
+#'
+#' @keywords internal
 
 
 gltablink <- function(from, to, action="none", info="none") {

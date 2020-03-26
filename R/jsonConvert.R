@@ -8,6 +8,9 @@
 #' @return a stringified JSON object.
 #'
 #' @importFrom jsonlite toJSON
+#'
+#' @keywords internal
+
 makeJson <- function(x, ...) {
     UseMethod("makeJson")
 }
@@ -21,6 +24,8 @@ makeJson <- function(x, ...) {
 #' @return a stringified JSON object containing the chart data.
 #'
 #' @importFrom methods is
+#'
+#' @keywords internal
 
 makeJson.jschart <- function(chart) {
     makeEntry <- function(d) {
@@ -66,6 +71,8 @@ makeJson.list <- function(x, ...) {
 #' with each column being one object with keys corresponding to column names.
 #'
 #' @importFrom methods is
+#'
+#' @keywords internal
 
 makeJson.data.frame <- function(
     df,

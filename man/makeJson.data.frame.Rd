@@ -20,3 +20,4 @@ with each column being one object with keys corresponding to column names.
 \description{
 Function to create a JSON from a data.frame
 }
+\keyword{internal}
