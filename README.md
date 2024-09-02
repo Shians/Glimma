@@ -3,6 +3,10 @@ Master | Devel
 [![Build Status](https://travis-ci.org/Shians/Glimma.svg?branch=master)](https://travis-ci.org/Shians/Glimma) | [![Build Status](https://travis-ci.org/Shians/Glimma.svg?branch=devel)](https://travis-ci.org/Shians/Glimma) 
 [![codecov](https://codecov.io/gh/Shians/Glimma/branch/master/graph/badge.svg)](https://codecov.io/gh/Shians/Glimma) | [![codecov](https://codecov.io/gh/Shians/Glimma/branch/devel/graph/badge.svg)](https://codecov.io/gh/Shians/Glimma)
 
+# PROJECT HAS MOVED
+Development of Glimma has been moved to https://github.com/hasaru-k/GlimmaV2
+This repository has been archived.
+
 # Glimma
 Welcome to Glimma, a R package for creating interactive plots for differential expression analysis.
 
